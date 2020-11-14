@@ -1,20 +1,40 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
 import PageContainer from "@/components/PageContainer.vue"
+import LogIn from '@/views/LogIn.vue';
 import Home from "@/views/Home.vue"
+import Show from "@/views/Show.vue"
 Vue.use(VueRouter)
 
 const routes = [
     {
         path: '/',
         name: '#',
-        redirect: '/home',
+        redirect: '/login',
     },
     {
-        path: '/home',
-        name: 'home',
-        component: Home
+        path: '/login',
+        name: 'login',
+        component: LogIn
     },
+    {
+        path: '/main',
+        name: 'main',
+        component: PageContainer,
+        children: [
+            {
+                path: '/home',
+                name: 'home',
+                component: Home
+            },
+            {
+                path: '/show',
+                name: 'show',
+                component: Show
+            },
+        ]
+    },
+
     //   {
     //     path: '/about',
     //     name: 'About',
