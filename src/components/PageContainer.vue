@@ -89,6 +89,14 @@
             <el-breadcrumb-item :to="{ path: '/' }">首页</el-breadcrumb-item>
             <el-breadcrumb-item><a href="/">演出</a></el-breadcrumb-item>
             <el-breadcrumb-item>查看演出</el-breadcrumb-item>
+            <el-dropdown @command="handleCommand">
+              <span class="el-dropdown-link" >
+                点我<i class="el-icon-arrow-down el-icon--right"></i>
+              </span>
+              <el-dropdown-menu slot="dropdown">
+                <el-dropdown-item command="logout">退出</el-dropdown-item>
+              </el-dropdown-menu>
+            </el-dropdown>
           </el-breadcrumb>
         </el-header>
         <router-view></router-view>
@@ -137,8 +145,8 @@
   line-height: 320px;
 }
 .toggle-button {
-  background: #E9EEF3;
-  color: #329EF2;
+  background: #e9eef3;
+  color: #329ef2;
   font-size: 10px;
   line-height: 24px;
   text-align: center;
@@ -146,6 +154,12 @@
   cursor: pointer;
   width: 10px;
   height: 60px;
+}
+
+
+.el-dropdown-link {
+  cursor: pointer;
+  color: #409eff;
 }
 </style>
 
@@ -162,6 +176,13 @@ export default {
     toggleCollapse() {
       this.isCollapse = !this.isCollapse;
     },
+    handleCommand(command) {
+        if(command==='logout'){
+          window.sessionStorage.clear();
+          this.$router.push('/login');
+
+        }
+      }
   },
 };
 </script>
