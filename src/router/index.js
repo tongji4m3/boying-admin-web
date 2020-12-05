@@ -51,16 +51,15 @@ const router = new VueRouter({
 
 //挂载路由导航守卫
 router.beforeEach((to, from, next) => {
-     if(to.path==='/login') 
-     {
-         window.sessionStorage.clear();
-     }
-     return next();
-     //获取token
-     const tokenStr=window.sessionStorage.getItem('token');
-     //无token强制跳转到登录页面
-     if(!tokenStr)return next('/login');
-     next();
+    if (to.path === '/login') {
+        window.sessionStorage.clear();
+        return next();
+    }
+    //获取token
+    const tokenStr = window.sessionStorage.getItem('token');
+    //无token强制跳转到登录页面
+    if (!tokenStr) return next('/login');
+    next();
 })
 
 export default router
