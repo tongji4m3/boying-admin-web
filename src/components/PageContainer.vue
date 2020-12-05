@@ -85,11 +85,11 @@
       <el-main style="height: 100%">
         <el-header>
           <!-- <div class="toggle-button" @click="toggleCollapse">|||</div> -->
-          <el-breadcrumb separator="/" style="padding-top: 15px">
-            <el-breadcrumb-item :to="{ path: '/' }">首页</el-breadcrumb-item>
-            <el-breadcrumb-item><a href="/">演出</a></el-breadcrumb-item>
-            <el-breadcrumb-item>查看演出</el-breadcrumb-item>
-            <el-dropdown @command="handleCommand">
+          <el-breadcrumb separator=" " style="padding-top: 15px">
+            <el-breadcrumb-item >首页</el-breadcrumb-item>
+            <!-- <el-breadcrumb-item :to="{ path: '/show' }">演出</el-breadcrumb-item>
+            <el-breadcrumb-item>查看演出</el-breadcrumb-item> -->
+            <el-dropdown @command="handleCommand">  
               <span class="el-dropdown-link" >
                 点我<i class="el-icon-arrow-down el-icon--right"></i>
               </span>
@@ -144,6 +144,7 @@
 .el-container:nth-child(7) .el-aside {
   line-height: 320px;
 }
+
 .toggle-button {
   background: #e9eef3;
   color: #329ef2;
@@ -156,11 +157,13 @@
   height: 60px;
 }
 
-
 .el-dropdown-link {
   cursor: pointer;
   color: #409eff;
+  display: flex;
+  margin-left: 1000px;
 }
+
 </style>
 
 <script>
@@ -180,7 +183,6 @@ export default {
         if(command==='logout'){
           window.sessionStorage.clear();
           this.$router.push('/login');
-
         }
       }
   },
