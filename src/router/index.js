@@ -4,6 +4,7 @@ import PageContainer from "@/components/PageContainer.vue"
 import LogIn from '@/views/LogIn.vue';
 import Home from "@/views/Home.vue"
 import Show from "@/views/Show.vue"
+import Category from "@/views/Category.vue"
 Vue.use(VueRouter)
 
 const routes = [
@@ -31,6 +32,11 @@ const routes = [
                 path: '/show',
                 name: 'show',
                 component: Show
+            },
+            {
+                path: '/category',
+                name: 'category',
+                component: Category
             },
         ]
     },

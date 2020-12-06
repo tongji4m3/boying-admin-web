@@ -1,7 +1,6 @@
 <template>
   <el-container>
     <el-aside :width="isCollapse ? '64px' : '200px'">
-      <!-- <el-col style="height: 100%"> -->
       <el-menu
         default-active="this.$route.path"
         class="el-menu-vertical-demo"
@@ -56,51 +55,20 @@
             <span slot="title">用户列表</span></el-menu-item
           >
         </el-submenu>
-        <!-- <el-submenu index="security">
-          <template slot="title">
-            <i class="el-icon-location"></i>
-            <span slot="security">权限</span>
-          </template>
-          <el-menu-item index="show">
-            <i class="el-icon-location"></i>
-            <span slot="title">用户列表</span></el-menu-item
-          >
-          <el-menu-item index="show">
-            <i class="el-icon-location"></i>
-            <span slot="title">角色列表</span></el-menu-item
-          >
-          <el-menu-item index="show">
-            <i class="el-icon-location"></i>
-            <span slot="title">菜单列表</span></el-menu-item
-          >
-          <el-menu-item index="show">
-            <i class="el-icon-location"></i>
-            <span slot="title">资源列表</span></el-menu-item
-          >
-        </el-submenu> -->
       </el-menu>
-      <!-- </el-col> -->
     </el-aside>
     <el-main style="padding: 0px">
-      <el-main style="height: 100%">
-        <el-header>
-          <!-- <div class="toggle-button" @click="toggleCollapse">|||</div> -->
-          <el-breadcrumb separator=" " style="padding-top: 15px">
-            <el-breadcrumb-item >首页</el-breadcrumb-item>
-            <!-- <el-breadcrumb-item :to="{ path: '/show' }">演出</el-breadcrumb-item>
-            <el-breadcrumb-item>查看演出</el-breadcrumb-item> -->
-            <el-dropdown @command="handleCommand">  
-              <span class="el-dropdown-link" >
-                点我<i class="el-icon-arrow-down el-icon--right"></i>
-              </span>
-              <el-dropdown-menu slot="dropdown">
-                <el-dropdown-item command="logout">退出</el-dropdown-item>
-              </el-dropdown-menu>
-            </el-dropdown>
-          </el-breadcrumb>
-        </el-header>
-        <router-view></router-view>
-      </el-main>
+      <el-breadcrumb
+        separator-class="el-icon-arrow-right"
+        style="padding: 20px"
+      >
+        <el-breadcrumb-item :to="{ path: '/' }">首页</el-breadcrumb-item>
+        <el-breadcrumb-item>活动管理</el-breadcrumb-item>
+        <el-breadcrumb-item>活动列表</el-breadcrumb-item>
+        <el-breadcrumb-item>活动详情</el-breadcrumb-item>
+      </el-breadcrumb>
+      <el-divider></el-divider>
+      <router-view></router-view>
     </el-main>
   </el-container>
 </template>
@@ -116,7 +84,9 @@
   text-align: center;
   line-height: 60px;
 }
-
+.el-divider{
+margin: 0px;
+}
 .el-aside {
   background-color: #304156;
   color: #333;
@@ -125,7 +95,7 @@
 }
 
 .el-main {
-  background-color: #e9eef3;
+  background-color: #ffffff;
   color: #333;
   text-align: center;
   line-height: 100px;
@@ -180,11 +150,11 @@ export default {
       this.isCollapse = !this.isCollapse;
     },
     handleCommand(command) {
-        if(command==='logout'){
-          window.sessionStorage.clear();
-          this.$router.push('/login');
-        }
+      if (command === "logout") {
+        window.sessionStorage.clear();
+        this.$router.push("/login");
       }
+    },
   },
 };
 </script>
