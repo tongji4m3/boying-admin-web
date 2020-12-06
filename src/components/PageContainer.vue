@@ -84,8 +84,8 @@
   text-align: center;
   line-height: 60px;
 }
-.el-divider{
-margin: 0px;
+.el-divider {
+  margin: 0px;
 }
 .el-aside {
   background-color: #304156;
@@ -98,7 +98,7 @@ margin: 0px;
   background-color: #ffffff;
   color: #333;
   text-align: center;
-  line-height: 100px;
+  /* line-height: 100px; */
   padding: 0px;
 }
 
@@ -133,7 +133,6 @@ margin: 0px;
   display: flex;
   margin-left: 1000px;
 }
-
 </style>
 
 <script>
