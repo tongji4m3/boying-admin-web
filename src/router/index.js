@@ -20,22 +20,22 @@ const routes = [
     },
     {
         path: '/main',
-        name: 'main',
+        name: '首页',
         component: PageContainer,
         children: [
             {
                 path: '/home',
-                name: 'home',
+                name: '首页',
                 component: Home
             },
             {
                 path: '/show',
-                name: 'show',
+                name: '演出',
                 component: Show
             },
             {
                 path: '/category',
-                name: 'category',
+                name: '演出目录',
                 component: Category
             },
         ]

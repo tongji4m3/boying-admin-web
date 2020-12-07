@@ -52,16 +52,9 @@
   font-size: 20px;
 }
 
-.el-icon-s-order {
-  font-size: 50px;
-}
-
-.el-icon-coin {
-  font-size: 50px;
-}
-
 .total-layout {
   margin-top: 20px;
+  /* margin: auto; */
 }
 .total-frame {
   border: 1px solid #dcdfe6;
@@ -91,6 +84,7 @@
   color: #409eff;
   width: 60px;
   height: 60px;
+  font-size: 50px;
 }
 
 .item {

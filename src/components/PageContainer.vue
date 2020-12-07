@@ -62,10 +62,21 @@
         separator-class="el-icon-arrow-right"
         style="padding: 20px"
       >
-        <el-breadcrumb-item :to="{ path: '/' }">首页</el-breadcrumb-item>
-        <el-breadcrumb-item>活动管理</el-breadcrumb-item>
-        <el-breadcrumb-item>活动列表</el-breadcrumb-item>
-        <el-breadcrumb-item>活动详情</el-breadcrumb-item>
+        <el-breadcrumb-item
+          v-for="(item, index) in list"
+          :key="index"
+          :to="{ path: item.path }"
+        >
+          {{ item.name }}
+        </el-breadcrumb-item>
+        <el-dropdown @command="handleCommand">
+          <span class="el-dropdown-link">
+            点我<i class="el-icon-arrow-down el-icon--right"></i>
+          </span>
+          <el-dropdown-menu slot="dropdown">
+            <el-dropdown-item command="logout">退出</el-dropdown-item>
+          </el-dropdown-menu>
+        </el-dropdown>
       </el-breadcrumb>
       <el-divider></el-divider>
       <router-view></router-view>
@@ -141,7 +152,13 @@ export default {
     return {
       isCollapse: false,
       breadList: [], // 路由集合
+      list: [], //面包屑动态生成所用集合
     };
+  },
+  watch: {
+    $route() {
+      this.bread();
+    },
   },
   methods: {
     // 点击切换左侧菜单的折叠与展开
@@ -154,6 +171,29 @@ export default {
         this.$router.push("/login");
       }
     },
+    bread() {
+      let matched = this.$route.matched.filter((item) => item.name);
+      let first = matched[0];
+      if (first && first.name !== "home") {
+              console.log(first)
+        // 我在这里是判断的是name，渲染的是name，但是可以使用其他的字段
+        matched = [{ path: "/home", name: "首页" }].concat(matched);
+      }
+      for (let element of matched) {
+        if (element.name == "main" ||element.path == "/home") {
+          var index = matched.indexOf(element);
+          if (index > -1) {
+            matched.splice(index, 1);
+          }
+        }
+      }
+      this.list = matched;
+
+      console.log(this.list);
+    },
+  },
+  created() {
+    this.bread();
   },
 };
 </script>
