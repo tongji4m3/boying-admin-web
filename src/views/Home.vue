@@ -172,7 +172,7 @@ export default {
         this.allOrderMoney = res.data.data;
         setTimeout(() => {
           this.loading = false;
-        }, 1000);
+        }, 500);
       }
     },
 

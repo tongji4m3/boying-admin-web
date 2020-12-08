@@ -79,7 +79,7 @@ export default {
           this.tableData = res.data.data;
           setTimeout(() => {
             this.loading = false;
-          }, 1000);
+          }, 500);
           console.log(this.tableData);
         }
       } catch (err) {

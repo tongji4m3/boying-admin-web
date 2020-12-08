@@ -68,7 +68,7 @@ export default {
   async mounted() {
     setTimeout(() => {
       this.loading = false;
-    }, 1000);
+    }, 500);
     this.reload();
   },
   data() {

@@ -5,6 +5,10 @@ import LogIn from '@/views/LogIn.vue';
 import Home from "@/views/Home.vue"
 import Show from "@/views/Show.vue"
 import Category from "@/views/Category.vue"
+import AddShow from "@/views/AddShow.vue"
+import Order from "@/views/Order.vue"
+import User from "@/views/User.vue"
+
 Vue.use(VueRouter)
 
 const routes = [
@@ -38,6 +42,21 @@ const routes = [
                 name: '演出目录',
                 component: Category
             },
+            {
+                path: '/addshow',
+                name: "添加演出",
+                component:AddShow
+            },
+            {
+                path: '/order',
+                name: '订单列表',
+                component:Order
+            },
+            {
+                path: '/user',
+                name: '用户列表',
+                component:User
+            }
         ]
     },
 

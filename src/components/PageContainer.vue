@@ -171,6 +171,7 @@ export default {
         this.$router.push("/login");
       }
     },
+    //面包屑动态生成
     bread() {
       let matched = this.$route.matched.filter((item) => item.name);
       let first = matched[0];
