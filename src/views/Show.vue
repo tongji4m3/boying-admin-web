@@ -55,7 +55,7 @@ const fields = [
   // { label: "演出详情", prop: "showDetails" },
   { label: "演出最低价格", prop: "minPrice" },
   // { label: "演出最低价格", prop: "showMinPrice" },
-  // { label: "演出最高价格", prop: "showMaxPrice" },
+  { label: "演出最高价格", prop: "maxPrice" },
   // { label: "演出优先级", prop: "showWeight" },
   // { label: "演出城市", prop: "showCity" },
   { label: "演出地址", prop: "address" },
@@ -66,9 +66,6 @@ const fields = [
 
 export default {
   async mounted() {
-    setTimeout(() => {
-      this.loading = false;
-    }, 500);
     this.reload();
   },
   data() {
@@ -88,12 +85,15 @@ export default {
       console.log(row.showId);
       try {
         console.log("mounted");
-        const res = await axios.post(`${api.API_URL}/show/delete/`+row.showId, {
-          headers: {
-            Authorization: "Bearer " + sessionStorage.getItem("token"),
-          },
-        });
-        console.log("test")
+        const res = await axios.post(
+          `${api.API_URL}/show/delete/` + row.showId,
+          {
+            headers: {
+              Authorization: "Bearer " + sessionStorage.getItem("token"),
+            },
+          }
+        );
+        console.log("test");
         console.log(res);
         if (res.data.code == 200) {
           this.$message.success("删除成功");
@@ -115,6 +115,9 @@ export default {
         console.log(res);
         if (res.data.code == 200) {
           this.tableData = res.data.data;
+          setTimeout(() => {
+            this.loading = false;
+          }, 500);
         }
       } catch (err) {
         console.log(err);
