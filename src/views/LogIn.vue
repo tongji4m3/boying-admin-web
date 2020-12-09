@@ -1,17 +1,33 @@
 <template>
-  <div>
-    <el-form ref="form" :model="form" :rules="formRules" label-width="80px">
-      <el-form-item prop="username" label="账号">
-        <el-input v-model="form.username" @keyup.enter.native='onSubmit'></el-input>
+<body id="poster">
+  <el-container>
+    <el-form
+      ref="form"
+      :model="form"
+      :rules="formRules"
+      class="login-container"
+      label-position="left"
+      label-width="0px"
+    >
+      <h3 class="login_title">登录</h3>
+      <el-form-item prop="username">
+        <el-input type="text" v-model="form.username" auto-complete="off" placeholder="账号"></el-input>
       </el-form-item>
-      <el-form-item prop="password" label="密码">
-        <el-input type="password" v-model="form.password" @keyup.enter.native='onSubmit'></el-input>
+
+      <el-form-item prop="password">
+        <el-input type="password" v-model="form.password" auto-complete="off" placeholder="密码"></el-input>
       </el-form-item>
-      <el-form-item>
-        <el-button type="primary" @click="onSubmit" >登录</el-button>
+
+      <el-form-item style="width: 100%">
+        <el-button
+          type="primary"
+          style="width: 100%;background: #505458;border: none"
+          v-on:click="onSubmit"
+        >登录</el-button>
       </el-form-item>
     </el-form>
-  </div>
+  </el-container>
+</body>
 </template>
 
 <script>
@@ -64,3 +80,39 @@ export default {
   },
 };
 </script>
+
+
+<style scoped>
+#poster {
+  height: 100%;
+  width: 100%;
+  background-size: cover;
+  position: fixed;
+}
+
+body {
+  color: rgba(255, 255, 255, 0.65);
+  background-color: #24292e;
+    /*background-image: url(../../assets/img/star-bg.svg),*/
+    /*linear-gradient(#191c20, #24292e 15%);*/
+  background-repeat: repeat-x;
+  background-position: center 0, 0 0, 0 0;
+}
+
+.login-container {
+  border-radius: 15px;
+  background-clip: padding-box;
+  margin: 150px auto;
+  width: 300px;
+  padding: 35px 35px 15px 35px;
+  background: #fff;
+  border: 1px solid #eaeaea;
+}
+
+.login_title {
+  letter-spacing: 10px;
+  margin: 0px auto 40px auto;
+  text-align: center;
+  color: #505458;
+}
+</style>
