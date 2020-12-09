@@ -11,11 +11,11 @@
     >
       <h3 class="login_title">登录</h3>
       <el-form-item prop="username">
-        <el-input type="text" v-model="form.username" auto-complete="off" placeholder="账号"></el-input>
+        <el-input type="text" v-model="form.username" auto-complete="off" placeholder="账号" v-on:keyup.enter.native="onSubmit"></el-input>
       </el-form-item>
 
       <el-form-item prop="password">
-        <el-input type="password" v-model="form.password" auto-complete="off" placeholder="密码"></el-input>
+        <el-input type="password" v-model="form.password" auto-complete="off" placeholder="密码" v-on:keyup.enter.native="onSubmit"></el-input>
       </el-form-item>
 
       <el-form-item style="width: 100%">
