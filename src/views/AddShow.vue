@@ -23,11 +23,11 @@
           <el-option label="编号二" value="2"></el-option>
         </el-select>
       </el-form-item>
-      <el-form-item label="演出海报信息" prop="poster">
-        <el-input v-model="ruleForm.poster"></el-input>
+      <el-form-item label="演出具体信息" prop="details">
+        <el-input v-model="ruleForm.details"></el-input>
       </el-form-item>
 
-      <el-form-item label="演出图片" prop="details">
+      <el-form-item label="演出海报图片" prop="poster">
         <!--    上传个人头像组件-->
         <el-upload
           class="upload"
@@ -146,6 +146,7 @@ export default {
         address: "",
         dayStart: "",
         dayEnd: "",
+        imgUrl: "",
       },
       rules: {
         name: [
@@ -270,7 +271,7 @@ export default {
           if (res && res.status === 200) {
             console.log(`阿里云OSS上传图片成功回调`, res, url, name);
             console.log(url);
-            this.registerForm.imgUrl = url;
+            this.ruleForm.poster = url;
           }
         })
         .catch((err) => {

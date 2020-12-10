@@ -10,25 +10,45 @@
     v-loading="loading"
     style="width: 100%"
   >
-    <el-table-column
-      v-for="fruit in formThead"
-      :key="fruit.prop"
-      :label="fruit.label"
-      :width="fruit.width"
-      show-overflow-tooltip
-    >
-      <template slot-scope="scope">
-        {{ scope.row[fruit.prop] }}
-      </template>
-    </el-table-column>
-    <el-table-column label="操作" align="center">
+    <el-table-column label="演出编号" prop="showId"></el-table-column>
+    <el-table-column label="演出名称" prop="name"></el-table-column>
+    <el-table-column label="演出目录编号" prop="categoryId"></el-table-column>
+    <el-table-column label="演出海报" prop="poster"></el-table-column>
+    <el-table-column label="演出最低价格" prop="minPrice"></el-table-column>
+    <el-table-column label="演出最高价格" prop="maxPrice"></el-table-column>
+    <el-table-column label="演出地址" prop="address"></el-table-column>
+    <el-table-column label="演出开始时间" prop="dayStart"></el-table-column>
+    <el-table-column label="演出结束时间" prop="dayEnd"></el-table-column>
+
+    <el-table-column label="操作">
       <template slot-scope="scope">
         <el-button
           size="mini"
           type="danger"
           @click="handleDelete(scope.$index, scope.row)"
-          >Delete</el-button
+          >删除</el-button
         >
+        <el-button
+          size="mini"
+          style="margin-left: 0"
+          @click="handleClick(scope.row.details)"
+          >查看</el-button
+        >
+        <el-dialog
+          title="提示"
+          width="30%"
+          :visible.sync="dialogVisible"
+          :before-close="handleClose"
+        >
+        <!-- 弹框内容错误，每行的弹框内容都是最后一行的details -->
+          <span>{{scope.row.details}}</span>
+          <span slot="footer" class="dialog-footer">
+            <el-button @click="dialogVisible = false">取 消</el-button>
+            <el-button type="primary" @click="dialogVisible = false"
+              >确 定</el-button
+            >
+          </span>
+        </el-dialog>
       </template>
     </el-table-column>
     <!--  <el-table-column label="演出名称" prop="name"> </el-table-column>
@@ -44,6 +64,7 @@
   </el-table>
 </template>
 
+
 <script>
 import axios from "axios";
 import api from "@/assets/api.js";
@@ -53,7 +74,7 @@ const fields = [
   { label: "演出名称", prop: "name" },
   { label: "演出目录编号", prop: "categoryId" },
   { label: "演出海报", prop: "poster" },
-  // { label: "演出详情", prop: "showDetails" },
+  { label: "演出详情", prop: "details" },
   { label: "演出最低价格", prop: "minPrice" },
   // { label: "演出最低价格", prop: "showMinPrice" },
   { label: "演出最高价格", prop: "maxPrice" },
@@ -62,7 +83,7 @@ const fields = [
   { label: "演出地址", prop: "address" },
   // { label: "演出时间", prop: "showTime" },
   { label: "演出开始时间", prop: "dayStart" },
-  // { label: "演出结束时间", prop: "showEndTime" },
+  { label: "演出结束时间", prop: "dayEnd" },
 ];
 
 export default {
@@ -72,15 +93,32 @@ export default {
   data() {
     return {
       tableData: [],
+      dialogVisible: false, //对话框初始不可见
       search: "",
       key: 1, // table key
       formThead: fields, // 默认表头 Default header
       loading: true,
+      dialogInfo: "",
     };
   },
   methods: {
-    handleEdit(index, row) {
-      console.log(index, row);
+    //点击查看 按钮  的事件
+    handleClick(info) {
+      console.log(info);
+      this.dialogVisible = true;
+      this.dialogInfo = info
+      console.log(this.dialogVisible)
+    },
+    dialogVisibles(v){
+        this.dialogVisible = v
+        console.log(v)
+    },
+    handleClose(done) {
+      this.$confirm("确认关闭？")
+        .then((_) => {
+          done();
+        })
+        .catch((_) => {});
     },
     async handleDelete(index, row) {
       console.log(row.showId);
@@ -116,6 +154,7 @@ export default {
         console.log(res);
         if (res.data.code == 200) {
           this.tableData = res.data.data;
+          // console.log(this.tableData)
           setTimeout(() => {
             this.loading = false;
           }, 500);
