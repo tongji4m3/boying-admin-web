@@ -21,16 +21,7 @@
         {{ scope.row[fruit.prop] }}
       </template>
     </el-table-column>
-    <!-- <el-table-column label="演出编号" prop="showId"> </el-table-column>
-    <el-table-column label="演出名称" prop="name"> </el-table-column>
-    <el-table-column label="演出开始时间" prop="dayStart">
-    </el-table-column>
-    <el-table-column label="演出海报" prop="poster"> </el-table-column>
-    <el-table-column label="演出地址" prop="showAddress"> </el-table-column> -->
-    <el-table-column align="right">
-      <template slot="header" slot-scope="scope">
-        <el-input v-model="search" size="mini" placeholder="输入关键字搜索" />
-      </template>
+    <el-table-column label="操作" align="center">
       <template slot-scope="scope">
         <el-button
           size="mini"
@@ -38,6 +29,16 @@
           @click="handleDelete(scope.$index, scope.row)"
           >Delete</el-button
         >
+      </template>
+    </el-table-column>
+    <!--  <el-table-column label="演出名称" prop="name"> </el-table-column>
+    <el-table-column label="演出开始时间" prop="dayStart">
+    </el-table-column>
+    <el-table-column label="演出海报" prop="poster"> </el-table-column>
+    <el-table-column label="演出地址" prop="showAddress"> </el-table-column> -->
+    <el-table-column align="center">
+      <template slot="header" slot-scope="scope">
+        <el-input v-model="search" size="mini" placeholder="输入关键字搜索" />
       </template>
     </el-table-column>
   </el-table>

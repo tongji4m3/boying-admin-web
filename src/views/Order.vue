@@ -1,13 +1,136 @@
 <template>
-  <div v-loading="loading">这是订单页面</div>
+  <div>
+    <el-card class="operate-container" shadow="never" style="text-align: left">
+      <i class="el-icon-tickets"></i>
+      <span>数据列表</span>
+    </el-card>
+    <div class="table-container">
+      <el-table
+        :key="key"
+        :data="
+          tableData.filter(
+            (data) =>
+              !search || data.name.toLowerCase().includes(search.toLowerCase())
+          )
+        "
+        v-loading="loading"
+        style="width: 100%"
+      >
+        <!-- <el-table-column type="expand">
+          <template slot-scope="scope">
+            <el-form
+              label-position="left"
+              inline
+              class="demo-table-expand"
+              v-for="fruit in formThead"
+              :key="fruit.prop"
+              :width="fruit.width"
+              show-overflow-tooltip
+            >
+            <el-form-item >
+              <span>{{scope.row[fruit.label]}}</span>
+              <span>{{ scope.row[fruit.prop] }}</span>
+            </el-form-item>
+            </el-form>
+          </template>
+        </el-table-column> -->
+        <el-table-column type="expand">
+          <template slot-scope="props">
+            <el-form label-position="left" inline class="demo-table-expand">
+              <el-form-item label="订单编号">
+                <span>{{ props.row.orderId }}</span>
+              </el-form-item>
+              <el-form-item label="用户账号">
+                <span>{{ props.row.userId }}</span>
+              </el-form-item>
+              <el-form-item label="演出编号">
+                <span>{{ props.row.showId }}</span>
+              </el-form-item>
+              <el-form-item label="订单状态">
+                <span>{{ props.row.status }}</span>
+              </el-form-item>
+              <el-form-item label="订单提交时间">
+                <span>{{ props.row.time }}</span>
+              </el-form-item>
+              <el-form-item label="订单总金额">
+                <span>{{ props.row.money }}</span>
+              </el-form-item>
+              <el-form-item label="演出场次编号">
+                <span>{{ props.row.showSessionId }}</span>
+              </el-form-item>
+              <el-form-item label="订单支付方式">
+                <span>{{ props.row.payment }}</span>
+              </el-form-item>
+              <el-form-item label="订单地址编号">
+                <span>{{ props.row.addressId }}</span>
+              </el-form-item>
+              <el-form-item label="该订单对用户是否可见">
+                <span>{{ props.row.userDelete }}</span>
+              </el-form-item>
+              <el-form-item label="订单所含票数">
+                <span>{{ props.row.ticketCount }}</span>
+              </el-form-item>
+            </el-form>
+          </template>
+        </el-table-column>
+        <el-table-column label="订单编号" prop="orderId"> </el-table-column>
+        <el-table-column label="用户账号" prop="userId"> </el-table-column>
+        <el-table-column label="演出编号" prop="showId"> </el-table-column>
+        <el-table-column label="订单状态" prop="status"> </el-table-column>
+        <el-table-column label="订单提交时间" prop="time"> </el-table-column>
+        <el-table-column label="订单总金额" prop="money"> </el-table-column>
+        <el-table-column align="right">
+          <template slot="header" slot-scope="scope">
+            <el-input
+              v-model="search"
+              size="mini"
+              placeholder="输入关键字搜索"
+            />
+          </template>
+          <template slot-scope="scope">
+            <el-button
+              size="mini"
+              type="danger"
+              @click="handleDelete(scope.$index, scope.row)"
+              >Delete</el-button
+            >
+          </template>
+        </el-table-column>
+      </el-table>
+    </div>
+  </div>
 </template>
 
 <script>
+import axios from "axios";
+import api from "@/assets/api.js";
+import qs from "qs";
+
+const fields = [
+  { label: "订单编号", prop: "orderId" },
+  { label: "用户账号", prop: "userId" },
+  { label: "演出编号", prop: "showId" },
+  { label: "订单状态", prop: "status" },
+  { label: "订单提交时间", prop: "time" },
+  { label: "订单总金额", prop: "money" },
+
+  //展开行功能多出的内容
+  { label: "演出场次编号", prop: "showSessionId" },
+  { label: "订单支付方式", prop: "payment" },
+  { label: "订单地址编号", prop: "addressId" },
+  { label: "该订单对用户是否可见", prop: "userDelete" },
+  { label: "订单所含票数", prop: "ticketCount" },
+];
+
 export default {
   name: "",
   props: [""],
   data() {
     return {
+      tableData: [],
+      search: "",
+      key: 1, // table key
+      formThead: fields, // 默认表头 Default header
       loading: true,
     };
   },
@@ -19,15 +142,47 @@ export default {
   beforeMount() {},
 
   mounted() {
-    setTimeout(() => {
-      this.loading = false;
-    }, 500);
+    this.reload();
   },
 
-  methods: {},
+  methods: {
+    async reload() {
+      try {
+        console.log("mounted");
+        const res = await axios.get(`${api.API_URL}/user/list`, {
+          headers: {
+            Authorization: "Bearer " + sessionStorage.getItem("token"),
+          },
+        });
+        console.log(res);
+        if (res.data.code == 200) {
+          this.tableData = res.data.data;
+          setTimeout(() => {
+            this.loading = false;
+          }, 500);
+        }
+      } catch (err) {
+        console.log(err);
+      }
+    },
+  },
 
   watch: {},
 };
 </script>
-<style lang='' scoped>
+
+<style scoped>
+.demo-table-expand {
+  font-size: 0;
+}
+/* 这个css未生效 也可能这三个都未生效*/
+  .demo-table-expand .label {
+    width: 90px;
+    color: #99a9bf;
+  }
+  .demo-table-expand .el-form-item {
+    margin-right: 0;
+    margin-bottom: 0;
+    width: 50%;
+  }
 </style>
