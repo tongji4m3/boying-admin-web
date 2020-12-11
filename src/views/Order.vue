@@ -47,7 +47,7 @@
                 <span>{{ props.row.showId }}</span>
               </el-form-item>
               <el-form-item label="订单状态">
-                <span>{{ props.row.status }}</span>
+                <span>{{ props.row.realStatus }}</span>
               </el-form-item>
               <el-form-item label="订单提交时间">
                 <span>{{ props.row.time }}</span>
@@ -76,7 +76,11 @@
         <el-table-column label="订单编号" prop="orderId"> </el-table-column>
         <el-table-column label="用户账号" prop="userId"> </el-table-column>
         <el-table-column label="演出编号" prop="showId"> </el-table-column>
-        <el-table-column label="订单状态" prop="status"> </el-table-column>
+        <el-table-column label="订单状态" prop="realStatus">
+          <!-- <template slot-scope="scope">
+            <span>{{ this.OrderState[prop="status"] }}</span>
+          </template> -->
+        </el-table-column>
         <el-table-column label="订单提交时间" prop="time"> </el-table-column>
         <el-table-column label="订单总金额" prop="money"> </el-table-column>
         <el-table-column align="right">
@@ -110,7 +114,8 @@ const fields = [
   { label: "订单编号", prop: "orderId" },
   { label: "用户账号", prop: "userId" },
   { label: "演出编号", prop: "showId" },
-  { label: "订单状态", prop: "status" },
+  { label: "订单状态编号", prop: "status" },
+  { label: "订单状态", prop: "realStatus" },
   { label: "订单提交时间", prop: "time" },
   { label: "订单总金额", prop: "money" },
 
@@ -132,6 +137,7 @@ export default {
       key: 1, // table key
       formThead: fields, // 默认表头 Default header
       loading: true,
+      OrderState: ["待评价", "已完成", "已退订单"],
     };
   },
 
@@ -157,6 +163,17 @@ export default {
         console.log(res);
         if (res.data.code == 200) {
           this.tableData = res.data.data;
+          for (var i = 0; i < this.tableData.length; i++) {
+            if(this.tableData[i].status==0){
+              this.tableData[i].realStatus="待评价"
+            }
+            else if(this.tableData[i].status==1){
+              this.tableData[i].realStatus="已完成"
+            }
+            else{
+              this.tableData[i].realStatus="已退订单"
+            }
+          }
           setTimeout(() => {
             this.loading = false;
           }, 500);
@@ -176,13 +193,13 @@ export default {
   font-size: 0;
 }
 /* 这个css未生效 也可能这三个都未生效*/
-  .demo-table-expand .label {
-    width: 90px;
-    color: #99a9bf;
-  }
-  .demo-table-expand .el-form-item {
-    margin-right: 0;
-    margin-bottom: 0;
-    width: 50%;
-  }
+.demo-table-expand .label {
+  width: 90px;
+  color: #99a9bf;
+}
+.demo-table-expand .el-form-item {
+  margin-right: 0;
+  margin-bottom: 0;
+  width: 50%;
+}
 </style>

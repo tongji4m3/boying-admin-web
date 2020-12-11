@@ -238,9 +238,10 @@ export default {
             console.log(res);
             if (res.data.code == 200) {
               this.$message.success("添加演出成功,即将跳转演出界面");
+              // 等待不起作用
                setTimeout(() => {
                 this.loading = false;
-              }, 5000);
+              }, 500);
               console.log(res.data.data);
               this.$router.push('/show')
             }

@@ -1,75 +1,86 @@
 <template>
-  <el-table
-    :key="key"
-    :data="
-      tableData.filter(
-        (data) =>
-          !search || data.name.toLowerCase().includes(search.toLowerCase())
-      )
-    "
-    v-loading="loading"
-    style="width: 100%"
-  >
-    <el-table-column label="演出编号" prop="showId"></el-table-column>
-    <el-table-column label="演出名称" prop="name"></el-table-column>
-    <el-table-column label="演出目录编号" prop="categoryId"></el-table-column>
-    <el-table-column label="演出海报" align="center">
-      <template slot-scope="scope">
-        <el-image
-          style="width: 100px; height: 100px"
-          :src="scope.row.poster"
-          :preview-src-list="[scope.row.poster]"
-        ></el-image>
-      </template>
-    </el-table-column>
-    <el-table-column label="演出最低价格" prop="minPrice"></el-table-column>
-    <el-table-column label="演出最高价格" prop="maxPrice"></el-table-column>
-    <el-table-column label="演出地址" prop="address"></el-table-column>
-    <el-table-column label="演出开始时间" prop="dayStart"></el-table-column>
-    <el-table-column label="演出结束时间" prop="dayEnd"></el-table-column>
+  <div>
+    <el-card class="operate-container" shadow="never" style="text-align: left">
+      <i class="el-icon-tickets"></i>
+      <span>数据列表</span>
+    </el-card>
+    <div class="table-container">
+      <el-table
+        :key="key"
+        :data="
+          tableData.filter(
+            (data) =>
+              !search || data.name.toLowerCase().includes(search.toLowerCase())
+          )
+        "
+        v-loading="loading"
+        style="width: 100%"
+      >
+        <el-table-column label="演出编号" prop="showId"></el-table-column>
+        <el-table-column label="演出名称" prop="name"></el-table-column>
+        <el-table-column label="演出目录" prop="category"> </el-table-column>
+        <el-table-column label="演出海报" align="center">
+          <template slot-scope="scope">
+            <el-image
+              style="width: 100px; height: 100px"
+              :src="scope.row.poster"
+              :preview-src-list="[scope.row.poster]"
+            ></el-image>
+          </template>
+        </el-table-column>
+        <el-table-column label="演出最低价格" prop="minPrice"></el-table-column>
+        <el-table-column label="演出最高价格" prop="maxPrice"></el-table-column>
+        <el-table-column label="演出地址" prop="address"></el-table-column>
+        <el-table-column label="演出开始时间" prop="dayStart"></el-table-column>
+        <el-table-column label="演出结束时间" prop="dayEnd"></el-table-column>
 
-    <el-table-column label="操作">
-      <template slot-scope="scope">
-        <el-button
-          size="mini"
-          type="danger"
-          @click="handleDelete(scope.$index, scope.row)"
-          >删除</el-button
-        >
-        <el-button
-          size="mini"
-          style="margin-left: 0"
-          @click="handleClick(scope.row.details)"
-          >查看</el-button
-        >
-        <el-dialog
-          title="提示"
-          width="30%"
-          :visible.sync="dialogVisible"
-          :before-close="handleClose"
-        >
-          <!-- 弹框内容错误，每行的弹框内容都是最后一行的details -->
-          <span>{{dialogInfo }}</span>
-          <span slot="footer" class="dialog-footer">
-            <el-button @click="dialogVisible = false">取 消</el-button>
-            <el-button type="primary" @click="dialogVisible = false"
-              >确 定</el-button
+        <el-table-column label="操作">
+          <template slot-scope="scope">
+            <el-button
+              size="mini"
+              type="danger"
+              @click="handleDelete(scope.$index, scope.row)"
+              >删除</el-button
             >
-          </span>
-        </el-dialog>
-      </template>
-    </el-table-column>
-    <!--  <el-table-column label="演出名称" prop="name"> </el-table-column>
+            <el-button
+              size="mini"
+              style="margin-left: 0"
+              @click="handleClick(scope.row.details)"
+              >查看</el-button
+            >
+            <el-dialog
+              title="提示"
+              width="30%"
+              :visible.sync="dialogVisible"
+              :before-close="handleClose"
+            >
+              <span>{{ dialogInfo }}</span>
+              <span slot="footer" class="dialog-footer">
+                <el-button @click="dialogVisible = false">取 消</el-button>
+                <el-button type="primary" @click="dialogVisible = false"
+                  >确 定</el-button
+                >
+              </span>
+            </el-dialog>
+          </template>
+        </el-table-column>
+        <!--  <el-table-column label="演出名称" prop="name"> </el-table-column>
     <el-table-column label="演出开始时间" prop="dayStart">
     </el-table-column>
     <el-table-column label="演出海报" prop="poster"> </el-table-column>
     <el-table-column label="演出地址" prop="showAddress"> </el-table-column> -->
-    <el-table-column align="center">
-      <template slot="header" slot-scope="scope">
-        <el-input v-model="search" size="mini" placeholder="输入关键字搜索" />
-      </template>
-    </el-table-column>
-  </el-table>
+        <el-table-column align="center">
+          <template slot="header" slot-scope="scope">
+            <el-input
+              v-model="search"
+              size="mini"
+              placeholder="输入关键字搜索"
+            />
+          </template>
+        </el-table-column>
+      </el-table>
+    </div>
+  </div>
 </template>
 
 
@@ -81,6 +92,8 @@ const fields = [
   { label: "演出编号", prop: "showId" },
   { label: "演出名称", prop: "name" },
   { label: "演出目录编号", prop: "categoryId" },
+  { label: "演出目录", prop: "category" },
+
   { label: "演出海报", prop: "poster" },
   { label: "演出详情", prop: "details" },
   { label: "演出最低价格", prop: "minPrice" },
@@ -162,7 +175,30 @@ export default {
         console.log(res);
         if (res.data.code == 200) {
           this.tableData = res.data.data;
+          for(var i=0;i<this.tableData.length;i++){
+            this.getCategory(this.tableData[i].categoryId,i);
+          }
           // console.log(this.tableData)
+          setTimeout(() => {
+            this.loading = false;
+          }, 500);
+        }
+      } catch (err) {
+        console.log(err);
+      }
+    },
+    async getCategory(categoryId,i){
+      try {
+        console.log("mounted");
+      const res = await axios.get(`${api.API_URL}/category/list/`+categoryId, {
+          headers: {
+            Authorization: "Bearer " + sessionStorage.getItem("token"),
+          },
+        });
+        console.log(res);
+        if (res.data.code == 200) {
+          this.tableData[i].category = res.data.data.name;
+          console.log(this.tableData[i].category)
           setTimeout(() => {
             this.loading = false;
           }, 500);
