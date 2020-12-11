@@ -17,7 +17,11 @@
       <el-form-item label="演出名称" prop="name">
         <el-input v-model="ruleForm.name"></el-input>
       </el-form-item>
-      <el-form-item label="演出目录编号" prop="categoryId" style="text-align: left" >
+      <el-form-item
+        label="演出目录编号"
+        prop="categoryId"
+        style="text-align: left"
+      >
         <el-select v-model="ruleForm.categoryId" placeholder="请选择演出目录">
           <el-option label="编号一" value="1"></el-option>
           <el-option label="编号二" value="2"></el-option>
@@ -38,9 +42,9 @@
           :http-request="uploadHttp"
           :before-upload="beforeAvatarUpload"
           :on-remove="handleRemove"
-        style="text-align: left"
+          style="text-align: left"
         >
-          <i class="el-icon-plus avatar-uploader-icon" ></i>
+          <i class="el-icon-plus avatar-uploader-icon"></i>
           <p id="img-context">上传演出图片</p>
           <div class="el-upload__tip" slot="tip">
             只能上传jpg/jpeg/png文件，且不超过5MB
@@ -61,7 +65,11 @@
         </el-select>
       </el-form-item> -->
 
-      <el-form-item label="演出展示优先级" prop="weight" style="text-align: left">
+      <el-form-item
+        label="演出展示优先级"
+        prop="weight"
+        style="text-align: left"
+      >
         <el-radio-group v-model="ruleForm.weight">
           <el-radio label="0"></el-radio>
           <el-radio label="1"></el-radio>
@@ -146,7 +154,6 @@ export default {
         address: "",
         dayStart: "",
         dayEnd: "",
-        imgUrl: "",
       },
       rules: {
         name: [
@@ -156,8 +163,11 @@ export default {
         categoryId: [
           { required: true, message: "请选择演出目录", trigger: "change" },
         ],
+        details: [
+          { required: true, message: "请输入演出具体信息", trigger: "blur" },
+        ],
         poster: [
-          { required: true, message: "请输入演出海报信息", trigger: "blur" },
+          { required: true, message: "请放入演出海报图片", trigger: "blur" },
         ],
         minPrice: [
           { required: true, message: "请输入演出最低价格", trigger: "blur" },
@@ -165,9 +175,7 @@ export default {
         maxPrice: [
           { required: true, message: "请输入演出最高价格", trigger: "blur" },
         ],
-         city: [
-          { required: true, message: "请输入演出城市", trigger: "blur" },
-        ],
+        city: [{ required: true, message: "请输入演出城市", trigger: "blur" }],
         dayStart: [
           {
             type: "string",
@@ -212,35 +220,36 @@ export default {
   },
 
   methods: {
-    async submitForm(formName) {
-      this.$refs[formName].validate((valid) => {
-        if (!valid) {
+    submitForm(formName) {
+      this.$refs[formName].validate(async (valid) => {
+        if (!valid || this.ruleForm.poster == "") {
+          console.log(this.ruleForm.poster);
           console.log("error submit!!");
+          this.$message.error("添加失败，请完整填写表单");
           return false;
+        } else {
+          try {
+            console.log(this.ruleForm.dayStart);
+            console.log("mounted");
+            const res = await axios.post(
+              `${api.API_URL}/show/create`,
+              this.ruleForm, 
+            );
+            console.log(res);
+            if (res.data.code == 200) {
+              this.$message.success("添加演出成功,即将跳转演出界面");
+               setTimeout(() => {
+                this.loading = false;
+              }, 5000);
+              console.log(res.data.data);
+              this.$router.push('/show')
+            }
+          } catch (err) {
+            console.log(err);
+            this.$message.error("添加失败，数据填写错误");
+          }
         }
       });
-      try {
-        console.log(this.ruleForm.dayStart);
-        console.log("mounted");
-        const res = await axios.post(
-          `${api.API_URL}/show/create`,
-          this.ruleForm,
-          {
-            headers: {
-              Authorization: "Bearer " + sessionStorage.getItem("token"),
-            },
-          }
-        );
-        console.log(res);
-        if (res.data.code == 200) {
-          setTimeout(() => {
-            this.loading = false;
-          }, 500);
-          console.log(res.data.data);
-        }
-      } catch (err) {
-        console.log(err);
-      }
     },
     resetForm(formName) {
       this.$refs[formName].resetFields();
