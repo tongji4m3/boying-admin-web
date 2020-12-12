@@ -291,9 +291,6 @@ export default {
         if (res.data.code == 200) {
           this.$message.success("修改成功");
         }
-        setTimeout(() => {
-          this.loading = false;
-        }, 500);
       } catch (err) {
         console.log(err);
         this.$message.error("修改失败");
@@ -331,9 +328,6 @@ export default {
         if (res.data.code == 200) {
           this.$message.success("删除成功");
         }
-        setTimeout(() => {
-          this.loading = false;
-        }, 500);
       } catch (err) {
         console.log(err);
         this.$message.error("删除失败");
@@ -341,19 +335,20 @@ export default {
       this.getList();
     },
 
-
     handleDelete(index, row) {
       this.$confirm("是否要删除该用户?", "提示", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
         type: "warning",
-      }).then(() => {
-        this.deleteUser(row);
-        }).catch(() => {
+      })
+        .then(() => {
+          this.deleteUser(row);
+        })
+        .catch(() => {
           this.$message.info("取消删除");
           console.log("catch");
           this.getList();
-      });
+        });
     },
     //无用暂时
     handleUpdate(index, row) {
@@ -413,7 +408,7 @@ export default {
       this.getRoleListByAdmin(row.id);
     },
     async getList() {
-      this.listLoading = false;
+      this.listLoading = true;
       try {
         const res = await axios.get(`${api.API_URL}/user/list`, {
           headers: {
@@ -421,15 +416,17 @@ export default {
           },
         });
         console.log(res);
+        if (res.data.message == "不存在任何用户") {
+          this.list = null;
+        }
         if (res.data.code == 200) {
           this.list = res.data.data;
         }
         setTimeout(() => {
-          this.loading = false;
+          this.listLoading = false;
         }, 500);
       } catch (err) {
         console.log(err);
-        this.list=null;
       }
       // fetchList(this.listQuery).then(response => {
       //   this.listLoading = false;
