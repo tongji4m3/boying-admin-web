@@ -259,8 +259,6 @@ export default {
         return "N/A";
       }
       let date = new Date(time);
-      console.log(date);
-      console.log(formatDate(date, "yyyy-MM-dd hh:mm:ss"));
       return formatDate(date, "yyyy-MM-dd hh:mm:ss");
     },
   },
