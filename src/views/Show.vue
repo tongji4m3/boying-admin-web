@@ -31,8 +31,16 @@
         <el-table-column label="演出最低价格" prop="minPrice"></el-table-column>
         <el-table-column label="演出最高价格" prop="maxPrice"></el-table-column>
         <el-table-column label="演出地址" prop="address"></el-table-column>
-        <el-table-column label="演出开始时间" prop="dayStart"></el-table-column>
-        <el-table-column label="演出结束时间" prop="dayEnd"></el-table-column>
+        <el-table-column label="演出开始时间" width="160" align="center">
+          <template slot-scope="scope">{{
+            scope.row.dayStart | formatDateTime
+          }}</template>
+        </el-table-column>
+        <el-table-column label="演出结束时间" width="160" align="center">
+          <template slot-scope="scope">{{
+            scope.row.dayEnd | formatDateTime
+          }}</template>
+        </el-table-column>
 
         <el-table-column label="操作">
           <template slot-scope="scope">
@@ -88,6 +96,8 @@
 import axios from "axios";
 import api from "@/assets/api.js";
 import qs from "qs";
+import {formatDate} from '@/utils/date';
+
 const fields = [
   { label: "演出编号", prop: "showId" },
   { label: "演出名称", prop: "name" },
@@ -106,6 +116,8 @@ const fields = [
   { label: "演出开始时间", prop: "dayStart" },
   { label: "演出结束时间", prop: "dayEnd" },
 ];
+
+
 
 export default {
   async mounted() {
@@ -175,8 +187,8 @@ export default {
         console.log(res);
         if (res.data.code == 200) {
           this.tableData = res.data.data;
-          for(var i=0;i<this.tableData.length;i++){
-            this.getCategory(this.tableData[i].categoryId,i);
+          for (var i = 0; i < this.tableData.length; i++) {
+            this.getCategory(this.tableData[i].categoryId, i);
           }
           // console.log(this.tableData)
           setTimeout(() => {
@@ -187,18 +199,21 @@ export default {
         console.log(err);
       }
     },
-    async getCategory(categoryId,i){
+    async getCategory(categoryId, i) {
       try {
         console.log("mounted");
-      const res = await axios.get(`${api.API_URL}/category/list/`+categoryId, {
-          headers: {
-            Authorization: "Bearer " + sessionStorage.getItem("token"),
-          },
-        });
+        const res = await axios.get(
+          `${api.API_URL}/category/list/` + categoryId,
+          {
+            headers: {
+              Authorization: "Bearer " + sessionStorage.getItem("token"),
+            },
+          }
+        );
         console.log(res);
         if (res.data.code == 200) {
           this.tableData[i].category = res.data.data.name;
-          console.log(this.tableData[i].category)
+          console.log(this.tableData[i].category);
           setTimeout(() => {
             this.loading = false;
           }, 500);
@@ -236,6 +251,17 @@ export default {
       width = document.querySelector(".getTextWidth").offsetWidth;
       document.querySelector(".getTextWidth").remove();
       return width;
+    },
+  },
+  filters: {
+    formatDateTime(time) {
+      if (time == null || time === "") {
+        return "N/A";
+      }
+      let date = new Date(time);
+      console.log(date);
+      console.log(formatDate(date, "yyyy-MM-dd hh:mm:ss"));
+      return formatDate(date, "yyyy-MM-dd hh:mm:ss");
     },
   },
   watch: {

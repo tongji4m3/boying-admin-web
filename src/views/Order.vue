@@ -50,7 +50,7 @@
                 <span>{{ props.row.realStatus }}</span>
               </el-form-item>
               <el-form-item label="订单提交时间">
-                <span>{{ props.row.time }}</span>
+                <span>{{ props.row.time | formatDateTime }}</span>
               </el-form-item>
               <el-form-item label="订单总金额">
                 <span>{{ props.row.money }}</span>
@@ -76,12 +76,13 @@
         <el-table-column label="订单编号" prop="orderId"> </el-table-column>
         <el-table-column label="用户账号" prop="userId"> </el-table-column>
         <el-table-column label="演出编号" prop="showId"> </el-table-column>
-        <el-table-column label="订单状态" prop="realStatus">
-          <!-- <template slot-scope="scope">
-            <span>{{ this.OrderState[prop="status"] }}</span>
-          </template> -->
+        <el-table-column label="订单状态" prop="realStatus"> </el-table-column>
+        <el-table-column label="订单提交时间" width="160" align="center">
+          <template slot-scope="scope">{{
+            scope.row.time | formatDateTime
+          }}</template>
         </el-table-column>
-        <el-table-column label="订单提交时间" prop="time"> </el-table-column>
+
         <el-table-column label="订单总金额" prop="money"> </el-table-column>
         <el-table-column align="right">
           <template slot="header" slot-scope="scope">
@@ -109,6 +110,7 @@
 import axios from "axios";
 import api from "@/assets/api.js";
 import qs from "qs";
+import { formatDate } from "@/utils/date";
 
 const fields = [
   { label: "订单编号", prop: "orderId" },
@@ -164,14 +166,12 @@ export default {
         if (res.data.code == 200) {
           this.tableData = res.data.data;
           for (var i = 0; i < this.tableData.length; i++) {
-            if(this.tableData[i].status==0){
-              this.tableData[i].realStatus="待评价"
-            }
-            else if(this.tableData[i].status==1){
-              this.tableData[i].realStatus="已完成"
-            }
-            else{
-              this.tableData[i].realStatus="已退订单"
+            if (this.tableData[i].status == 0) {
+              this.tableData[i].realStatus = "待评价";
+            } else if (this.tableData[i].status == 1) {
+              this.tableData[i].realStatus = "已完成";
+            } else {
+              this.tableData[i].realStatus = "已退订单";
             }
           }
           setTimeout(() => {
@@ -181,6 +181,17 @@ export default {
       } catch (err) {
         console.log(err);
       }
+    },
+  },
+  filters: {
+    formatDateTime(time) {
+      if (time == null || time === "") {
+        return "N/A";
+      }
+      let date = new Date(time);
+      console.log(date);
+      console.log(formatDate(date, "yyyy-MM-dd hh:mm:ss"));
+      return formatDate(date, "yyyy-MM-dd hh:mm:ss");
     },
   },
 
