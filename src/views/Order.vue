@@ -10,7 +10,7 @@
         :data="
           tableData.filter(
             (data) =>
-              !search || data.name.toLowerCase().includes(search.toLowerCase())
+              !search || data.realStatus.toLowerCase().includes(search.toLowerCase())
           )
         "
         v-loading="loading"
@@ -89,7 +89,7 @@
             <el-input
               v-model="search"
               size="mini"
-              placeholder="输入关键字搜索"
+              placeholder="按订单状态关键字搜索"
             />
           </template>
           <template slot-scope="scope">
@@ -173,11 +173,11 @@ export default {
             } else {
               this.tableData[i].realStatus = "已退订单";
             }
-          }
-          setTimeout(() => {
+          }          
+        }
+        setTimeout(() => {
             this.loading = false;
           }, 500);
-        }
       } catch (err) {
         console.log(err);
       }
