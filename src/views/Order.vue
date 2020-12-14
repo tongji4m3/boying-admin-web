@@ -97,7 +97,7 @@
               size="mini"
               type="danger"
               @click="handleDelete(scope.$index, scope.row)"
-              >Delete</el-button
+              >删除</el-button
             >
           </template>
         </el-table-column>
