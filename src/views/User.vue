@@ -281,6 +281,25 @@ export default {
       this.listQuery.pageNum = val;
       this.getList();
     },
+
+    async addUser(user) {
+      user.createTime = new Date();
+      try {
+        const res = await axios.post(`${api.API_URL}/user/add`, user, {
+          headers: {
+            Authorization: "Bearer " + sessionStorage.getItem("token"),
+          },
+        });
+        console.log(res);
+        if (res.data.code == 200) {
+          this.$message.success("添加成功");
+          this.getList();
+        }
+      } catch (err) {
+        console.log(err);
+        this.$message.error("添加失败");
+      }
+    },
     handleAdd() {
       this.dialogVisible = true;
       this.isEdit = false;
@@ -367,7 +386,7 @@ export default {
     },
     async updateUser(id, user) {
       try {
-        const res = await axios.post(`${api.API_URL}/user/update/` + id, {
+        const res = await axios.post(`${api.API_URL}/user/update/` + id, user, {
           headers: {
             Authorization: "Bearer " + sessionStorage.getItem("token"),
           },
@@ -375,6 +394,7 @@ export default {
         console.log(res);
         if (res.data.code == 200) {
           this.$message.success("更新信息成功");
+          this.getList();
         }
       } catch (err) {
         console.log(err);
@@ -390,16 +410,9 @@ export default {
         if (this.isEdit) {
           this.updateUser(this.user.userId, this.user);
           this.dialogVisible = false;
-          this.getList();
         } else {
-          createAdmin(this.user).then((response) => {
-            this.$message({
-              message: "添加成功！",
-              type: "success",
-            });
-            this.dialogVisible = false;
-            this.getList();
-          });
+          this.addUser(this.user);
+          this.dialogVisible = false;
         }
       });
     },
