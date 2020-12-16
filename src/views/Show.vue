@@ -82,7 +82,7 @@
             <el-input
               v-model="search"
               size="mini"
-              placeholder="输入关键字搜索"
+              placeholder="按演出名称关键字搜索"
             />
           </template>
         </el-table-column>
