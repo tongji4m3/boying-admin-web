@@ -197,9 +197,9 @@ export default {
         if (res.data.code == 200) {
           this.tableData = res.data.data;
           for (var i = 0; i < this.tableData.length; i++) {
-            if (this.tableData[i].status == 0) {
+            if (this.tableData[i].status == 1) {
               this.tableData[i].realStatus = "待评价";
-            } else if (this.tableData[i].status == 1) {
+            } else if (this.tableData[i].status == 2) {
               this.tableData[i].realStatus = "已完成";
             } else {
               this.tableData[i].realStatus = "已退订单";
