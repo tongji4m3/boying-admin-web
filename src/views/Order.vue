@@ -10,7 +10,8 @@
         :data="
           tableData.filter(
             (data) =>
-              !search || data.realStatus.toLowerCase().includes(search.toLowerCase())
+              !search ||
+              data.realStatus.toLowerCase().includes(search.toLowerCase())
           )
         "
         v-loading="loading"
@@ -96,7 +97,7 @@
             <el-button
               size="mini"
               type="danger"
-              @click="handleDelete(scope.$index, scope.row)"
+              @click="Delete(scope.$index, scope.row)"
               >删除</el-button
             >
           </template>
@@ -154,6 +155,33 @@ export default {
   },
 
   methods: {
+    Delete(index,row) {
+      this.$confirm("此操作将永久删除该文件, 是否继续?", "提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning",
+      })
+        .then(() => {
+          this.handleDelete(row.orderId)
+        }).catch(() => {
+          this.$message.info("已取消删除");
+        });
+    },
+    async handleDelete(id) {
+      try {
+        console.log("mounted");
+        const res = await axios.post(`${api.API_URL}/user/deleteOrder/` + id);
+        console.log("test");
+        console.log(res);
+        if (res.data.code == 200) {
+          this.$message.success("删除成功");
+          this.reload();
+        }
+      } catch (err) {
+        console.log(err);
+      }
+    },
+
     async reload() {
       try {
         console.log("mounted");
@@ -163,6 +191,9 @@ export default {
           },
         });
         console.log(res);
+        if(res.data.message == "不存在任何订单"){
+          this.tableData=[];
+        }
         if (res.data.code == 200) {
           this.tableData = res.data.data;
           for (var i = 0; i < this.tableData.length; i++) {
@@ -173,11 +204,11 @@ export default {
             } else {
               this.tableData[i].realStatus = "已退订单";
             }
-          }          
+          }
         }
         setTimeout(() => {
-            this.loading = false;
-          }, 500);
+          this.loading = false;
+        }, 500);
       } catch (err) {
         console.log(err);
       }
