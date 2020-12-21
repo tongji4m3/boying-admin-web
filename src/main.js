@@ -4,6 +4,7 @@ import router from './router'
 import store from './store'
 import ElementUI, { Message } from 'element-ui';
 import 'element-ui/lib/theme-chalk/index.css';
+import VCharts from 'v-charts'
 
 
 // 为了实现Class的私有属性
@@ -39,6 +40,7 @@ class DonMessage {
 }
 
 Vue.use(ElementUI);
+Vue.use(VCharts)
 
 //使用重写的Message防止出现多个message并存的情况
 Vue.prototype.$message = new DonMessage()

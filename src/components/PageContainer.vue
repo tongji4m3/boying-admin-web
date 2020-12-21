@@ -71,7 +71,7 @@
         </el-breadcrumb-item>
         <el-dropdown @command="handleCommand">
           <span class="el-dropdown-link">
-            点我<i class="el-icon-arrow-down el-icon--right"></i>
+            <i class="el-icon-user-solid" style="font-size:30px"></i><i class="el-icon-arrow-down el-icon--right"></i>
           </span>
           <el-dropdown-menu slot="dropdown">
             <el-dropdown-item command="logout">退出</el-dropdown-item>
@@ -141,8 +141,8 @@
 .el-dropdown-link {
   cursor: pointer;
   color: #409eff;
-  display: flex;
-  margin-left: 1000px;
+  padding-left: 1200px;
+
 }
 </style>
 
