@@ -98,12 +98,6 @@
         </el-table-column>
         <el-table-column label="操作" width="180" align="center">
           <template slot-scope="scope">
-            <!-- <el-button
-              size="mini"
-              type="text"
-              @click="handleSelectRole(scope.$index, scope.row)"
-              >分配角色
-            </el-button> -->
             <el-button
               size="mini"
               type="text"
