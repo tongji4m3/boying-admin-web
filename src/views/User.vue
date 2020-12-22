@@ -46,7 +46,7 @@
         size="mini"
         class="btn-add"
         @click="handleAdd()"
-        style="margin-left: 1010px"
+        style="float:right"
         >添加</el-button
       >
     </el-card>

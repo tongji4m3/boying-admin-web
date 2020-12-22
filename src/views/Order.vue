@@ -38,37 +38,34 @@
         <el-table-column type="expand">
           <template slot-scope="props">
             <el-form label-position="left" inline class="demo-table-expand">
-              <el-form-item label="订单编号">
+              <el-form-item label="订单编号:">
                 <span>{{ props.row.orderId }}</span>
               </el-form-item>
-              <el-form-item label="用户账号">
+              <el-form-item label="用户账号:">
                 <span>{{ props.row.userId }}</span>
               </el-form-item>
-              <el-form-item label="演出编号">
+              <el-form-item label="演出编号:">
                 <span>{{ props.row.showId }}</span>
               </el-form-item>
-              <el-form-item label="订单状态">
+              <el-form-item label="订单状态:">
                 <span>{{ props.row.realStatus }}</span>
               </el-form-item>
-              <el-form-item label="订单提交时间">
+              <el-form-item label="订单提交时间:">
                 <span>{{ props.row.time | formatDateTime }}</span>
               </el-form-item>
-              <el-form-item label="订单总金额">
-                <span>{{ props.row.money }}</span>
+              <el-form-item label="订单总金额:">
+                <span>￥{{ props.row.money }}</span>
               </el-form-item>
-              <el-form-item label="演出场次编号">
+              <el-form-item label="演出场次编号:">
                 <span>{{ props.row.showSessionId }}</span>
               </el-form-item>
-              <el-form-item label="订单支付方式">
+              <el-form-item label="订单支付方式:">
                 <span>{{ props.row.payment }}</span>
               </el-form-item>
-              <el-form-item label="订单地址编号">
-                <span>{{ props.row.addressId }}</span>
+              <el-form-item label="该订单对用户是否可见:">
+                <span>{{ props.row.userDelete | formatUserDelete }}</span>
               </el-form-item>
-              <el-form-item label="该订单对用户是否可见">
-                <span>{{ props.row.userDelete }}</span>
-              </el-form-item>
-              <el-form-item label="订单所含票数">
+              <el-form-item label="订单所含票数:">
                 <span>{{ props.row.ticketCount }}</span>
               </el-form-item>
             </el-form>
@@ -84,8 +81,8 @@
           }}</template>
         </el-table-column>
 
-        <el-table-column label="订单总金额" prop="money"> </el-table-column>
-        <el-table-column align="right">
+        <el-table-column label="订单总金额" prop="money" align="center"> </el-table-column>
+        <el-table-column align="center">
           <template slot="header" slot-scope="scope">
             <el-input
               v-model="search"
@@ -125,8 +122,7 @@ const fields = [
   //展开行功能多出的内容
   { label: "演出场次编号", prop: "showSessionId" },
   { label: "订单支付方式", prop: "payment" },
-  { label: "订单地址编号", prop: "addressId" },
-  { label: "该订单对用户是否可见", prop: "userDelete" },
+  { label: "用户是否已经删除了该订单", prop: "userDelete" },
   { label: "订单所含票数", prop: "ticketCount" },
 ];
 
@@ -140,7 +136,7 @@ export default {
       key: 1, // table key
       formThead: fields, // 默认表头 Default header
       loading: true,
-      OrderState: ["待评价", "已完成", "已退订单"],
+      OrderState: ["待观看", "已完成", "已退订单"],
     };
   },
 
@@ -198,7 +194,7 @@ export default {
           this.tableData = res.data.data;
           for (var i = 0; i < this.tableData.length; i++) {
             if (this.tableData[i].status == 1) {
-              this.tableData[i].realStatus = "待评价";
+              this.tableData[i].realStatus = "待观看";
             } else if (this.tableData[i].status == 2) {
               this.tableData[i].realStatus = "已完成";
             } else {
@@ -222,6 +218,15 @@ export default {
       let date = new Date(time);
       return formatDate(date, "yyyy-MM-dd hh:mm:ss");
     },
+
+    formatUserDelete(value){
+      if(value==true){
+        return "用户已删除";
+      }
+      else{
+        return "用户未删除";
+      }
+    }
   },
 
   watch: {},

@@ -5,6 +5,7 @@ import store from './store'
 import ElementUI, { Message } from 'element-ui';
 import 'element-ui/lib/theme-chalk/index.css';
 import VCharts from 'v-charts'
+import './icons/iconfont/iconfont.css'
 
 
 // 为了实现Class的私有属性

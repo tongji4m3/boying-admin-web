@@ -13,46 +13,46 @@
         :collapse-transition="false"
       >
         <el-menu-item index="home">
-          <i class="el-icon-setting"></i>
+          <i class="el-icon-s-home"></i>
           <span slot="title">首页</span>
         </el-menu-item>
         <el-submenu index="show">
           <template slot="title">
-            <i class="el-icon-location"></i>
-            <span slot="title">演出</span>
+            <i class="myicon myiconyanchu" style="font-size:20px"></i>
+            <span slot="title"> 演出</span>
           </template>
 
           <el-menu-item index="show">
-            <i class="el-icon-location"></i>
+            <i class="el-icon-tickets"></i>
             <span slot="title">演出列表</span></el-menu-item
           >
           <el-menu-item index="addShow">
-            <i class="el-icon-location"></i>
-            <span slot="title">添加演出</span></el-menu-item
+            <i class="myicon myicontianjiaxiangqing"></i>
+            <span slot="title" style="margin-left:5px"> 添加演出</span></el-menu-item
           >
           <el-menu-item index="category">
-            <i class="el-icon-location"></i>
-            <span slot="title">目录管理</span></el-menu-item
+            <i class="myicon myiconmulu"></i>
+            <span slot="title" style="margin-left:5px"> 目录管理</span></el-menu-item
           >
         </el-submenu>
         <el-submenu index="order">
           <template slot="title">
-            <i class="el-icon-location"></i>
-            <span slot="title">订单</span>
+            <i class="myicon myiconicon--copy" style="font-size:20px"></i>
+            <span slot="title"> 订单</span>
           </template>
           <el-menu-item index="order">
-            <i class="el-icon-location"></i>
-            <span slot="title">订单列表</span></el-menu-item
+            <i class="myicon myiconicon--copy" style="font-size:20px"></i>
+            <span slot="title"> 订单列表</span></el-menu-item
           >
         </el-submenu>
         <el-submenu index="user">
           <template slot="title">
-            <i class="el-icon-location"></i>
-            <span slot="user">用户</span>
+            <i class="el-icon-user-solid"></i>
+            <span slot="user"> 用户</span>
           </template>
           <el-menu-item index="user">
-            <i class="el-icon-location"></i>
-            <span slot="title">用户列表</span></el-menu-item
+            <i class="myicon myiconyonghuliebiao" style="font-size:20px"></i>
+            <span slot="title" style="margin-left:5px"> 用户列表</span></el-menu-item
           >
         </el-submenu>
       </el-menu>
@@ -71,7 +71,7 @@
         </el-breadcrumb-item>
         <el-dropdown @command="handleCommand">
           <span class="el-dropdown-link">
-            <i class="el-icon-user-solid" style="font-size:30px"></i><i class="el-icon-arrow-down el-icon--right"></i>
+            <i class="el-icon-user-solid" style="font-size:25px"></i><i class="el-icon-arrow-down el-icon--right"></i>
           </span>
           <el-dropdown-menu slot="dropdown">
             <el-dropdown-item command="logout">退出</el-dropdown-item>
@@ -141,7 +141,7 @@
 .el-dropdown-link {
   cursor: pointer;
   color: #409eff;
-  padding-left: 1200px;
+  padding-left: 1100px;
 
 }
 </style>
