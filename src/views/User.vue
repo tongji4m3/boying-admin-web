@@ -98,13 +98,13 @@
         </el-table-column>
         <el-table-column label="操作" width="180" align="center">
           <template slot-scope="scope">
-            <el-button
+            <!-- <el-button
               size="mini"
               type="text"
               @click="handleUpdate(scope.$index, scope.row)"
             >
               编辑
-            </el-button>
+            </el-button> -->
             <el-button
               size="mini"
               type="text"
