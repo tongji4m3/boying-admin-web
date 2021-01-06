@@ -3,91 +3,98 @@
     <el-card class="operate-container" shadow="never" style="text-align: left">
       <i class="el-icon-tickets"></i>
       <span>数据列表</span>
-    </el-card>
-    <div class="table-container">
-      <el-table
-        :key="key"
-        :data="
-          tableData.filter(
-            (data) =>
-              !search || data.name.toLowerCase().includes(search.toLowerCase())
-          )
-        "
-        v-loading="loading"
-        style="width: 100%"
-      >
-        <el-table-column label="演出编号" prop="showId"></el-table-column>
-        <el-table-column label="演出名称" prop="name"></el-table-column>
-        <el-table-column label="演出目录" prop="category"> </el-table-column>
-        <el-table-column label="演出海报" align="center">
-          <template slot-scope="scope">
-            <el-image
-              style="width: 100px; height: 100px"
-              :src="scope.row.poster"
-              :preview-src-list="[scope.row.poster]"
-            ></el-image>
-          </template>
-        </el-table-column>
-        <el-table-column label="演出最低价格" prop="minPrice"></el-table-column>
-        <el-table-column label="演出最高价格" prop="maxPrice"></el-table-column>
-        <el-table-column label="演出地址" prop="address"></el-table-column>
-        <el-table-column label="演出开始时间" width="160" align="center">
-          <template slot-scope="scope">{{
-            scope.row.dayStart | formatDateTime
-          }}</template>
-        </el-table-column>
-        <el-table-column label="演出结束时间" width="160" align="center">
-          <template slot-scope="scope">{{
-            scope.row.dayEnd | formatDateTime
-          }}</template>
-        </el-table-column>
+      <div class="table-container">
+        <el-table
+          :key="key"
+          :data="
+            tableData.filter(
+              (data) =>
+                !search ||
+                data.name.toLowerCase().includes(search.toLowerCase())
+            )
+          "
+          v-loading="loading"
+          style="width: 100%"
+        >
+          <el-table-column label="演出编号" prop="showId"></el-table-column>
+          <el-table-column label="演出名称" prop="name"></el-table-column>
+          <el-table-column label="演出目录" prop="category"> </el-table-column>
+          <el-table-column label="演出海报" align="center">
+            <template slot-scope="scope">
+              <el-image
+                style="width: 100px; height: 100px"
+                :src="scope.row.poster"
+                :preview-src-list="[scope.row.poster]"
+              ></el-image>
+            </template>
+          </el-table-column>
+          <el-table-column
+            label="演出最低价格"
+            prop="minPrice"
+          ></el-table-column>
+          <el-table-column
+            label="演出最高价格"
+            prop="maxPrice"
+          ></el-table-column>
+          <el-table-column label="演出地址" prop="address"></el-table-column>
+          <el-table-column label="演出开始时间" width="160" align="center">
+            <template slot-scope="scope">{{
+              scope.row.dayStart | formatDateTime
+            }}</template>
+          </el-table-column>
+          <el-table-column label="演出结束时间" width="160" align="center">
+            <template slot-scope="scope">{{
+              scope.row.dayEnd | formatDateTime
+            }}</template>
+          </el-table-column>
 
-        <el-table-column label="操作">
-          <template slot-scope="scope">
-            <el-button
-              size="mini"
-              type="danger"
-              @click="handleDelete(scope.$index, scope.row)"
-              >删除</el-button
-            >
-            <el-button
-              size="mini"
-              style="margin-left: 0"
-              @click="handleClick(scope.row.details)"
-              >查看</el-button
-            >
-            <el-dialog
-              title="提示"
-              width="30%"
-              :visible.sync="dialogVisible"
-              :before-close="handleClose"
-            >
-              <span>{{ dialogInfo }}</span>
-              <span slot="footer" class="dialog-footer">
-                <el-button @click="dialogVisible = false">取 消</el-button>
-                <el-button type="primary" @click="dialogVisible = false"
-                  >确 定</el-button
-                >
-              </span>
-            </el-dialog>
-          </template>
-        </el-table-column>
-        <!--  <el-table-column label="演出名称" prop="name"> </el-table-column>
+          <el-table-column label="操作">
+            <template slot-scope="scope">
+              <el-button
+                size="mini"
+                type="danger"
+                @click="handleDelete(scope.$index, scope.row)"
+                >删除</el-button
+              >
+              <el-button
+                size="mini"
+                style="margin-left: 0"
+                @click="handleClick(scope.row)"
+                >查看</el-button
+              >
+            </template>
+          </el-table-column>
+          <!--  <el-table-column label="演出名称" prop="name"> </el-table-column>
     <el-table-column label="演出开始时间" prop="dayStart">
     </el-table-column>
     <el-table-column label="演出海报" prop="poster"> </el-table-column>
     <el-table-column label="演出地址" prop="showAddress"> </el-table-column> -->
-        <el-table-column align="center">
-          <template slot="header" slot-scope="scope">
-            <el-input
-              v-model="search"
-              size="mini"
-              placeholder="按演出名称关键字搜索"
-            />
-          </template>
-        </el-table-column>
-      </el-table>
-    </div>
+          <el-table-column align="center">
+            <template slot="header" slot-scope="scope">
+              <el-input
+                v-model="search"
+                size="mini"
+                placeholder="按演出名称关键字搜索"
+              />
+            </template>
+          </el-table-column>
+        </el-table>
+        <el-dialog
+          title="提示"
+          width="30%"
+          :visible.sync="dialogVisible"
+          :before-close="handleClose"
+        >
+          <span>{{ dialogInfo }}</span>
+          <span slot="footer" class="dialog-footer">
+            <el-button @click="dialogVisible = false">取 消</el-button>
+            <el-button type="primary" @click="dialogVisible = false"
+              >确 定</el-button
+            >
+          </span>
+        </el-dialog>
+      </div>
+    </el-card>
   </div>
 </template>
 
@@ -96,7 +103,7 @@
 import axios from "axios";
 import api from "@/assets/api.js";
 import qs from "qs";
-import {formatDate} from '@/utils/date';
+import { formatDate } from "@/utils/date";
 
 const fields = [
   { label: "演出编号", prop: "showId" },
@@ -116,8 +123,6 @@ const fields = [
   { label: "演出开始时间", prop: "dayStart" },
   { label: "演出结束时间", prop: "dayEnd" },
 ];
-
-
 
 export default {
   async mounted() {

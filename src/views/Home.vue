@@ -95,7 +95,7 @@
               </div>
             </div>
           </el-col> -->
-          <el-col :span="20">
+          <el-col :span="24">
             <div style="padding: 10px; border-left: 1px solid #dcdfe6">
               <el-date-picker
                 style="float: right; z-index: 1"
