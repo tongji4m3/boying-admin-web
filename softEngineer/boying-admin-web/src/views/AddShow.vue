@@ -17,14 +17,19 @@
       <el-form-item label="演出名称" prop="name">
         <el-input v-model="ruleForm.name"></el-input>
       </el-form-item>
-      <el-form-item
-        label="演出目录编号"
-        prop="categoryId"
-        style="text-align: left"
-      >
-        <el-select v-model="ruleForm.categoryId" placeholder="请选择演出目录">
+      <el-form-item label="演出目录编号" prop="id" style="text-align: left">
+        <!-- <el-select v-model="ruleForm.categoryId" placeholder="请选择演出目录">
           <el-option label="编号一" value="1"></el-option>
           <el-option label="编号二" value="2"></el-option>
+        </el-select> -->
+        <el-select v-model="ruleForm.categoryId" placeholder="请选择演出目录">
+          <el-option
+            v-for="item in options"
+            :key="item.id"
+            :label="item.name"
+            :value="item.id"
+          >
+          </el-option>
         </el-select>
       </el-form-item>
       <el-form-item label="演出具体信息" prop="details">
@@ -52,12 +57,12 @@
         </el-upload>
       </el-form-item>
 
-      <el-form-item label="演出最低价格" prop="minPrice" style="width: 50%">
+      <!-- <el-form-item label="演出最低价格" prop="minPrice" style="width: 50%">
         <el-input v-model="ruleForm.minPrice"></el-input>
       </el-form-item>
       <el-form-item label="演出最高价格" prop="maxPrice" style="width: 50%">
         <el-input v-model="ruleForm.maxPrice"></el-input>
-      </el-form-item>
+      </el-form-item> -->
       <!-- <el-form-item label="演出展示优先级" prop="region">
         <el-select v-model="ruleForm.region" placeholder="请选择演出展示优先级">
           <el-option label="0" value="shanghai"></el-option>
@@ -89,7 +94,7 @@
             <el-date-picker
               type="date"
               placeholder="选择日期"
-              v-model="ruleForm.dayStart"
+              v-model="ruleForm.startTime"
               style="width: 100%"
               format="yyyy 年 MM 月 dd 日 HH 小时 mm 分钟 ss 秒"
               value-format="yyyy-MM-dd HH:mm:ss"
@@ -103,7 +108,7 @@
             <el-date-picker
               type="date"
               placeholder="选择日期"
-              v-model="ruleForm.dayEnd"
+              v-model="ruleForm.endTime"
               style="width: 100%"
               format="yyyy 年 MM 月 dd 日 HH 小时 mm 分钟 ss 秒"
               value-format="yyyy-MM-dd HH:mm:ss"
@@ -132,6 +137,7 @@ export default {
   props: [""],
   data() {
     return {
+      options: [],
       loading: true,
       //上传图片相关
       images: [],
@@ -147,13 +153,13 @@ export default {
         categoryId: "",
         poster: "",
         details: "",
-        minPrice: "",
-        maxPrice: "",
+        // minPrice: "",
+        // maxPrice: "",
         weight: -1,
         city: "",
         address: "",
-        dayStart: "",
-        dayEnd: "",
+        startTime: "",
+        endTime: "",
       },
       rules: {
         name: [
@@ -213,13 +219,37 @@ export default {
 
   beforeMount() {},
 
-  mounted() {
+  async mounted() {
+    this.reload();
     setTimeout(() => {
       this.loading = false;
     }, 500);
   },
 
   methods: {
+    async reload() {
+      this.loading = true;
+      try {
+        const res = await axios.get(`${api.API_URL}/category/listAll`, {
+          headers: {
+            Authorization: "Bearer " + sessionStorage.getItem("token"),
+          },
+        });
+        console.log(res);
+        if (res.data.code == 200) {
+          this.options = res.data.data;
+          //   for (var i = 0; i < this.tableData.length; i++) {
+          //     this.getChildren(this.tableData[i]);
+          //   }
+          setTimeout(() => {
+            this.loading = false;
+          }, 500);
+          console.log(this.options);
+        }
+      } catch (err) {
+        console.log(err);
+      }
+    },
     submitForm(formName) {
       this.$refs[formName].validate(async (valid) => {
         if (!valid || this.ruleForm.poster == "") {
@@ -233,17 +263,17 @@ export default {
             console.log("mounted");
             const res = await axios.post(
               `${api.API_URL}/show/create`,
-              this.ruleForm, 
+              this.ruleForm
             );
             console.log(res);
             if (res.data.code == 200) {
               this.$message.success("添加演出成功,即将跳转演出界面");
               // 等待不起作用
-               setTimeout(() => {
+              setTimeout(() => {
                 this.loading = false;
               }, 500);
               console.log(res.data.data);
-              this.$router.push('/show')
+              this.$router.push("/show");
             }
           } catch (err) {
             console.log(err);

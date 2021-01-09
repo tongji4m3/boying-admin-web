@@ -8,9 +8,9 @@
         row-key="categoryId"
         :tree-props="{ children: 'children', hasChildren: 'hasChildren' }"
       >
-        <el-table-column prop="categoryId" label="演出目录编号" width="150">
+        <!-- <el-table-column prop="categoryId" label="演出目录编号" width="150"> -->
         </el-table-column>
-        <el-table-column prop="name" label="一级目录" width="300">
+        <el-table-column prop="name" label="目录名">
         </el-table-column>
         <!-- <el-table-column prop="setting" label="设置" width="200">
       </el-table-column> -->
@@ -50,12 +50,12 @@
         width="40%"
       >
         <el-form :model="categorySelected" label-width="150px" size="small">
-          <el-form-item label="父目录id：">
+          <!-- <el-form-item label="父目录id：">
             <el-input
               v-model="categorySelected.parentId"
               style="width: 250px"
             ></el-input>
-          </el-form-item>
+          </el-form-item> -->
           <el-form-item label="目录名称:">
             <el-input
               v-model="categorySelected.name"
@@ -91,9 +91,9 @@ const defaultCategory = {
   description: "",
   icon: "",
   name: "",
-  parentId: 0,
+  //   parentId: 0,
   weight: 1,
-  children: [],
+  //   children: [],
 };
 
 export default {
@@ -126,7 +126,7 @@ export default {
       this.loading = true;
       try {
         const res = await axios.post(
-          `${api.API_URL}/category/delete` + "/" + category.categoryId,
+          `${api.API_URL}/category/delete` + "/" + category.id,
           {
             headers: {
               Authorization: "Bearer " + sessionStorage.getItem("token"),
@@ -153,8 +153,12 @@ export default {
         type: "warning",
       })
         .then(async () => {
-          console.log(row)
-          if (row.children!=undefined && row.children != [] && row.children!=null) {
+          console.log(row);
+          if (
+            row.children != undefined &&
+            row.children != [] &&
+            row.children != null
+          ) {
             for (var i of row.children) {
               await this.deleteCategory(i);
             }
@@ -165,7 +169,7 @@ export default {
         .catch(() => {
           this.$message.info("取消删除");
           console.log("catch");
-          console.log(row.children)
+          console.log(row.children);
           // this.getList();
         });
     },
@@ -173,9 +177,9 @@ export default {
       this.loading = true;
       try {
         const res = await axios.post(
-          `${api.API_URL}/category/update` + "/" + category.categoryId,
+          `${api.API_URL}/category/update` + "/" + category.id,
           {
-            parentId: category.parentId,
+            // parentId: category.parentId,
             name: category.name,
             weight: category.weight,
             icon: category.icon,
@@ -208,10 +212,12 @@ export default {
         type: "warning",
       }).then(() => {
         if (this.isEdit) {
+          console.log("this.categorySelected", this.categorySelected);
           this.updateCategory(this.categorySelected);
           this.dialogVisible = false;
         } else {
           console.log(this.add);
+          console.log("this.categorySelected", this.categorySelected);
           this.addCategory(this.categorySelected);
           this.dialogVisible = false;
         }
@@ -243,38 +249,37 @@ export default {
     //   this.add = false;
     // },
 
-    async getChildren(category) {
-      this.loading = true;
-      try {
-        console.log("mounted");
-        const res = await axios.get(
-          `${api.API_URL}/category/getChildren` + "/" + category.categoryId,
-          {
-            headers: {
-              Authorization: "Bearer " + sessionStorage.getItem("token"),
-            },
-          }
-        );
-        console.log(res);
-        if (res.data.code == 200) {
-          this.$set(category, "children", res.data.data);
-          // category.children = res.data.data;
-          setTimeout(() => {
-            this.loading = false;
-          }, 500);
-          console.log(category.children);
-        } else {
-          this.$set(category, "children", []);
-        }
-      } catch (err) {
-        console.log(err);
-      }
-    },
+    // async getChildren(category) {
+    //   this.loading = true;
+    //   try {
+    //     console.log("mounted");
+    //     const res = await axios.get(
+    //       `${api.API_URL}/category/getChildren` + "/" + category.categoryId,
+    //       {
+    //         headers: {
+    //           Authorization: "Bearer " + sessionStorage.getItem("token"),
+    //         },
+    //       }
+    //     );
+    //     console.log(res);
+    //     if (res.data.code == 200) {
+    //       this.$set(category, "children", res.data.data);
+    //       // category.children = res.data.data;
+    //       setTimeout(() => {
+    //         this.loading = false;
+    //       }, 500);
+    //       console.log(category.children);
+    //     } else {
+    //       this.$set(category, "children", []);
+    //     }
+    //   } catch (err) {
+    //     console.log(err);
+    //   }
+    // },
     async reload() {
       this.loading = true;
       try {
-        console.log("mounted");
-        const res = await axios.get(`${api.API_URL}/category/listParent`, {
+        const res = await axios.get(`${api.API_URL}/category/listAll`, {
           headers: {
             Authorization: "Bearer " + sessionStorage.getItem("token"),
           },
@@ -282,9 +287,9 @@ export default {
         console.log(res);
         if (res.data.code == 200) {
           this.tableData = res.data.data;
-          for (var i = 0; i < this.tableData.length; i++) {
-            this.getChildren(this.tableData[i]);
-          }
+          //   for (var i = 0; i < this.tableData.length; i++) {
+          //     this.getChildren(this.tableData[i]);
+          //   }
           setTimeout(() => {
             this.loading = false;
           }, 500);
@@ -293,6 +298,27 @@ export default {
       } catch (err) {
         console.log(err);
       }
+      //   try {
+      //     console.log("mounted");
+      //     const res = await axios.get(`${api.API_URL}/category/listParent`, {
+      //       headers: {
+      //         Authorization: "Bearer " + sessionStorage.getItem("token"),
+      //       },
+      //     });
+      //     console.log(res);
+      //     if (res.data.code == 200) {
+      //       this.tableData = res.data.data;
+      //       for (var i = 0; i < this.tableData.length; i++) {
+      //         this.getChildren(this.tableData[i]);
+      //       }
+      //       setTimeout(() => {
+      //         this.loading = false;
+      //       }, 500);
+      //       console.log(this.tableData);
+      //     }
+      //   } catch (err) {
+      //     console.log(err);
+      //   }
     },
   },
 
