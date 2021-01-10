@@ -23,13 +23,21 @@
             >
               编辑
             </el-button>
-            <el-button
+            <el-switch
+              @change="handleStatusChange(scope.$index, scope.row)"
+              :active-value="false"
+              :inactive-value="true"
+              v-model="scope.row.adminDelete"
+            >
+            </el-switch>
+            <!-- <el-button
               size="mini"
               type="danger"
               @click="handleDelete(scope.$index, scope.row)"
               style="margin-left: 30px"
               >删除
-            </el-button></template
+            </el-button> -->
+            </template
           ></el-table-column
         >
       </el-table>
@@ -145,6 +153,47 @@ export default {
       } catch (err) {
         console.log(err);
       }
+    },
+    async handleStatusChange(index, row) {
+      this.$confirm("是否要修改该状态?", "提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning",
+      }).then(async () => {
+        console.log(index, row);
+        if (row.adminDelete == true) {
+          const res = await axios.post(
+            `${api.API_URL}/category/delete` + "/" + row.id,
+            {
+              headers: {
+                Authorization: "Bearer " + sessionStorage.getItem("token"),
+              },
+            }
+          );
+          if (res.data.code == 200) {
+            this.$message.success("目录关闭成功");
+          }
+          console.log(res);
+        } else {
+          const res = await axios.post(
+            `${api.API_URL}/category/recover` + "/" + row.id,
+            {
+              headers: {
+                Authorization: "Bearer " + sessionStorage.getItem("token"),
+              },
+            }
+          );
+          if (res.data.code == 200) {
+            this.$message.success("目录启用成功");
+          }
+          console.log(res);
+        }
+      });
+      // .catch(() => {
+      //   this.$message.info("取消修改");
+      //   console.log("catch");
+      // //   this.getList();
+      // });
     },
     handleDelete(index, row) {
       this.$confirm("是否要删除该目录?", "提示", {

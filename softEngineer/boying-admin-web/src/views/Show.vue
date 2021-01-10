@@ -86,7 +86,7 @@ mm<template>
           </el-table-column>
         </el-table>
         <el-dialog title="提示" width="30%" :visible.sync="dialogVisible">
-          <span>{{ dialogInfo }}</span>
+          <span>{{ dialogInfo.details }}</span>
           <span slot="footer" class="dialog-footer">
             <el-button @click="dialogVisible = false">取 消</el-button>
             <el-button type="primary" @click="dialogVisible = false"
