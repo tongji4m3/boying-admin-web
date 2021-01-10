@@ -92,7 +92,7 @@
         <el-col :span="11">
           <el-form-item prop="dayStart">
             <el-date-picker
-              type="date"
+              type="datetime"
               placeholder="选择日期"
               v-model="ruleForm.startTime"
               style="width: 100%"
@@ -106,7 +106,7 @@
         <el-col :span="11">
           <el-form-item prop="dayEnd">
             <el-date-picker
-              type="date"
+              type="datetime"
               placeholder="选择日期"
               v-model="ruleForm.endTime"
               style="width: 100%"
@@ -181,23 +181,23 @@ export default {
         maxPrice: [
           { required: true, message: "请输入演出最高价格", trigger: "blur" },
         ],
-        city: [{ required: true, message: "请输入演出城市", trigger: "blur" }],
-        dayStart: [
-          {
-            type: "string",
-            required: true,
-            message: "请选择日期",
-            trigger: "change",
-          },
-        ],
-        dayEnd: [
-          {
-            type: "string",
-            required: true,
-            message: "请选择日期",
-            trigger: "change",
-          },
-        ],
+        // city: [{ required: true, message: "请输入演出城市", trigger: "blur" }],
+        // dayStart: [
+        //   {
+        //     type: "string",
+        //     required: true,
+        //     message: "请选择日期",
+        //     trigger: "change",
+        //   },
+        // ],
+        // dayEnd: [
+        //   {
+        //     type: "string",
+        //     required: true,
+        //     message: "请选择日期",
+        //     trigger: "change",
+        //   },
+        // ],
 
         weight: [
           {
@@ -251,6 +251,8 @@ export default {
       }
     },
     submitForm(formName) {
+      console.log("this.ruleForm", this.ruleForm);
+    //   return;
       this.$refs[formName].validate(async (valid) => {
         if (!valid || this.ruleForm.poster == "") {
           console.log(this.ruleForm.poster);

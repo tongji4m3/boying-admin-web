@@ -16,7 +16,7 @@ mm<template>
           v-loading="loading"
           style="width: 100%"
         >
-          <el-table-column label="演出编号" prop="showId"></el-table-column>
+          <!-- <el-table-column label="演出编号" prop="showId"></el-table-column> -->
           <el-table-column label="演出名称" prop="name"></el-table-column>
           <el-table-column label="演出目录" prop="category"> </el-table-column>
           <el-table-column label="演出海报" align="center">
@@ -28,23 +28,23 @@ mm<template>
               ></el-image>
             </template>
           </el-table-column>
-          <el-table-column
+          <!-- <el-table-column
             label="演出最低价格"
             prop="minPrice"
           ></el-table-column>
           <el-table-column
             label="演出最高价格"
             prop="maxPrice"
-          ></el-table-column>
+          ></el-table-column> -->
           <el-table-column label="演出地址" prop="address"></el-table-column>
           <el-table-column label="演出开始时间" width="160" align="center">
             <template slot-scope="scope">{{
-              scope.row.dayStart | formatDateTime
+              scope.row.startTime | formatDateTime
             }}</template>
           </el-table-column>
           <el-table-column label="演出结束时间" width="160" align="center">
             <template slot-scope="scope">{{
-              scope.row.dayEnd | formatDateTime
+              scope.row.endTime | formatDateTime
             }}</template>
           </el-table-column>
 
@@ -315,7 +315,7 @@ export default {
       await this.getShowSession();
       await this.getShowClass();
       //   await this.getUser();
-      console.log("show",this.show);
+      console.log("show", this.show);
       setTimeout(() => {
         this.loading = false;
       }, 500);
@@ -364,8 +364,8 @@ export default {
         if (res.data.code === 200) {
           this.classList = res.data.data.list;
           this.showClassSelected = this.classList[0].showClassId;
-        //   this.priceSelected = this.classList[0].price;
-        //   this.finalPrice = this.priceSelected;
+          //   this.priceSelected = this.classList[0].price;
+          //   this.finalPrice = this.priceSelected;
         } else {
           this.classList = [];
           this.showClassSelected = null;
@@ -383,7 +383,7 @@ export default {
             Authorization: "Bearer " + sessionStorage.getItem("token"),
           },
         });
-        console.log(res);
+        console.log("res", res);
         if (res.data.code == 200) {
           this.tableData = res.data.data;
           for (var i = 0; i < this.tableData.length; i++) {
