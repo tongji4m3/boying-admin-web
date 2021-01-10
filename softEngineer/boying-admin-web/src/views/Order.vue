@@ -38,9 +38,9 @@
         <el-table-column type="expand">
           <template slot-scope="props">
             <el-form label-position="left" inline class="demo-table-expand">
-              <el-form-item label="订单编号:">
+              <!-- <el-form-item label="订单编号:">
                 <span>{{ props.row.orderId }}</span>
-              </el-form-item>
+              </el-form-item> -->
               <el-form-item label="用户账号:">
                 <span>{{ props.row.userId }}</span>
               </el-form-item>
@@ -56,12 +56,12 @@
               <el-form-item label="订单总金额:">
                 <span>￥{{ props.row.money }}</span>
               </el-form-item>
-              <el-form-item label="演出场次编号:">
+              <!-- <el-form-item label="演出场次编号:">
                 <span>{{ props.row.showSessionId }}</span>
-              </el-form-item>
-              <el-form-item label="订单支付方式:">
+              </el-form-item> -->
+              <!-- <el-form-item label="订单支付方式:">
                 <span>{{ props.row.payment }}</span>
-              </el-form-item>
+              </el-form-item> -->
               <el-form-item label="该订单对用户是否可见:">
                 <span>{{ props.row.userDelete | formatUserDelete }}</span>
               </el-form-item>
@@ -71,7 +71,7 @@
             </el-form>
           </template>
         </el-table-column>
-        <el-table-column label="订单编号" prop="orderId"> </el-table-column>
+        <!-- <el-table-column label="订单编号" prop="orderId"> </el-table-column> -->
         <el-table-column label="用户账号" prop="userId"> </el-table-column>
         <el-table-column label="演出编号" prop="showId"> </el-table-column>
         <el-table-column label="订单状态" prop="realStatus"> </el-table-column>
@@ -81,7 +81,8 @@
           }}</template>
         </el-table-column>
 
-        <el-table-column label="订单总金额" prop="money" align="center"> </el-table-column>
+        <el-table-column label="订单总金额" prop="money" align="center">
+        </el-table-column>
         <el-table-column align="center">
           <template slot="header" slot-scope="scope">
             <el-input
@@ -111,7 +112,7 @@ import qs from "qs";
 import { formatDate } from "@/utils/date";
 
 const fields = [
-  { label: "订单编号", prop: "orderId" },
+  //   { label: "订单编号", prop: "orderId" },
   { label: "用户账号", prop: "userId" },
   { label: "演出编号", prop: "showId" },
   { label: "订单状态编号", prop: "status" },
@@ -151,15 +152,16 @@ export default {
   },
 
   methods: {
-    Delete(index,row) {
+    Delete(index, row) {
       this.$confirm("此操作将删除该订单, 是否继续?", "提示", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
         type: "warning",
       })
         .then(() => {
-          this.handleDelete(row.orderId)
-        }).catch(() => {
+          this.handleDelete(row.orderId);
+        })
+        .catch(() => {
           this.$message.info("已取消删除");
         });
     },
@@ -186,9 +188,9 @@ export default {
             Authorization: "Bearer " + sessionStorage.getItem("token"),
           },
         });
-        console.log(res);
-        if(res.data.message == "不存在任何订单"){
-          this.tableData=[];
+        console.log("res", res);
+        if (res.data.message == "不存在任何订单") {
+          this.tableData = [];
         }
         if (res.data.code == 200) {
           this.tableData = res.data.data;
@@ -202,6 +204,7 @@ export default {
             }
           }
         }
+        console.log("tableData", this.tableData);
         setTimeout(() => {
           this.loading = false;
         }, 500);
@@ -219,14 +222,13 @@ export default {
       return formatDate(date, "yyyy-MM-dd hh:mm:ss");
     },
 
-    formatUserDelete(value){
-      if(value==true){
+    formatUserDelete(value) {
+      if (value == true) {
         return "用户已删除";
-      }
-      else{
+      } else {
         return "用户未删除";
       }
-    }
+    },
   },
 
   watch: {},
