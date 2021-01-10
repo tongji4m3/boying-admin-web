@@ -46,7 +46,7 @@
         size="mini"
         class="btn-add"
         @click="handleAdd()"
-        style="float:right"
+        style="float: right"
         >添加</el-button
       >
     </el-card>
@@ -66,7 +66,7 @@
         border
       >
         <el-table-column label="用户id" width="100" align="center">
-          <template slot-scope="scope">{{ scope.row.userId }}</template>
+          <template slot-scope="scope">{{ scope.row.id }}</template>
         </el-table-column>
         <el-table-column label="用户名" align="center">
           <template slot-scope="scope">{{ scope.row.username }}</template>
@@ -85,26 +85,26 @@
             scope.row.createTime | formatDateTime
           }}</template>
         </el-table-column>
-        <el-table-column label="是否启用" width="140" align="center">
+        <el-table-column label="是否禁用" width="140" align="center">
           <template slot-scope="scope">
             <el-switch
               @change="handleStatusChange(scope.$index, scope.row)"
-              :active-value="true"
-              :inactive-value="false"
-              v-model="scope.row.userstatus"
+              :active-value="false"
+              :inactive-value="true"
+              v-model="scope.row.adminDelete"
             >
             </el-switch>
           </template>
         </el-table-column>
-        <el-table-column label="操作" width="180" align="center">
+        <!-- <el-table-column label="操作" width="180" align="center">
           <template slot-scope="scope">
-            <!-- <el-button
+            <el-button
               size="mini"
               type="text"
               @click="handleUpdate(scope.$index, scope.row)"
             >
               编辑
-            </el-button> -->
+            </el-button>
             <el-button
               size="mini"
               type="text"
@@ -112,7 +112,7 @@
               >删除
             </el-button>
           </template>
-        </el-table-column>
+        </el-table-column> -->
         <el-table-column align="center">
           <template slot="header" slot-scope="scope">
             <el-input
@@ -163,7 +163,7 @@
           ></el-input>
         </el-form-item>
         <el-form-item label="是否启用：">
-          <el-radio-group v-model="user.userstatus">
+          <el-radio-group v-model="user.admin_delete">
             <el-radio :label="true">是</el-radio>
             <el-radio :label="false">否</el-radio>
           </el-radio-group>
@@ -217,14 +217,14 @@ const defaultListQuery = {
   keyword: null,
 };
 const defaultUser = {
-  userId: null,
+  id: null,
   username: null,
   phone: null,
   realName: null,
   password: null,
   email: null,
   createTime: null,
-  userstatus: true,
+  admin_delete: true,
 };
 export default {
   name: "adminList",
@@ -288,6 +288,8 @@ export default {
         if (res.data.code == 200) {
           this.$message.success("添加成功");
           this.getList();
+        } else {
+          this.$message.error("添加失败");
         }
       } catch (err) {
         console.log(err);
@@ -301,9 +303,10 @@ export default {
     },
 
     async updateStatus(row) {
+      console.log("row", row);
       try {
         const res = await axios.post(
-          `${api.API_URL}/user/ChangeUserStatus/` + row.userId,
+          `${api.API_URL}/user/ChangeUserStatus/` + row.id,
           {
             headers: {
               Authorization: "Bearer " + sessionStorage.getItem("token"),
@@ -337,42 +340,42 @@ export default {
         });
     },
 
-    async deleteUser(row) {
-      try {
-        const res = await axios.post(
-          `${api.API_URL}/user/delete/` + row.userId,
-          {
-            headers: {
-              Authorization: "Bearer " + sessionStorage.getItem("token"),
-            },
-          }
-        );
-        console.log(res);
-        if (res.data.code == 200) {
-          this.$message.success("删除成功");
-        }
-      } catch (err) {
-        console.log(err);
-        this.$message.error("删除失败");
-      }
-      this.getList();
-    },
+    // async deleteUser(row) {
+    //   try {
+    //     const res = await axios.post(
+    //       `${api.API_URL}/user/delete/` + row.userId,
+    //       {
+    //         headers: {
+    //           Authorization: "Bearer " + sessionStorage.getItem("token"),
+    //         },
+    //       }
+    //     );
+    //     console.log(res);
+    //     if (res.data.code == 200) {
+    //       this.$message.success("删除成功");
+    //     }
+    //   } catch (err) {
+    //     console.log(err);
+    //     this.$message.error("删除失败");
+    //   }
+    //   this.getList();
+    // },
 
-    handleDelete(index, row) {
-      this.$confirm("是否要删除该用户?", "提示", {
-        confirmButtonText: "确定",
-        cancelButtonText: "取消",
-        type: "warning",
-      })
-        .then(() => {
-          this.deleteUser(row);
-        })
-        .catch(() => {
-          this.$message.info("取消删除");
-          console.log("catch");
-          this.getList();
-        });
-    },
+    // handleDelete(index, row) {
+    //   this.$confirm("是否要删除该用户?", "提示", {
+    //     confirmButtonText: "确定",
+    //     cancelButtonText: "取消",
+    //     type: "warning",
+    //   })
+    //     .then(() => {
+    //       this.deleteUser(row);
+    //     })
+    //     .catch(() => {
+    //       this.$message.info("取消删除");
+    //       console.log("catch");
+    //       this.getList();
+    //     });
+    // },
     handleUpdate(index, row) {
       this.dialogVisible = true;
       this.isEdit = true;

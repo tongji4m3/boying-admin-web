@@ -69,6 +69,14 @@
               v-model="categorySelected.name"
               style="width: 250px"
             ></el-input>
+            
+          </el-form-item>
+                    <el-form-item label="目录排序:">
+            <el-input
+              v-model="categorySelected.weight"
+              style="width: 250px"
+            ></el-input>
+            
           </el-form-item>
           <!-- <el-form-item label="目录图标:">
             <el-input
@@ -224,11 +232,11 @@ export default {
     },
     async updateCategory(category) {
       this.loading = true;
+      console.log("here category", category);
       try {
         const res = await axios.post(
           `${api.API_URL}/category/update` + "/" + category.id,
           {
-            // parentId: category.parentId,
             name: category.name,
             weight: category.weight,
             icon: category.icon,
@@ -249,6 +257,7 @@ export default {
           }, 500);
         } else {
           this.$message.error("未知错误编辑失败");
+          this.loading = false;
         }
       } catch (err) {
         console.log(err);
@@ -284,10 +293,17 @@ export default {
           `${api.API_URL}/category/create`,
           category
         );
-        if (res.status == 200) {
+        if (res.data.code == 200) {
+          console.log("add", res);
           this.$message.success("添加成功");
           this.reload();
           this.add = false;
+        } else {
+          if ((res.data.message = "目录名称不能重复!")) {
+            this.$message.error("目录名称不能重复");
+          } else {
+            this.$message.error("添加失败");
+          }
         }
       } catch (err) {
         console.log(err);

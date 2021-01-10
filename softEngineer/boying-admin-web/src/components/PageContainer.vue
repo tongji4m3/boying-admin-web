@@ -18,7 +18,7 @@
         </el-menu-item>
         <el-submenu index="show">
           <template slot="title">
-            <i class="myicon myiconyanchu" style="font-size:20px"></i>
+            <i class="myicon myiconyanchu" style="font-size: 20px"></i>
             <span slot="title"> 演出</span>
           </template>
 
@@ -28,20 +28,24 @@
           >
           <el-menu-item index="addShow">
             <i class="myicon myicontianjiaxiangqing"></i>
-            <span slot="title" style="margin-left:5px"> 添加演出</span></el-menu-item
+            <span slot="title" style="margin-left: 5px">
+              添加演出</span
+            ></el-menu-item
           >
           <el-menu-item index="category">
             <i class="myicon myiconmulu"></i>
-            <span slot="title" style="margin-left:5px"> 目录管理</span></el-menu-item
+            <span slot="title" style="margin-left: 5px">
+              目录管理</span
+            ></el-menu-item
           >
         </el-submenu>
         <el-submenu index="order">
           <template slot="title">
-            <i class="myicon myiconicon--copy" style="font-size:20px"></i>
+            <i class="myicon myiconicon--copy" style="font-size: 20px"></i>
             <span slot="title"> 订单</span>
           </template>
           <el-menu-item index="order">
-            <i class="myicon myiconicon--copy" style="font-size:20px"></i>
+            <i class="myicon myiconicon--copy" style="font-size: 20px"></i>
             <span slot="title"> 订单列表</span></el-menu-item
           >
         </el-submenu>
@@ -51,8 +55,10 @@
             <span slot="user"> 用户</span>
           </template>
           <el-menu-item index="user">
-            <i class="myicon myiconyonghuliebiao" style="font-size:20px"></i>
-            <span slot="title" style="margin-left:5px"> 用户列表</span></el-menu-item
+            <i class="myicon myiconyonghuliebiao" style="font-size: 20px"></i>
+            <span slot="title" style="margin-left: 5px">
+              用户列表</span
+            ></el-menu-item
           >
         </el-submenu>
       </el-menu>
@@ -71,7 +77,9 @@
         </el-breadcrumb-item>
         <el-dropdown @command="handleCommand">
           <span class="el-dropdown-link">
-            <i class="el-icon-user-solid" style="font-size:25px"></i><i class="el-icon-arrow-down el-icon--right"></i>
+            <el-badge is-dot class="item">
+              <el-avatar :src="adminInfo.icon"></el-avatar> </el-badge
+            >{{ adminInfo.username }}
           </span>
           <el-dropdown-menu slot="dropdown">
             <el-dropdown-item command="logout">退出</el-dropdown-item>
@@ -142,14 +150,42 @@
   cursor: pointer;
   color: #409eff;
   padding-left: 1100px;
-
 }
 </style>
 
 <script>
+import axios from "axios";
+import api from "@/assets/api.js";
+
 export default {
+  async mounted() {
+    try {
+      const res = await axios.post(
+        `${api.API_URL}/login/info`,
+        { name: "1" },
+        {
+          headers: {
+            Authorization: "Bearer " + sessionStorage.getItem("token"),
+          },
+        }
+      );
+      console.log("login", res);
+
+      if (res.data.code == 200) {
+        console.log("login", res);
+        this.adminInfo = res.data.data;
+        setTimeout(() => {
+          this.loading = false;
+        }, 500);
+        console.log(this.options);
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  },
   data() {
     return {
+      adminInfo: {},
       isCollapse: false,
       breadList: [], // 路由集合
       list: [], //面包屑动态生成所用集合
@@ -176,12 +212,12 @@ export default {
       let matched = this.$route.matched.filter((item) => item.name);
       let first = matched[0];
       if (first && first.name !== "home") {
-              console.log(first)
+        console.log(first);
         // 我在这里是判断的是name，渲染的是name，但是可以使用其他的字段
         matched = [{ path: "/home", name: "首页" }].concat(matched);
       }
       for (let element of matched) {
-        if (element.name == "main" ||element.path == "/home") {
+        if (element.name == "main" || element.path == "/home") {
           var index = matched.indexOf(element);
           if (index > -1) {
             matched.splice(index, 1);

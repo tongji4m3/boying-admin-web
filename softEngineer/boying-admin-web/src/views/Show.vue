@@ -3,6 +3,16 @@ mm<template>
     <el-card class="operate-container" shadow="never" style="text-align: left">
       <i class="el-icon-tickets"></i>
       <span>数据列表</span>
+      <el-select v-model="categoryId" placeholder="请选择演出目录">
+        <el-option
+          v-for="item in options"
+          :key="item.id"
+          :label="item.name"
+          :value="item.id"
+        >
+        </el-option>
+      </el-select>
+      <el-button type="primary" @click="searchShow()">搜索</el-button>
       <div class="table-container">
         <el-table
           :key="key"
@@ -50,12 +60,12 @@ mm<template>
 
           <el-table-column label="操作">
             <template slot-scope="scope">
-              <el-button
+              <!-- <el-button
                 size="mini"
                 type="danger"
                 @click="handleDelete(scope.$index, scope.row)"
                 >删除</el-button
-              >
+              > -->
               <el-button
                 size="mini"
                 style="margin-left: 0"
@@ -67,6 +77,12 @@ mm<template>
                 style="margin-left: 0"
                 @click="updateSeat(scope.row)"
                 >座位</el-button
+              >
+              <el-button
+                size="mini"
+                style="margin-left: 0"
+                @click="updateShow(scope.row)"
+                >修改</el-button
               >
             </template>
           </el-table-column>
@@ -179,10 +195,32 @@ const fields = [
 
 export default {
   async mounted() {
+    try {
+      const res = await axios.get(`${api.API_URL}/category/listAll`, {
+        headers: {
+          Authorization: "Bearer " + sessionStorage.getItem("token"),
+        },
+      });
+      console.log("here");
+      if (res.data.code == 200) {
+        this.options = res.data.data;
+        //   for (var i = 0; i < this.tableData.length; i++) {
+        //     this.getChildren(this.tableData[i]);
+        //   }
+        setTimeout(() => {
+          this.loading = false;
+        }, 500);
+        console.log(this.options);
+      }
+    } catch (err) {
+      console.log(err);
+    }
     this.reload();
   },
   data() {
     return {
+      categoryId: "",
+      options: [],
       addSeatForm: {},
       addSeatVisible: false,
       maxStock: 0,
@@ -205,6 +243,13 @@ export default {
     };
   },
   methods: {
+    updateShow(info) {
+      console.log(info);
+      this.$router.push({
+        path: "/UpdateShow",
+        query: { id: info.id },
+      });
+    },
     async submitAddSeat() {
       console.log(this.show);
       console.log("addSeatForm", this.addSeatForm);
@@ -236,10 +281,19 @@ export default {
         }
       } catch (err) {
         console.log(err);
+        this.$message.success("添加失败");
       }
+    },
+    async searchShow() {
+      console.log(this.categoryId);
+      this.reload();
     },
     async addSeat() {
       this.addSeatVisible = true;
+    },
+    async change() {
+      console.log(this.categoryId);
+      this.reload();
     },
     async handleCurrentChange() {
       this.loading = true;
@@ -376,14 +430,14 @@ export default {
       }
     },
     async reload() {
-      this.load = true;
+      this.loading = true;
       try {
         console.log("reload");
         console.log("pageNum", this.pageNum, "pageSize", this.pageSize);
         const res = await axios.post(
           `${api.API_URL}/show/list`,
           {
-            categoryId: "",
+            categoryId: this.categoryId,
             name: "",
             pageNum: this.pageNum,
             pageSize: this.pageSize,

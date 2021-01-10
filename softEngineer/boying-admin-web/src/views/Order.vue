@@ -83,6 +83,17 @@
 
         <el-table-column label="订单总金额" prop="money" align="center">
         </el-table-column>
+        <el-table-column label="操作" align="center">
+          <template slot-scope="scope">
+            <el-button
+              type="primary"
+              size="small"
+              @click="listTickets(scope.row)"
+              >查看</el-button
+            ></template
+          >
+        </el-table-column>
+
         <el-table-column align="center">
           <template slot="header" slot-scope="scope">
             <el-input
@@ -113,6 +124,29 @@
       >
       </el-pagination>
     </div>
+    <el-dialog title="提示" :visible.sync="listTicketsVislble" width="90%">
+      <template>
+        <el-table :data="listTicketData" style="width: 100%">
+          <el-table-column prop="name" label="名称" width="180">
+          </el-table-column>
+          <el-table-column prop="price" label="价格" width="180">
+          </el-table-column>
+          <el-table-column prop="capacity" label="容量"> </el-table-column>
+          <el-table-column prop="qrCodeUrl" label="二维码">
+            <template slot-scope="scope">
+              <el-image
+                style="width: 50px; height: 50px"
+                :src="scope.row.qrCodeUrl"
+              >
+              </el-image>
+            </template>
+          </el-table-column>
+        </el-table>
+      </template>
+      <span slot="footer" class="dialog-footer">
+        <el-button type="primary" @click="closeTickete()">确 定</el-button>
+      </span>
+    </el-dialog>
   </div>
 </template>
 
@@ -143,6 +177,8 @@ export default {
   props: [""],
   data() {
     return {
+      listTicketData: [],
+      listTicketsVislble: false,
       pageSize: 10,
       pageNum: 1,
       total: 100,
@@ -166,6 +202,37 @@ export default {
   },
 
   methods: {
+    closeTickete() {
+      this.listTicketData = [];
+      this.listTicketsVislble = false;
+    },
+    async listTickets(info) {
+      console.log("listTickets.info", info);
+      this.listTicketsVislble = true;
+      const res = await axios.post(
+        `${api.API_URL}/ticket/listTickets`,
+        {
+          orderId: info.id,
+          pageNum: 1,
+          pageSize: 10000,
+          seatId: 0,
+        },
+        {
+          headers: {
+            Authorization: "Bearer " + sessionStorage.getItem("token"),
+          },
+        }
+      );
+      console.log("here", res);
+      if (res.data.code == 200) {
+        this.listTicketData = res.data.data.list;
+        console.log("this.listTicketData", this.listTicketData);
+        // this.$message.success("");
+      } else if (res.data.message == "不存在任何票！") {
+        this.$message.info("不存在任何票！");
+        console.log("不存在任何票！");
+      }
+    },
     async handleStatusChange(index, row) {
       this.$confirm("是否要修改该状态?", "提示", {
         confirmButtonText: "确定",
