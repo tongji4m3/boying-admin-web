@@ -92,15 +92,26 @@
             />
           </template>
           <template slot-scope="scope">
-            <el-button
-              size="mini"
-              type="danger"
-              @click="Delete(scope.$index, scope.row)"
-              >删除</el-button
+            <el-switch
+              @change="handleStatusChange(scope.$index, scope.row)"
+              :active-value="false"
+              :inactive-value="true"
+              v-model="scope.row.adminDelete"
             >
+            </el-switch>
           </template>
         </el-table-column>
       </el-table>
+    </div>
+    <div class="block">
+      <el-pagination
+        layout="prev, pager, next"
+        :page-size="pageSize"
+        :current-page.sync="pageNum"
+        :total="this.total"
+        @current-change="handleCurrentChange"
+      >
+      </el-pagination>
     </div>
   </div>
 </template>
@@ -132,6 +143,9 @@ export default {
   props: [""],
   data() {
     return {
+      pageSize: 10,
+      pageNum: 1,
+      total: 100,
       tableData: [],
       search: "",
       key: 1, // table key
@@ -152,6 +166,43 @@ export default {
   },
 
   methods: {
+    async handleStatusChange(index, row) {
+      this.$confirm("是否要修改该状态?", "提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning",
+      }).then(async () => {
+        console.log(index, row);
+        if (row.adminDelete == true) {
+          const res = await axios.post(
+            `${api.API_URL}/order/deleteOrder` + "/" + row.id,
+            {
+              headers: {
+                Authorization: "Bearer " + sessionStorage.getItem("token"),
+              },
+            }
+          );
+          if (res.data.code == 200) {
+            this.$message.success("订单关闭成功");
+          }
+          console.log(res);
+        } else {
+          const res = await axios.post(
+            `${api.API_URL}/order/recoverOrder` + "/" + row.id,
+            {
+              headers: {
+                Authorization: "Bearer " + sessionStorage.getItem("token"),
+              },
+            }
+          );
+          if (res.data.code == 200) {
+            this.$message.success("订单启用成功");
+          }
+          console.log(res);
+        }
+      });
+    },
+    async handleCurrentChange() {},
     Delete(index, row) {
       this.$confirm("此操作将删除该订单, 是否继续?", "提示", {
         confirmButtonText: "确定",
@@ -183,17 +234,28 @@ export default {
     async reload() {
       try {
         console.log("mounted");
-        const res = await axios.get(`${api.API_URL}/user/listOrders`, {
-          headers: {
-            Authorization: "Bearer " + sessionStorage.getItem("token"),
+        const res = await axios.post(
+          `${api.API_URL}/order/listOrders`,
+          {
+            pageNum: this.pageNum,
+            pageSize: this.pageSize,
+            showId: 0,
+            userId: 0,
           },
-        });
+          {
+            headers: {
+              Authorization: "Bearer " + sessionStorage.getItem("token"),
+            },
+          }
+        );
         console.log("res", res);
         if (res.data.message == "不存在任何订单") {
           this.tableData = [];
         }
         if (res.data.code == 200) {
-          this.tableData = res.data.data;
+          this.total = res.data.data.total;
+          this.tableData = res.data.data.list;
+          console.log(res.data.data);
           for (var i = 0; i < this.tableData.length; i++) {
             if (this.tableData[i].status == 1) {
               this.tableData[i].realStatus = "待观看";

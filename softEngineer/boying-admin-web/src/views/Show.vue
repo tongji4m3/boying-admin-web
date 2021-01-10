@@ -65,8 +65,8 @@ mm<template>
               <el-button
                 size="mini"
                 style="margin-left: 0"
-                @click="update(scope.row)"
-                >编辑</el-button
+                @click="updateSeat(scope.row)"
+                >座位</el-button
               >
             </template>
           </el-table-column>
@@ -99,114 +99,17 @@ mm<template>
             style="width: 80%; margin: auto"
             :body-style="{ padding: '30px' }"
           >
-            <el-row :gutter="20">
-              <el-col :span="8">
-                <div>
-                  <img
-                    width="300"
-                    height="430"
-                    :src="show.poster"
-                    class="image"
-                  />
-                </div>
-              </el-col>
-              <el-col :span="16">
-                <div class="text">
-                  <div class="showName">
-                    <h2>{{ show.name }}</h2>
-                  </div>
-                  <br />
-                  <div
-                    class="minor-text"
-                    v-if="
-                      show.dayStart != undefined && show.dayEnd != undefined
-                    "
-                  >
-                    <div class="showAddress">
-                      <i
-                        class="myicon myiconchengshi"
-                        style="padding-right: 7px"
-                      ></i
-                      >演出城市:{{ show.city }}
-                    </div>
-                    <br /><i
-                      class="myicon myiconshijian"
-                      style="padding-right: 3px"
-                    ></i>
-                    演出时间:{{ show.dayStart.substring(0, 10) }}~{{
-                      show.dayEnd.substring(0, 10)
-                    }}
-                  </div>
-                  <div class="tip">
-                    <i class="el-icon-info" style="padding-right: 3px"></i>
-                    演出时间和场次时间均为演出当地时间
-                  </div>
-                  <br />
-                  <div>
-                    <i class="myicon myiconchangci"></i>
-                    场次
-                    <el-radio-group
-                      v-model="sessionSelected"
-                      @change="sessionChange()"
-                      class="sessionGroup"
-                      v-for="session in sessionList"
-                      :key="session.showSessionId"
-                    >
-                      <el-radio-button
-                        :label="session.showSessionId"
-                        class="sessionRadioButton"
-                        >{{ session.startTime | formatDateTime }}-{{
-                          session.endTime | formatDateTime
-                        }}</el-radio-button
-                      >
-                      <br />
-                    </el-radio-group>
-                  </div>
-                  <!-- <div class="fundText">¥基础票价:{{ show.minPrice }}</div> -->
-                  <div
-                    v-show="this.classList != [] && this.classList.length != 0"
-                  >
-                    <div class="fundText">
-                      <i
-                        class="myicon myiconpiaozhong"
-                        style="padding-right: 3px"
-                      ></i
-                      >票种
-                    </div>
-                    <el-radio-group
-                      v-model="showClassSelected"
-                      @change="classChange()"
-                      class="classGroup"
-                      v-for="showclass in classList"
-                      :key="showclass.showClassId"
-                    >
-                      <el-radio-button
-                        :label="showclass.showClassId"
-                        class="classRadioButton"
-                        >{{ showclass.name }} 票价:{{
-                          showclass.price
-                        }}
-                        票量：{{ showclass.stock }} / {{ showclass.capacity }}
-                      </el-radio-button>
-                      <br />
-                    </el-radio-group>
-                    <!-- <div v-show="this.priceSelected != null" class="finalPrice">
-                      最终价格: ¥{{ this.priceSelected }}
-                    </div> -->
-                  </div>
-
-                  <!-- <div class="Buy" v-show="this.priceSelected != null">
-                    <el-button
-                      type="danger"
-                      icon="myicon myicontubiaozhizuomoEban"
-                      @click="buyTicket"
-                    >
-                      购票</el-button
-                    >
-                  </div> -->
-                </div>
-              </el-col>
-            </el-row>
+            <template>
+              <el-table :data="showSeatData" style="width: 100%">
+                <el-table-column prop="name" label="姓名" width="180">
+                </el-table-column>
+                <el-table-column prop="price" label="价格"> </el-table-column>
+                <el-table-column prop="capacity" label="容量">
+                </el-table-column>
+                <el-table-column prop="stock" label="库存"> </el-table-column>
+              </el-table>
+              <el-button type="primary" @click="addSeat()">添加座位</el-button>
+            </template>
           </el-card>
 
           <span slot="footer" class="dialog-footer">
@@ -216,6 +119,33 @@ mm<template>
             >
           </span>
         </el-dialog>
+        <el-dialog title="添加座位" width="50%" :visible.sync="addSeatVisible">
+          <el-form label-width="80px" :model="addSeatForm">
+            <el-form-item label="名称">
+              <el-input v-model="addSeatForm.name"></el-input>
+            </el-form-item>
+            <el-form-item label="价格">
+              <el-input v-model="addSeatForm.price"></el-input>
+            </el-form-item>
+            <el-form-item label="容量">
+              <el-input v-model="addSeatForm.capacity"></el-input>
+            </el-form-item>
+            <el-form-item label="库存">
+              <el-input v-model="addSeatForm.stock"></el-input>
+            </el-form-item>
+          </el-form>
+          <el-button type="primary" @click="submitAddSeat()">确 定</el-button>
+        </el-dialog>
+      </div>
+      <div class="block">
+        <el-pagination
+          layout="prev, pager, next"
+          :page-size="pageSize"
+          :current-page.sync="pageNum"
+          :total="this.total"
+          @current-change="handleCurrentChange"
+        >
+        </el-pagination>
       </div>
     </el-card>
   </div>
@@ -253,6 +183,14 @@ export default {
   },
   data() {
     return {
+      addSeatForm: {},
+      addSeatVisible: false,
+      maxStock: 0,
+      num: 0,
+      showSeatData: [],
+      total: 100,
+      pageSize: 10,
+      pageNum: 1,
       tableData: [],
       dialogVisible: false, //对话框初始不可见
       search: "",
@@ -267,6 +205,48 @@ export default {
     };
   },
   methods: {
+    async submitAddSeat() {
+      console.log(this.show);
+      console.log("addSeatForm", this.addSeatForm);
+      try {
+        const res = await axios.post(
+          `${api.API_URL}/seat/create/`,
+          {
+            capacity: this.addSeatForm.capacity,
+            name: this.addSeatForm.name,
+            price: this.addSeatForm.price,
+            showId: this.show.id,
+            stock: this.addSeatForm.stock,
+          },
+          {
+            headers: {
+              Authorization: "Bearer " + sessionStorage.getItem("token"),
+            },
+          }
+        );
+        console.log("test");
+        console.log(res);
+        if (res.data.code == 200) {
+          this.addSeatForm = {};
+          this.addSeatVisible = false;
+          this.reload();
+          this.$message.success("添加成功");
+          this.addSeatVisible = false;
+          this.updatedialogVisible = false;
+        }
+      } catch (err) {
+        console.log(err);
+      }
+    },
+    async addSeat() {
+      this.addSeatVisible = true;
+    },
+    async handleCurrentChange() {
+      this.loading = true;
+      console.log("handleCurrentChange");
+      await this.reload();
+    },
+
     //点击查看 按钮  的事件
     handleClick(info) {
       console.log(info);
@@ -308,25 +288,45 @@ export default {
       this.tableData.splice(index, 1);
       console.log(index, row);
     },
-    async update(info) {
+    async updateSeat(info) {
       this.updatedialogVisible = true;
       this.show = info;
-      await this.getShow();
-      await this.getShowSession();
-      await this.getShowClass();
+      await this.getSeats(this.show.id);
+      console.log("this.showSeatData", this.showSeatData);
+      //   await this.getShow();
+      //   await this.getShowSession();
+      //   await this.getShowClass();
       //   await this.getUser();
       console.log("show", this.show);
       setTimeout(() => {
         this.loading = false;
       }, 500);
-      console.log(this.classList);
+      //   console.log(this.classList);
+    },
+    async getSeats(showId) {
+      console.log("showId", showId);
+      try {
+        const res = await axios.post(`${api.API_URL}/seat/seats`, {
+          pageNum: 1,
+          pageSize: 1000,
+          showId: showId,
+        });
+        console.log("showSeat", res);
+        if (res.data.code === 200) {
+          this.showSeatData = res.data.data.list;
+          console.log("showSeatData", this.showSeatData);
+        }
+      } catch (err) {
+        console.log(err);
+        this.$message.error("获取演出座位失败");
+      }
     },
     async getShow() {
       try {
         const res = await axios.post(
           `${api.API_URL}/show/detail` + "/" + this.show.showId
         );
-        console.log(res);
+        // console.log(res);
         if (res.data.code === 200) {
           this.show = res.data.data;
         }
@@ -342,7 +342,7 @@ export default {
           pageNum: 1,
           pageSize: 10,
         });
-        console.log(res);
+        // console.log(res);
         if (res.data.code === 200) {
           this.sessionList = res.data.data.list;
           this.sessionSelected = this.sessionList[0].showSessionId;
@@ -360,7 +360,7 @@ export default {
           pageNum: 1,
           pageSize: 10,
         });
-        console.log(res);
+        // console.log(res);
         if (res.data.code === 200) {
           this.classList = res.data.data.list;
           this.showClassSelected = this.classList[0].showClassId;
@@ -376,19 +376,33 @@ export default {
       }
     },
     async reload() {
+      this.load = true;
       try {
-        console.log("mounted");
-        const res = await axios.get(`${api.API_URL}/show/list`, {
-          headers: {
-            Authorization: "Bearer " + sessionStorage.getItem("token"),
+        console.log("reload");
+        console.log("pageNum", this.pageNum, "pageSize", this.pageSize);
+        const res = await axios.post(
+          `${api.API_URL}/show/list`,
+          {
+            categoryId: "",
+            name: "",
+            pageNum: this.pageNum,
+            pageSize: this.pageSize,
           },
-        });
-        console.log("res", res);
+          {
+            headers: {
+              Authorization: "Bearer " + sessionStorage.getItem("token"),
+            },
+          }
+        );
+        // console.log("res", res);
         if (res.data.code == 200) {
-          this.tableData = res.data.data;
+          console.log("111");
+          this.total = res.data.data.total;
+          this.tableData = res.data.data.list;
           for (var i = 0; i < this.tableData.length; i++) {
             this.getCategory(this.tableData[i].categoryId, i);
           }
+          console.log("tableData", this.tableData);
           // console.log(this.tableData)
           setTimeout(() => {
             this.loading = false;
@@ -401,6 +415,7 @@ export default {
     async getCategory(categoryId, i) {
       try {
         console.log("mounted");
+        console.log("here");
         const res = await axios.get(
           `${api.API_URL}/category/list/` + categoryId,
           {
