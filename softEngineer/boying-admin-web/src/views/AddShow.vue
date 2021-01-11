@@ -164,7 +164,12 @@ export default {
       rules: {
         name: [
           { required: true, message: "请输入活动名称", trigger: "blur" },
-          { min: 3, max: 5, message: "长度在 3 到 5 个字符", trigger: "blur" },
+          {
+            min: 3,
+            max: 50,
+            message: "长度在 3 到 50 个字符",
+            trigger: "blur",
+          },
         ],
         categoryId: [
           { required: true, message: "请选择演出目录", trigger: "change" },
@@ -252,7 +257,7 @@ export default {
     },
     submitForm(formName) {
       console.log("this.ruleForm", this.ruleForm);
-    //   return;
+      //   return;
       this.$refs[formName].validate(async (valid) => {
         if (!valid || this.ruleForm.poster == "") {
           console.log(this.ruleForm.poster);
@@ -276,6 +281,9 @@ export default {
               }, 500);
               console.log(res.data.data);
               this.$router.push("/show");
+            } else {
+              this.$message.error("添加演出失败");
+              console.log(res.data.data);
             }
           } catch (err) {
             console.log(err);

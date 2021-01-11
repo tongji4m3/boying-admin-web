@@ -278,6 +278,8 @@ export default {
           this.$message.success("添加成功");
           this.addSeatVisible = false;
           this.updatedialogVisible = false;
+        } else {
+          this.$message.error("添加失败");
         }
       } catch (err) {
         console.log(err);

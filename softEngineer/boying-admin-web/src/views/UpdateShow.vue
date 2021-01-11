@@ -166,8 +166,8 @@ export default {
           { required: true, message: "请输入活动名称", trigger: "blur" },
           {
             min: 3,
-            max: 25,
-            message: "长度在 3 到 25 个字符",
+            max: 50,
+            message: "长度在 3 到 50 个字符",
             trigger: "blur",
           },
         ],
@@ -316,8 +316,10 @@ export default {
               setTimeout(() => {
                 this.loading = false;
               }, 500);
-              console.log(res.data.data);
               this.$router.push("/show");
+            } else {
+              this.$message.error("更新演出失败");
+              console.log(res.data.data);
             }
           } catch (err) {
             console.log(err);
