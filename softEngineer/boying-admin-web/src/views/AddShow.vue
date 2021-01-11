@@ -76,10 +76,11 @@
         style="text-align: left"
       >
         <el-radio-group v-model="ruleForm.weight">
-          <el-radio label="0"></el-radio>
           <el-radio label="1"></el-radio>
           <el-radio label="2"></el-radio>
           <el-radio label="3"></el-radio>
+          <el-radio label="4"></el-radio>
+          <el-radio label="5"></el-radio>
         </el-radio-group>
       </el-form-item>
       <el-form-item label="演出城市" prop="city">

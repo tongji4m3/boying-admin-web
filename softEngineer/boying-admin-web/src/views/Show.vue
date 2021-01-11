@@ -455,14 +455,14 @@ export default {
           console.log("111");
           this.total = res.data.data.total;
           this.tableData = res.data.data.list;
-          for (var i = 0; i < this.tableData.length; i++) {
-            this.getCategory(this.tableData[i].categoryId, i);
-          }
+          // for (var i = 0; i < this.tableData.length; i++) {
+          //   this.getCategory(this.tableData[i].categoryId, i);
+          // }
           console.log("tableData", this.tableData);
           // console.log(this.tableData)
           setTimeout(() => {
             this.loading = false;
-          }, 500);
+          }, 1000);
         }
       } catch (err) {
         console.log(err);
