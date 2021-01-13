@@ -85,17 +85,17 @@
             scope.row.createTime | formatDateTime
           }}</template>
         </el-table-column>
-<!--        <el-table-column label="是否启用" width="140" align="center">-->
-<!--          <template slot-scope="scope">-->
-<!--            <el-switch-->
-<!--              @change="handleStatusChange(scope.$index, scope.row)"-->
-<!--              :active-value="false"-->
-<!--              :inactive-value="true"-->
-<!--              v-model="scope.row.adminDelete"-->
-<!--            >-->
-<!--            </el-switch>-->
-<!--          </template>-->
-<!--        </el-table-column>-->
+        <el-table-column label="是否启用" width="140" align="center">
+          <template slot-scope="scope">
+            <el-switch
+              @change="handleStatusChange(scope.$index, scope.row)"
+              :active-value="false"
+              :inactive-value="true"
+              v-model="scope.row.adminDelete"
+            >
+            </el-switch>
+          </template>
+        </el-table-column>
         <!-- <el-table-column label="操作" width="180" align="center">
           <template slot-scope="scope">
             <el-button
