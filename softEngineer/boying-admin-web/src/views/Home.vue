@@ -349,7 +349,7 @@ export default {
       let start = new Date();
       start.setFullYear(2020);
       start.setMonth(12);
-      start.setDate(9);
+      start.setDate(13);
       const end = new Date();
       end.setTime(start.getTime() + 1000 * 60 * 60 * 24 * 7);
       this.orderCountDate = [start, end];
