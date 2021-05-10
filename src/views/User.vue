@@ -46,7 +46,7 @@
         size="mini"
         class="btn-add"
         @click="handleAdd()"
-        style="float:right"
+        style="float: right"
         >添加</el-button
       >
     </el-card>
@@ -114,7 +114,7 @@
           </template>
         </el-table-column>
         <el-table-column align="center">
-          <template slot="header" slot-scope="scope">
+          <template slot="header">
             <el-input
               v-model="search"
               size="mini"

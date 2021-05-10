@@ -23,8 +23,12 @@
         style="text-align: left"
       >
         <el-select v-model="ruleForm.categoryId" placeholder="请选择演出目录">
-          <el-option label="编号一" value="1"></el-option>
-          <el-option label="编号二" value="2"></el-option>
+          <el-option
+            v-for="category in categoryList"
+            :key="category.id"
+            :label="category.name"
+            :value="category.id"
+          ></el-option>
         </el-select>
       </el-form-item>
       <el-form-item label="演出具体信息" prop="details">
@@ -44,11 +48,22 @@
           :on-remove="handleRemove"
           style="text-align: left"
         >
-          <i class="el-icon-plus avatar-uploader-icon"></i>
+          <img v-if="ruleForm.poster" :src="ruleForm.poster" class="avatar" />
+          <i v-else class="el-icon-plus avatar-uploader-icon"></i>
           <p id="img-context">上传演出图片</p>
           <div class="el-upload__tip" slot="tip">
             只能上传jpg/jpeg/png文件，且不超过5MB
           </div>
+        </el-upload>
+        <el-upload
+          class="avatar-uploader"
+          action="https://jsonplaceholder.typicode.com/posts/"
+          :show-file-list="false"
+          :on-success="uploadHttp"
+          :before-upload="beforeAvatarUpload"
+        >
+          <img v-if="ruleForm.poster" :src="ruleForm.poster" class="avatar" />
+          <i v-else class="el-icon-plus avatar-uploader-icon"></i>
         </el-upload>
       </el-form-item>
 
@@ -70,12 +85,13 @@
         prop="weight"
         style="text-align: left"
       >
-        <el-radio-group v-model="ruleForm.weight">
+        <!-- <el-radio-group v-model="ruleForm.weight">
           <el-radio label="0"></el-radio>
           <el-radio label="1"></el-radio>
           <el-radio label="2"></el-radio>
           <el-radio label="3"></el-radio>
-        </el-radio-group>
+        </el-radio-group> -->
+        <el-input v-model="ruleForm.weight"></el-input>
       </el-form-item>
       <el-form-item label="演出城市" prop="city">
         <el-input v-model="ruleForm.city"></el-input>
@@ -132,6 +148,7 @@ export default {
   props: [""],
   data() {
     return {
+      categoryList: [], //目录列表
       loading: true,
       //上传图片相关
       images: [],
@@ -149,7 +166,7 @@ export default {
         details: "",
         minPrice: "",
         maxPrice: "",
-        weight: -1,
+        weight: 1,
         city: "",
         address: "",
         dayStart: "",
@@ -206,17 +223,24 @@ export default {
       },
     };
   },
-
-  components: {},
-
-  computed: {},
-
-  beforeMount() {},
-
-  mounted() {
-    setTimeout(() => {
-      this.loading = false;
-    }, 500);
+  async mounted() {
+    console.log("mounted");
+    try {
+      const res = await axios.get(`${api.API_URL}/category/listAll`);
+      console.log("mounted", res.data.data);
+      if (res.data.code == 200) {
+        // 等待不起作用
+        this.categoryList = res.data.data;
+        setTimeout(() => {
+          this.loading = false;
+        }, 500);
+        console.log(res.data.data);
+      } else {
+        this.$message.error("未知错误");
+      }
+    } catch {
+      this.$message.error("未知错误");
+    }
   },
 
   methods: {
@@ -233,17 +257,17 @@ export default {
             console.log("mounted");
             const res = await axios.post(
               `${api.API_URL}/show/create`,
-              this.ruleForm, 
+              this.ruleForm
             );
             console.log(res);
             if (res.data.code == 200) {
               this.$message.success("添加演出成功,即将跳转演出界面");
               // 等待不起作用
-               setTimeout(() => {
+              setTimeout(() => {
                 this.loading = false;
               }, 500);
               console.log(res.data.data);
-              this.$router.push('/show')
+              this.$router.push("/show");
             }
           } catch (err) {
             console.log(err);
@@ -329,4 +353,27 @@ export default {
   margin-left: 200px;
   width: 800px;
 }
+ .avatar-uploader .el-upload {
+    border: 1px dashed #d9d9d9;
+    border-radius: 6px;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+  }
+  .avatar-uploader .el-upload:hover {
+    border-color: #409EFF;
+  }
+  .avatar-uploader-icon {
+    font-size: 28px;
+    color: #8c939d;
+    width: 178px;
+    height: 178px;
+    line-height: 178px;
+    text-align: center;
+  }
+  .avatar {
+    width: 178px;
+    height: 178px;
+    display: block;
+  }
 </style>
