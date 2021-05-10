@@ -16,7 +16,7 @@
           v-loading="loading"
           style="width: 100%"
         >
-          <el-table-column label="演出编号" prop="showId"></el-table-column>
+          <el-table-column label="演出编号" prop="id"></el-table-column>
           <el-table-column label="演出名称" prop="name"></el-table-column>
           <el-table-column label="演出目录" prop="category"> </el-table-column>
           <el-table-column label="演出海报" align="center">
@@ -70,7 +70,7 @@
     <el-table-column label="演出海报" prop="poster"> </el-table-column>
     <el-table-column label="演出地址" prop="showAddress"> </el-table-column> -->
           <el-table-column align="center">
-            <template slot="header" slot-scope="scope">
+            <template slot="header" >
               <el-input
                 v-model="search"
                 size="mini"
@@ -159,11 +159,11 @@ export default {
         .catch((_) => {});
     },
     async handleDelete(index, row) {
-      console.log(row.showId);
+      console.log(row.id);
       try {
         console.log("mounted");
         const res = await axios.post(
-          `${api.API_URL}/show/delete/` + row.showId,
+          `${api.API_URL}/show/delete/` + row.id,
           {
             headers: {
               Authorization: "Bearer " + sessionStorage.getItem("token"),
@@ -174,16 +174,19 @@ export default {
         console.log(res);
         if (res.data.code == 200) {
           this.$message.success("删除成功");
+          this.tableData.splice(index, 1);
+          console.log(index, row);
+        } else {
+          this.$message.error("删除失败");
         }
       } catch (err) {
         console.log(err);
+        this.$message.error("删除失败");
       }
-      this.tableData.splice(index, 1);
-      console.log(index, row);
     },
     async reload() {
       try {
-        console.log("mounted");
+        console.log("reload");
         const res = await axios.get(`${api.API_URL}/show/list`, {
           headers: {
             Authorization: "Bearer " + sessionStorage.getItem("token"),
@@ -195,7 +198,7 @@ export default {
           for (var i = 0; i < this.tableData.length; i++) {
             this.getCategory(this.tableData[i].categoryId, i);
           }
-          // console.log(this.tableData)
+          console.log(this.tableData);
           setTimeout(() => {
             this.loading = false;
           }, 500);
@@ -206,7 +209,7 @@ export default {
     },
     async getCategory(categoryId, i) {
       try {
-        console.log("mounted");
+        console.log("getCategory");
         const res = await axios.get(
           `${api.API_URL}/category/list/` + categoryId,
           {

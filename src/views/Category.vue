@@ -8,12 +8,29 @@
         row-key="categoryId"
         :tree-props="{ children: 'children', hasChildren: 'hasChildren' }"
       >
-        <el-table-column prop="categoryId" label="演出目录编号" width="150">
+        <el-table-column prop="id" label="演出目录编号"> </el-table-column>
+        <el-table-column prop="name" label="目录名称"> </el-table-column>
+        <el-table-column prop="icon" label="目录图标">
+          <template slot-scope="scope">
+            <el-image
+              style="width: 100px; height: 100px"
+              :src="scope.row.icon"
+              :preview-src-list="[scope.row.icon]"
+            ></el-image>
+          </template>
         </el-table-column>
-        <el-table-column prop="name" label="一级目录" width="300">
-        </el-table-column>
-        <!-- <el-table-column prop="setting" label="设置" width="200">
-      </el-table-column> -->
+        <el-table-column prop="description" label="目录描述"> </el-table-column>
+        <el-table-column prop="weight" label="目录权重"> </el-table-column>
+        <el-table-column prop="adminDelete" label="是否启用">
+          <template slot-scope="scope">
+            <el-switch
+              @change="handleStatusChange(scope.$index, scope.row)"
+              :active-value="false"
+              :inactive-value="true"
+              v-model="scope.row.adminDelete"
+            >
+            </el-switch></template
+        ></el-table-column>
         <el-table-column prop="address" label="操作">
           <template slot-scope="scope">
             <el-button
@@ -23,14 +40,7 @@
             >
               编辑
             </el-button>
-            <el-button
-              size="mini"
-              type="danger"
-              @click="handleDelete(scope.$index, scope.row)"
-              style="margin-left: 30px"
-              >删除
-            </el-button></template
-          ></el-table-column
+          </template></el-table-column
         >
       </el-table>
       <el-button type="primary" @click="handleAdd()">添加目录</el-button>
@@ -50,15 +60,28 @@
         width="40%"
       >
         <el-form :model="categorySelected" label-width="150px" size="small">
-          <el-form-item label="父目录id：">
-            <el-input
-              v-model="categorySelected.parentId"
-              style="width: 250px"
-            ></el-input>
-          </el-form-item>
           <el-form-item label="目录名称:">
             <el-input
               v-model="categorySelected.name"
+              style="width: 250px"
+            ></el-input>
+          </el-form-item>
+          <el-form-item label="目录图标:">
+            <el-image
+              style="width: 100px; height: 100px"
+              :src="categorySelected.icon"
+              :preview-src-list="[categorySelected.icon]"
+            ></el-image>
+          </el-form-item>
+          <el-form-item label="目录描述:">
+            <el-input
+              v-model="categorySelected.description"
+              style="width: 250px"
+            ></el-input>
+          </el-form-item>
+          <el-form-item label="目录权重:">
+            <el-input
+              v-model="categorySelected.weight"
               style="width: 250px"
             ></el-input>
           </el-form-item>
@@ -122,11 +145,11 @@ export default {
       this.isEdit = true;
       this.categorySelected = Object.assign({}, row);
     },
-    async deleteCategory(category) {
-      this.loading = true;
+    async handleStatusChange(index, row) {
+      console.log("handleStatusChange", index, row, row.id);
       try {
         const res = await axios.post(
-          `${api.API_URL}/category/delete` + "/" + category.categoryId,
+          `${api.API_URL}/category/admin_delete/` + row.id,
           {
             headers: {
               Authorization: "Bearer " + sessionStorage.getItem("token"),
@@ -135,39 +158,17 @@ export default {
         );
         console.log(res);
         if (res.data.code == 200) {
-          this.$message.success("删除成功");
+          this.$message.success("操作成功");
           setTimeout(() => {
             this.loading = false;
           }, 500);
         } else {
-          this.$message.error("未知错误删除失败");
+          this.$message.error("未知错误");
         }
       } catch (err) {
+        this.$message.error("未知错误");
         console.log(err);
       }
-    },
-    handleDelete(index, row) {
-      this.$confirm("是否要删除该目录?", "提示", {
-        confirmButtonText: "确定",
-        cancelButtonText: "取消",
-        type: "warning",
-      })
-        .then(async () => {
-          console.log(row)
-          if (row.children!=undefined && row.children != [] && row.children!=null) {
-            for (var i of row.children) {
-              await this.deleteCategory(i);
-            }
-          }
-          await this.deleteCategory(row);
-          await this.reload();
-        })
-        .catch(() => {
-          this.$message.info("取消删除");
-          console.log("catch");
-          console.log(row.children)
-          // this.getList();
-        });
     },
     async updateCategory(category) {
       this.loading = true;
@@ -239,42 +240,12 @@ export default {
         this.$message.error("添加失败");
       }
     },
-    // cancle() {
-    //   this.add = false;
-    // },
 
-    async getChildren(category) {
-      this.loading = true;
-      try {
-        console.log("mounted");
-        const res = await axios.get(
-          `${api.API_URL}/category/getChildren` + "/" + category.categoryId,
-          {
-            headers: {
-              Authorization: "Bearer " + sessionStorage.getItem("token"),
-            },
-          }
-        );
-        console.log(res);
-        if (res.data.code == 200) {
-          this.$set(category, "children", res.data.data);
-          // category.children = res.data.data;
-          setTimeout(() => {
-            this.loading = false;
-          }, 500);
-          console.log(category.children);
-        } else {
-          this.$set(category, "children", []);
-        }
-      } catch (err) {
-        console.log(err);
-      }
-    },
     async reload() {
       this.loading = true;
       try {
-        console.log("mounted");
-        const res = await axios.get(`${api.API_URL}/category/listParent`, {
+        console.log("reload");
+        const res = await axios.get(`${api.API_URL}/category/listAll`, {
           headers: {
             Authorization: "Bearer " + sessionStorage.getItem("token"),
           },
@@ -282,9 +253,6 @@ export default {
         console.log(res);
         if (res.data.code == 200) {
           this.tableData = res.data.data;
-          for (var i = 0; i < this.tableData.length; i++) {
-            this.getChildren(this.tableData[i]);
-          }
           setTimeout(() => {
             this.loading = false;
           }, 500);
