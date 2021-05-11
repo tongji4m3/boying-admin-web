@@ -65,7 +65,7 @@
               <el-button
                 size="mini"
                 style="margin-left: 0"
-                @click="handleClickSeat(scope.row)"
+                @click="handleClickSeat(scope.row.id)"
                 >座次</el-button
               >
             </template>
@@ -102,15 +102,66 @@
       </div>
     </el-card>
 
-    <el-card class="seatCard">
+    <el-dialog
+      title="座次信息"
+      :visible.sync="handleClickSeatVisiable"
+      width="50%"
+      :before-close="handleClose"
+    >
       <el-table :data="seatTable" style="width: 100%">
-        <el-table-column prop="name" label="名称" width="180">
-        </el-table-column>
-        <el-table-column prop="price" label="价格" width="180">
-        </el-table-column>
+        <el-table-column prop="name" label="名称"> </el-table-column>
+        <el-table-column prop="price" label="价格"> </el-table-column>
         <el-table-column prop="capacity" label="容量"> </el-table-column>
+        <el-table-column label="操作" align="center">
+          <template slot-scope="scope">
+            <el-button
+              type="text"
+              size="mini"
+              @click="editSeat(scope.$index, scope.row)"
+              >编辑</el-button
+            >
+            <!-- <el-button
+              size="mini"
+              type="text"
+              @click="handleDelete(scope.$index, scope.row)"
+              >删除
+            </el-button> -->
+          </template>
+        </el-table-column>
       </el-table>
-    </el-card>
+
+      <el-button type="common" @click="addSeat()">添加</el-button>
+    </el-dialog>
+
+    <el-dialog
+      :title="isEdit ? '编辑座次' : '添加座次'"
+      :visible.sync="addSeatVisiable"
+      width="50%"
+      :before-close="handleClose"
+    >
+      <el-form :inline="true" :model="addSeatTable" class="demo-form-inline">
+        <el-form-item label="名称">
+          <el-input v-model="addSeatTable.name" placeholder="名称"></el-input>
+        </el-form-item>
+        <el-form-item label="价格">
+          <el-input v-model="addSeatTable.price" placeholder="价格"></el-input>
+        </el-form-item>
+        <el-form-item label="容量">
+          <el-input
+            v-model="addSeatTable.capacity"
+            placeholder="容量"
+          ></el-input>
+        </el-form-item>
+        <el-form-item>
+          <el-button type="primary" v-if="isEdit" @click="updateSeatSubmit"
+            >修改</el-button
+          >
+          <el-button v-else type="primary" @click="addSeatSubmit"
+            >添加</el-button
+          >
+        </el-form-item>
+      </el-form>
+    </el-dialog>
   </div>
 </template>
 
@@ -146,7 +197,11 @@ export default {
   },
   data() {
     return {
+      isEdit: false,
+      handleClickSeatVisiable: false, //座次详情表格
+      addSeatVisiable: false, //添加座次表格
       seatTable: [],
+      addSeatTable: {},
       tableData: [],
       //   dialogVisible: false, //对话框初始不可见
       search: "",
@@ -169,8 +224,94 @@ export default {
       });
     },
     //点击座次按钮
-    handleClickSeat(info) {
-      console.log("handleClickSeat", info);
+    async handleClickSeat(id) {
+      try {
+        const res = await axios.get(`${api.API_URL}/seat/getShowSeat/` + id, {
+          headers: {
+            Authorization: "Bearer " + sessionStorage.getItem("token"),
+          },
+        });
+        console.log("/seat/list/", res.data);
+        if (res.data.code == 200) {
+          this.seatTable = res.data.data;
+          console.log(this.seatTable);
+          this.handleClickSeatVisiable = true;
+        } else {
+          this.$message.error("查看座次失败");
+        }
+      } catch (err) {
+        console.log(err);
+        this.$message.error("查看座次失败");
+      }
+    },
+    //添加座次
+    addSeat() {
+      this.addSeatVisiable = true;
+      this.isEdit = false;
+      console.log("this.seatTable[0].showId", this.seatTable[0].showId);
+      this.addSeatTable = {};
+      this.addSeatTable.showId = this.seatTable[0].showId;
+    },
+    //编辑座次
+    editSeat(index, row) {
+      this.addSeatVisiable = true;
+      this.isEdit = true;
+      console.log("index,row", index, row);
+      this.addSeatTable = row;
+    },
+    //添加座次提交
+    async addSeatSubmit() {
+      console.log("addSeatSubmit", this.addSeatTable);
+      try {
+        const res = await axios.post(
+          `${api.API_URL}/seat/create`,
+          this.addSeatTable,
+          {
+            headers: {
+              Authorization: "Bearer " + sessionStorage.getItem("token"),
+            },
+          }
+        );
+        console.log("/seat/create", res.data);
+        if (res.data.code == 200) {
+          console.log(this.seatTable);
+          this.addSeatVisiable = false;
+          this.$message.success("添加成功");
+          this.handleClickSeat(this.seatTable[0].showId);
+        } else {
+          this.$message.error("添加失败");
+        }
+      } catch (err) {
+        console.log(err);
+        this.$message.error("添加失败");
+      }
+    },
+    //修改座次提交
+    async updateSeatSubmit() {
+      console.log("updateSeatSubmit",this.addSeatTable);
+            try {
+        const res = await axios.post(
+          `${api.API_URL}/seat/update/`+this.addSeatTable.id,
+          this.addSeatTable,
+          {
+            headers: {
+              Authorization: "Bearer " + sessionStorage.getItem("token"),
+            },
+          }
+        );
+        console.log("/seat/update", res.data);
+        if (res.data.code == 200) {
+          console.log(this.seatTable);
+          this.addSeatVisiable = false;
+          this.$message.success("修改成功");
+          this.handleClickSeat(this.seatTable[0].showId);
+        } else {
+          this.$message.error("修改失败");
+        }
+      } catch (err) {
+        console.log(err);
+        this.$message.error("修改失败");
+      }
     },
     dialogVisibles(v) {
       this.dialogVisible = v;

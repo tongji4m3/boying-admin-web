@@ -64,7 +64,6 @@
         <el-table-column label="用户名" align="center">
           <template slot-scope="scope">{{ scope.row.username }}</template>
         </el-table-column>
-        </el-table-column>
         <el-table-column label="真实姓名" align="center">
           <template slot-scope="scope">{{ scope.row.username }}</template>
         </el-table-column>
@@ -146,8 +145,8 @@
           <el-input v-model="user.phone" style="width: 250px"></el-input>
         </el-form-item> -->
         <!-- <el-form-item label="真实姓名：">
-          <el-input v-model="user.realName" style="width: 250px"></el-input> -->
-        </el-form-item>
+          <el-input v-model="user.realName" style="width: 250px"></el-input>
+        </el-form-item> -->
         <el-form-item label="邮箱：">
           <el-input v-model="user.email" style="width: 250px"></el-input>
         </el-form-item>
