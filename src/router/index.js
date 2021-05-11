@@ -8,6 +8,8 @@ import Category from "@/views/Category.vue"
 import AddShow from "@/views/AddShow.vue"
 import Order from "@/views/Order.vue"
 import User from "@/views/User.vue"
+import UpdateShow from "@/views/UpdateShow.vue"
+import Role from "@/views/Role.vue"
 
 Vue.use(VueRouter)
 
@@ -45,17 +47,27 @@ const routes = [
             {
                 path: '/addshow',
                 name: "添加演出",
-                component:AddShow
+                component: AddShow
             },
             {
                 path: '/order',
                 name: '订单列表',
-                component:Order
+                component: Order
             },
             {
                 path: '/user',
                 name: '用户列表',
-                component:User
+                component: User
+            }, {
+                path: '/UpdateShow',
+                name: '修改演出',
+                component: UpdateShow
+
+            }, {
+                path: '/Role',
+                name: '角色管理',
+                component: Role
+
             }
         ]
     },

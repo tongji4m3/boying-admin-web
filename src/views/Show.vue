@@ -75,7 +75,7 @@
     </el-table-column>
     <el-table-column label="演出海报" prop="poster"> </el-table-column>
     <el-table-column label="演出地址" prop="showAddress"> </el-table-column> -->
-          <el-table-column align="center">
+          <!-- <el-table-column align="center">
             <template slot="header">
               <el-input
                 v-model="search"
@@ -83,9 +83,9 @@
                 placeholder="按演出名称关键字搜索"
               />
             </template>
-          </el-table-column>
+          </el-table-column> -->
         </el-table>
-        <el-dialog
+        <!-- <el-dialog
           title="提示"
           width="30%"
           :visible.sync="dialogVisible"
@@ -98,7 +98,7 @@
               >确 定</el-button
             >
           </span>
-        </el-dialog>
+        </el-dialog> -->
       </div>
     </el-card>
 
@@ -148,7 +148,7 @@ export default {
     return {
       seatTable: [],
       tableData: [],
-      dialogVisible: false, //对话框初始不可见
+      //   dialogVisible: false, //对话框初始不可见
       search: "",
       key: 1, // table key
       formThead: fields, // 默认表头 Default header
@@ -159,10 +159,14 @@ export default {
   methods: {
     //点击查看 按钮  的事件
     handleClick(info) {
-      console.log(info);
-      this.dialogVisible = true;
-      this.dialogInfo = info;
-      console.log(this.dialogVisible);
+      console.log("info", info);
+      //   this.dialogVisible = true;
+      //   this.dialogInfo = info;
+      //   console.log(this.dialogVisible);
+      this.$router.push({
+        path: "/UpdateShow",
+        query: { showId: info.id },
+      });
     },
     //点击座次按钮
     handleClickSeat(info) {

@@ -119,9 +119,8 @@
       </el-form-item>
       <el-form-item>
         <el-button type="primary" @click="submitForm('ruleForm')"
-          >立即创建</el-button
+          >修改</el-button
         >
-        <el-button @click="resetForm('ruleForm')">重置</el-button>
       </el-form-item>
     </el-form>
   </el-card>
@@ -138,6 +137,7 @@ export default {
   props: [""],
   data() {
     return {
+      showId: "",
       categoryList: [], //目录列表
       loading: true,
       //上传图片相关
@@ -214,7 +214,8 @@ export default {
     };
   },
   async mounted() {
-    console.log("mounted");
+    this.showId = this.$route.query.showId;
+    console.log("mounted,this.showId", this.showId);
     try {
       const res = await axios.get(`${api.API_URL}/category/listAll`);
       console.log("mounted", res.data.data);
@@ -225,6 +226,21 @@ export default {
           this.loading = false;
         }, 500);
         console.log(res.data.data);
+      } else {
+        this.$message.error("未知错误");
+      }
+    } catch {
+      this.$message.error("未知错误");
+    }
+    try {
+      const res = await axios.get(`${api.API_URL}/show/list/` + this.showId);
+      console.log("mounted222", res.data.data);
+      if (res.data.code == 200) {
+        // 等待不起作用
+        this.ruleForm = res.data.data;
+        setTimeout(() => {
+          this.loading = false;
+        }, 500);
       } else {
         this.$message.error("未知错误");
       }
@@ -246,28 +262,23 @@ export default {
             console.log("this.ruleForm", this.ruleForm);
             console.log("mounted");
             const res = await axios.post(
-              `${api.API_URL}/show/create`,
+              `${api.API_URL}/show/update/` + this.showId,
               this.ruleForm
             );
             console.log(res);
             if (res.data.code == 200) {
-              this.$message.success("添加演出成功,即将跳转演出界面");
+              this.$message.success("修改成功");
               // 等待不起作用
               setTimeout(() => {
                 this.loading = false;
               }, 500);
-              console.log(res.data.data);
-              this.$router.push("/show");
             }
           } catch (err) {
             console.log(err);
-            this.$message.error("添加失败，数据填写错误");
+            this.$message.error("修改失败");
           }
         }
       });
-    },
-    resetForm(formName) {
-      this.$refs[formName].resetFields();
     },
 
     /**
