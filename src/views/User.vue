@@ -52,51 +52,42 @@
     </el-card>
     <div class="table-container">
       <el-table
-        ref="adminTable"
+        :data="list"
         :key="key"
-        :data="
-          list.filter(
-            (data) =>
-              !search ||
-              data.username.toLowerCase().includes(search.toLowerCase())
-          )
-        "
         style="width: 100%"
         v-loading="listLoading"
         border
       >
-        <el-table-column label="用户id" width="100" align="center">
-          <template slot-scope="scope">{{ scope.row.userId }}</template>
+        <el-table-column label="用户id" align="center">
+          <template slot-scope="scope">{{ scope.row.id }}</template>
         </el-table-column>
         <el-table-column label="用户名" align="center">
           <template slot-scope="scope">{{ scope.row.username }}</template>
         </el-table-column>
-        <el-table-column label="电话号码" align="center">
-          <template slot-scope="scope">{{ scope.row.phone }}</template>
         </el-table-column>
         <el-table-column label="真实姓名" align="center">
-          <template slot-scope="scope">{{ scope.row.realName }}</template>
+          <template slot-scope="scope">{{ scope.row.username }}</template>
         </el-table-column>
-        <el-table-column label="邮箱" width="160" align="center">
+        <el-table-column label="邮箱" align="center">
           <template slot-scope="scope">{{ scope.row.email }}</template>
         </el-table-column>
-        <el-table-column label="账号创建时间" width="160" align="center">
+        <el-table-column label="账号创建时间" align="center">
           <template slot-scope="scope">{{
             scope.row.createTime | formatDateTime
           }}</template>
         </el-table-column>
-        <el-table-column label="是否启用" width="140" align="center">
+        <el-table-column label="是否启用"align="center">
           <template slot-scope="scope">
             <el-switch
               @change="handleStatusChange(scope.$index, scope.row)"
               :active-value="true"
               :inactive-value="false"
-              v-model="scope.row.userstatus"
+              v-model="scope.row.status"
             >
             </el-switch>
           </template>
         </el-table-column>
-        <el-table-column label="操作" width="180" align="center">
+        <el-table-column label="操作"  align="center">
           <template slot-scope="scope">
             <!-- <el-button
               size="mini"
@@ -105,15 +96,15 @@
             >
               编辑
             </el-button> -->
-            <el-button
+            <!-- <el-button
               size="mini"
               type="text"
               @click="handleDelete(scope.$index, scope.row)"
               >删除
-            </el-button>
+            </el-button> -->
           </template>
         </el-table-column>
-        <el-table-column align="center">
+        <!-- <el-table-column align="center">
           <template slot="header">
             <el-input
               v-model="search"
@@ -121,7 +112,7 @@
               placeholder="按用户名关键字搜索"
             />
           </template>
-        </el-table-column>
+        </el-table-column> -->
       </el-table>
     </div>
     <!-- <div class="pagination-container">
@@ -146,11 +137,11 @@
         <el-form-item label="用户名：">
           <el-input v-model="user.username" style="width: 250px"></el-input>
         </el-form-item>
-        <el-form-item label="电话号码">
+        <!-- <el-form-item label="电话号码">
           <el-input v-model="user.phone" style="width: 250px"></el-input>
-        </el-form-item>
-        <el-form-item label="真实姓名：">
-          <el-input v-model="user.realName" style="width: 250px"></el-input>
+        </el-form-item> -->
+        <!-- <el-form-item label="真实姓名：">
+          <el-input v-model="user.realName" style="width: 250px"></el-input> -->
         </el-form-item>
         <el-form-item label="邮箱：">
           <el-input v-model="user.email" style="width: 250px"></el-input>
@@ -162,12 +153,12 @@
             style="width: 250px"
           ></el-input>
         </el-form-item>
-        <el-form-item label="是否启用：">
+        <!-- <el-form-item label="是否启用：">
           <el-radio-group v-model="user.userstatus">
             <el-radio :label="true">是</el-radio>
             <el-radio :label="false">否</el-radio>
           </el-radio-group>
-        </el-form-item>
+        </el-form-item> -->
       </el-form>
       <span slot="footer" class="dialog-footer">
         <el-button @click="dialogVisible = false" size="small">取 消</el-button>
@@ -279,11 +270,20 @@ export default {
     async addUser(user) {
       user.createTime = new Date();
       try {
-        const res = await axios.post(`${api.API_URL}/user/add`, user, {
-          headers: {
-            Authorization: "Bearer " + sessionStorage.getItem("token"),
+        const res = await axios.post(
+          `${api.API_URL}/AdminUser/register`,
+          {
+            email: user.email,
+            icon: "",
+            password: user.password,
+            username: user.username,
           },
-        });
+          {
+            headers: {
+              Authorization: "Bearer " + sessionStorage.getItem("token"),
+            },
+          }
+        );
         console.log(res);
         if (res.data.code == 200) {
           this.$message.success("添加成功");
@@ -302,15 +302,22 @@ export default {
 
     async updateStatus(row) {
       try {
-        const res = await axios.post(
-          `${api.API_URL}/user/ChangeUserStatus/` + row.userId,
-          {
-            headers: {
-              Authorization: "Bearer " + sessionStorage.getItem("token"),
-            },
-          }
-        );
-        console.log(res);
+        var url = "";
+        if (row.status) {
+          url =
+            `${api.API_URL}/AdminUser/updateStatus/` + row.id + "?status=false";
+        } else {
+          url =
+            `${api.API_URL}/AdminUser/updateStatus/` + row.id + "?status=true";
+        }
+        console.log("row", row, url);
+
+        const res = await axios.post(url, {
+          headers: {
+            Authorization: "Bearer " + sessionStorage.getItem("token"),
+          },
+        });
+        console.log("updateStatus", res);
         if (res.data.code == 200) {
           this.$message.success("修改成功");
         }
@@ -340,7 +347,7 @@ export default {
     async deleteUser(row) {
       try {
         const res = await axios.post(
-          `${api.API_URL}/user/delete/` + row.userId,
+          `${api.API_URL}/AdminUser/delete/` + row.userId,
           {
             headers: {
               Authorization: "Bearer " + sessionStorage.getItem("token"),
@@ -380,11 +387,15 @@ export default {
     },
     async updateUser(id, user) {
       try {
-        const res = await axios.post(`${api.API_URL}/user/update/` + id, user, {
-          headers: {
-            Authorization: "Bearer " + sessionStorage.getItem("token"),
-          },
-        });
+        const res = await axios.post(
+          `${api.API_URL}/AdminUser/update/` + id,
+          user,
+          {
+            headers: {
+              Authorization: "Bearer " + sessionStorage.getItem("token"),
+            },
+          }
+        );
         console.log(res);
         if (res.data.code == 200) {
           this.$message.success("更新信息成功");
@@ -437,18 +448,19 @@ export default {
     async getList() {
       this.listLoading = true;
       try {
-        const res = await axios.get(`${api.API_URL}/user/list`, {
+        const res = await axios.post(`${api.API_URL}/AdminUser/list`, {
           headers: {
             Authorization: "Bearer " + sessionStorage.getItem("token"),
           },
         });
-        console.log(res);
+        console.log("/AdminUser/list", res);
         if (res.data.message == "不存在任何用户") {
           this.list = null;
         }
         if (res.data.code == 200) {
-          this.list = res.data.data;
+          this.list = res.data.data.list;
         }
+        console.log("this.list", this.list);
         setTimeout(() => {
           this.listLoading = false;
         }, 500);

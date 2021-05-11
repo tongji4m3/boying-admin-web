@@ -55,16 +55,6 @@
             只能上传jpg/jpeg/png文件，且不超过5MB
           </div>
         </el-upload>
-        <el-upload
-          class="avatar-uploader"
-          action="https://jsonplaceholder.typicode.com/posts/"
-          :show-file-list="false"
-          :on-success="uploadHttp"
-          :before-upload="beforeAvatarUpload"
-        >
-          <img v-if="ruleForm.poster" :src="ruleForm.poster" class="avatar" />
-          <i v-else class="el-icon-plus avatar-uploader-icon"></i>
-        </el-upload>
       </el-form-item>
 
       <el-form-item label="演出最低价格" prop="minPrice" style="width: 50%">
@@ -253,7 +243,7 @@ export default {
           return false;
         } else {
           try {
-            console.log(this.ruleForm.dayStart);
+            console.log("this.ruleForm", this.ruleForm);
             console.log("mounted");
             const res = await axios.post(
               `${api.API_URL}/show/create`,
@@ -353,27 +343,8 @@ export default {
   margin-left: 200px;
   width: 800px;
 }
- .avatar-uploader .el-upload {
-    border: 1px dashed #d9d9d9;
-    border-radius: 6px;
-    cursor: pointer;
-    position: relative;
-    overflow: hidden;
-  }
-  .avatar-uploader .el-upload:hover {
-    border-color: #409EFF;
-  }
-  .avatar-uploader-icon {
-    font-size: 28px;
-    color: #8c939d;
-    width: 178px;
-    height: 178px;
-    line-height: 178px;
-    text-align: center;
-  }
-  .avatar {
-    width: 178px;
-    height: 178px;
-    display: block;
-  }
+.avatar {
+  width: 100%;
+  height: 100%;
+}
 </style>

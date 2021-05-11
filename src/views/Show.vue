@@ -39,12 +39,12 @@
           <el-table-column label="演出地址" prop="address"></el-table-column>
           <el-table-column label="演出开始时间" width="160" align="center">
             <template slot-scope="scope">{{
-              scope.row.dayStart | formatDateTime
+              scope.row.startTime | formatDateTime
             }}</template>
           </el-table-column>
           <el-table-column label="演出结束时间" width="160" align="center">
             <template slot-scope="scope">{{
-              scope.row.dayEnd | formatDateTime
+              scope.row.endTime | formatDateTime
             }}</template>
           </el-table-column>
 
@@ -62,6 +62,12 @@
                 @click="handleClick(scope.row)"
                 >查看</el-button
               >
+              <el-button
+                size="mini"
+                style="margin-left: 0"
+                @click="handleClickSeat(scope.row)"
+                >座次</el-button
+              >
             </template>
           </el-table-column>
           <!--  <el-table-column label="演出名称" prop="name"> </el-table-column>
@@ -70,7 +76,7 @@
     <el-table-column label="演出海报" prop="poster"> </el-table-column>
     <el-table-column label="演出地址" prop="showAddress"> </el-table-column> -->
           <el-table-column align="center">
-            <template slot="header" >
+            <template slot="header">
               <el-input
                 v-model="search"
                 size="mini"
@@ -94,6 +100,16 @@
           </span>
         </el-dialog>
       </div>
+    </el-card>
+
+    <el-card class="seatCard">
+      <el-table :data="seatTable" style="width: 100%">
+        <el-table-column prop="name" label="名称" width="180">
+        </el-table-column>
+        <el-table-column prop="price" label="价格" width="180">
+        </el-table-column>
+        <el-table-column prop="capacity" label="容量"> </el-table-column>
+      </el-table>
     </el-card>
   </div>
 </template>
@@ -130,6 +146,7 @@ export default {
   },
   data() {
     return {
+      seatTable: [],
       tableData: [],
       dialogVisible: false, //对话框初始不可见
       search: "",
@@ -147,6 +164,10 @@ export default {
       this.dialogInfo = info;
       console.log(this.dialogVisible);
     },
+    //点击座次按钮
+    handleClickSeat(info) {
+      console.log("handleClickSeat", info);
+    },
     dialogVisibles(v) {
       this.dialogVisible = v;
       console.log(v);
@@ -162,14 +183,11 @@ export default {
       console.log(row.id);
       try {
         console.log("mounted");
-        const res = await axios.post(
-          `${api.API_URL}/show/delete/` + row.id,
-          {
-            headers: {
-              Authorization: "Bearer " + sessionStorage.getItem("token"),
-            },
-          }
-        );
+        const res = await axios.post(`${api.API_URL}/show/delete/` + row.id, {
+          headers: {
+            Authorization: "Bearer " + sessionStorage.getItem("token"),
+          },
+        });
         console.log("test");
         console.log(res);
         if (res.data.code == 200) {
@@ -209,7 +227,6 @@ export default {
     },
     async getCategory(categoryId, i) {
       try {
-        console.log("getCategory");
         const res = await axios.get(
           `${api.API_URL}/category/list/` + categoryId,
           {
@@ -218,7 +235,7 @@ export default {
             },
           }
         );
-        console.log(res);
+        console.log("getCategory", res);
         if (res.data.code == 200) {
           this.tableData[i].category = res.data.data.name;
           console.log(this.tableData[i].category);
