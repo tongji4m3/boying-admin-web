@@ -10,7 +10,7 @@ import Order from "@/views/Order.vue"
 import User from "@/views/User.vue"
 import UpdateShow from "@/views/UpdateShow.vue"
 import Role from "@/views/Role.vue"
-
+import Resource from "@/views/Resource.vue"
 Vue.use(VueRouter)
 
 const routes = [
@@ -67,6 +67,12 @@ const routes = [
                 path: '/Role',
                 name: '角色管理',
                 component: Role
+
+            },
+            {
+                path: '/Resource',
+                name: '资源管理',
+                component: Resource
 
             }
         ]
