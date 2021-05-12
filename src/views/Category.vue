@@ -1,5 +1,5 @@
 <template>
-  <div class="showView" >
+  <div class="showView">
     <div v-loading="loading" style="padding: 50px">
       <el-card>
         <el-table
@@ -69,7 +69,7 @@
               ></el-input>
             </el-form-item>
             <el-form-item label="目录图标:">
-              <el-upload
+              <!-- <el-upload
                 class="avatar-uploader"
                 action
                 :drag="true"
@@ -90,6 +90,20 @@
                 <div class="el-upload__tip" slot="tip">
                   只能上传jpg/jpeg/png文件，且不超过5MB
                 </div>
+              </el-upload> -->
+              <el-upload
+                class="avatar-uploader"
+                action=""
+                :show-file-list="false"
+                :http-request="uploadHttp"
+                :before-upload="beforeAvatarUpload"
+              >
+                <img
+                  v-if="categorySelected.icon"
+                  :src="categorySelected.icon"
+                  class="avatar"
+                />
+                <i v-else class="el-icon-plus avatar-uploader-icon"></i>
               </el-upload>
               <!-- <el-image
               style="width: 100px; height: 100px"
@@ -365,4 +379,27 @@ export default {
 </script>
 
 <style scoped>
+.avatar-uploader .el-upload {
+  border: 1px dashed #d9d9d9;
+  border-radius: 6px;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+}
+.avatar-uploader .el-upload:hover {
+  border-color: #409eff;
+}
+.avatar-uploader-icon {
+  font-size: 28px;
+  color: #8c939d;
+  width: 178px;
+  height: 178px;
+  line-height: 178px;
+  text-align: center;
+}
+.avatar {
+  width: 178px;
+  height: 178px;
+  display: block;
+}
 </style>
