@@ -49,8 +49,18 @@
         </el-table-column>
         <el-table-column label="操作" align="center">
           <template slot-scope="scope">
-            <el-button type="text" size="mini">分配菜单</el-button>
-            <el-button type="text" size="mini">分配资源</el-button>
+            <el-button
+              type="text"
+              size="mini"
+              @click="allocMenu(scope.$index, scope.row)"
+              >分配菜单</el-button
+            >
+            <el-button
+              type="text"
+              size="mini"
+              @click="allocResource(scope.$index, scope.row)"
+              >分配资源</el-button
+            >
             <el-button
               type="text"
               size="mini"
@@ -68,7 +78,7 @@
       :visible.sync="dialogVisible"
       width="40%"
     >
-      <el-form :model="user" ref="adminForm" label-width="150px" size="small">
+      <el-form :model="allocMenuForm" label-width="150px" size="small">
         <el-form-item label="角色名">
           <el-input v-model="user.name" style="width: 250px"></el-input>
         </el-form-item>
@@ -87,39 +97,73 @@
       </el-form>
       <span slot="footer" class="dialog-footer">
         <el-button @click="dialogVisible = false" size="small">取 消</el-button>
-        <el-button type="primary" @click="handleDialogConfirm()" size="small"
+        <el-button @click="handleDialogConfirm()" type="primary" size="small"
           >确 定</el-button
         >
       </span>
     </el-dialog>
-    <!-- <el-dialog title="分配角色" :visible.sync="allocDialogVisible" width="30%">
-      <el-select
-        v-model="allocRoleIds"
-        multiple
-        placeholder="请选择"
-        size="small"
-        style="width: 80%"
-      >
-        <el-option
-          v-for="item in allRoleList"
-          :key="item.id"
-          :label="item.name"
-          :value="item.id"
+
+    <el-dialog
+      :title="'分配菜单'"
+      :visible.sync="allocMenuDialogVisible"
+      width="40%"
+    >
+      <div v-for="(value, key) in adminMenuTreeList" :key="key">
+        {{ key }}
+        <div style="margin: 15px 0"></div>
+        <el-checkbox-group
+          v-model="allocMenuForm"
+          @change="handleCheckedMenuChange"
         >
-        </el-option>
-      </el-select>
+          <el-checkbox
+            v-for="adminMenu in value"
+            :label="adminMenu.id"
+            :key="adminMenu.id"
+            >{{ adminMenu["title"] }}</el-checkbox
+          >
+        </el-checkbox-group>
+      </div>
+
       <span slot="footer" class="dialog-footer">
-        <el-button @click="allocDialogVisible = false" size="small"
+        <el-button @click="allocMenuDialogVisible = false" size="small"
           >取 消</el-button
         >
-        <el-button
-          type="primary"
-          @click="handleAllocDialogConfirm()"
-          size="small"
+        <el-button type="primary" @click="allocMenuconfirm()" size="small"
           >确 定</el-button
         >
       </span>
-    </el-dialog> -->
+    </el-dialog>
+
+    <el-dialog
+      :title="'分配资源'"
+      :visible.sync="allocResourceDialogVisible"
+      width="40%"
+    >
+      <div v-for="(value, key) in adminResourceTreeList" :key="key">
+        {{ key }}
+        <div style="margin: 15px 0"></div>
+        <el-checkbox-group
+          v-model="allocResourceForm"
+          @change="handleCheckedResourceChange"
+        >
+          <el-checkbox
+            v-for="adminResource in value"
+            :label="adminResource.id"
+            :key="adminResource.id"
+            >{{ adminResource["name"] }}</el-checkbox
+          >
+        </el-checkbox-group>
+      </div>
+
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="allocResourceDialogVisible = false" size="small"
+          >取 消</el-button
+        >
+        <el-button type="primary" @click="allocResourceconfirm()" size="small"
+          >确 定</el-button
+        >
+      </span>
+    </el-dialog>
   </div>
 </template>
 <script>
@@ -144,6 +188,13 @@ export default {
   name: "adminList",
   data() {
     return {
+      roleId: 0,
+      allocResourceDialogVisible: false,
+      adminResourceTreeList: [],
+      allocResourceForm: [],
+      allocMenuForm: [],
+      allocMenuDialogVisible: false,
+      adminMenuTreeList: [],
       key: 1, // table key
       search: "",
       listQuery: Object.assign({}, defaultListQuery),
@@ -161,6 +212,8 @@ export default {
   },
   created() {
     this.getList();
+    this.getAdminMenuTreeList();
+    this.getAdminResourceTreeList();
     // this.getAllRoleList();
   },
   filters: {
@@ -207,13 +260,12 @@ export default {
             },
           }
         );
-        console.log(res);
+        // console.log(res);
         if (res.data.code == 200) {
           this.$message.success("添加成功");
           this.getList();
         }
       } catch (err) {
-        console.log(err);
         this.$message.error("添加失败");
       }
     },
@@ -228,28 +280,22 @@ export default {
         //注意这里的row的status跟实际的status是相反的
         var url = "";
         if (row.status) {
-          console.log("row.status", false);
           url =
             `${api.API_URL}/AdminRole/updateStatus/` + row.id + "?status=true";
         } else {
-          console.log("row.status", true);
-
           url =
             `${api.API_URL}/AdminRole/updateStatus/` + row.id + "?status=false";
         }
-        console.log("row", row, url);
 
         const res = await axios.post(url, {
           headers: {
             Authorization: "Bearer " + sessionStorage.getItem("token"),
           },
         });
-        console.log("updateStatus", res);
         if (res.data.code == 200) {
           this.$message.success("修改成功");
         }
       } catch (err) {
-        console.log(err);
         this.$message.error("修改失败");
       }
       this.getList();
@@ -266,7 +312,6 @@ export default {
         })
         .catch(() => {
           this.$message.info("取消修改");
-          console.log("catch");
           this.getList();
         });
     },
@@ -281,12 +326,10 @@ export default {
             },
           }
         );
-        console.log(res);
         if (res.data.code == 200) {
           this.$message.success("删除成功");
         }
       } catch (err) {
-        console.log(err);
         this.$message.error("删除失败");
       }
       this.getList();
@@ -303,7 +346,6 @@ export default {
         })
         .catch(() => {
           this.$message.info("取消删除");
-          console.log("catch");
           this.getList();
         });
     },
@@ -323,18 +365,15 @@ export default {
             },
           }
         );
-        console.log(res);
         if (res.data.code == 200) {
           this.$message.success("更新信息成功");
           this.getList();
         }
       } catch (err) {
-        console.log(err);
         this.$message.error("更新信息失败");
       }
     },
     handleDialogConfirm() {
-      console.log(this.user);
       this.$confirm("是否要确认?", "提示", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
@@ -381,11 +420,11 @@ export default {
             Authorization: "Bearer " + sessionStorage.getItem("token"),
           },
         });
-        console.log("/AdminRole/list", res.data.data);
+        // console.log("/AdminRole/list", res.data.data);
         if (res.data.code == 200) {
           this.list = res.data.data;
         }
-        console.log("this.list", this.list);
+        // console.log("this.list", this.list);
         setTimeout(() => {
           this.listLoading = false;
         }, 500);
@@ -398,10 +437,24 @@ export default {
       //   this.total = response.data.total;
       // });
     },
-    getAllRoleList() {
-      // fetchAllRoleList().then(response => {
-      //   this.allRoleList = response.data;
-      // });
+    async getAdminResourceTreeList() {
+      try {
+        const res = await axios.post(`${api.API_URL}/AdminResource/treeList`, {
+          headers: {
+            Authorization: "Bearer " + sessionStorage.getItem("token"),
+          },
+        });
+        console.log("getAdminResourceTreeList", res);
+        if (res.data.code == 200) {
+          this.adminResourceTreeList = res.data.data;
+          console.log("adminResourceTreeList", this.adminResourceTreeList);
+        }
+        setTimeout(() => {
+          this.listLoading = false;
+        }, 500);
+      } catch (err) {
+        console.log(err);
+      }
     },
     getRoleListByAdmin(adminId) {
       getRoleByAdmin(adminId).then((response) => {
@@ -413,6 +466,129 @@ export default {
           }
         }
       });
+    },
+    async getAdminMenuTreeList() {
+      try {
+        const res = await axios.post(`${api.API_URL}/AdminMenu/treeList2`, {
+          headers: {
+            Authorization: "Bearer " + sessionStorage.getItem("token"),
+          },
+        });
+        if (res.data.code == 200) {
+          this.adminMenuTreeList = res.data.data;
+          //   console.log("adminMenuTreeList", this.adminMenuTreeList);
+        }
+        setTimeout(() => {
+          this.listLoading = false;
+        }, 500);
+      } catch (err) {
+        console.log(err);
+      }
+    },
+
+    handleCheckedMenuChange(value) {
+      console.log("allocMenuFormallocMenuForm", this.allocMenuForm);
+    },
+    handleCheckedResourceChange(value) {
+      console.log("allocResourceFormallocResourceForm", this.allocResourceForm);
+    },
+    async allocMenu(index, row) {
+      this.allocMenuDialogVisible = true;
+      this.roleId = row.id;
+      this.allocMenuForm = [];
+      try {
+        const res = await axios.post(
+          `${api.API_URL}/AdminRole/listMenu/` + row.id,
+          {
+            headers: {
+              Authorization: "Bearer " + sessionStorage.getItem("token"),
+            },
+          }
+        );
+        console.log(res);
+        if (res.data.code == 200) {
+          for (var i in res.data.data) {
+            console.log(res.data.data[i]);
+            this.allocMenuForm.push(res.data.data[i].id);
+          }
+        }
+      } catch (err) {
+        console.log(err);
+      }
+    },
+    async allocMenuconfirm() {
+      try {
+        var param = {
+          roleId: this.roleId,
+          menuIds: this.allocMenuForm,
+        };
+        const res = await axios.post(
+          `${api.API_URL}/AdminRole/allocMenu`,
+          param,
+          {
+            headers: {
+              Authorization: "Bearer " + sessionStorage.getItem("token"),
+            },
+          }
+        );
+        console.log("allocMenuconfirmallocMenuconfirm", res);
+        if (res.data.code == 200) {
+          this.$message.success("更新信息成功");
+          this.getList();
+          this.allocMenuDialogVisible = false;
+        }
+      } catch (err) {
+        this.$message.error("更新信息失败");
+      }
+    },
+    async allocResource(index, row) {
+      this.allocResourceDialogVisible = true;
+      this.roleId = row.id;
+      this.allocResourceForm = [];
+      try {
+        const res = await axios.post(
+          `${api.API_URL}/AdminRole/listResource/` + row.id,
+          {
+            headers: {
+              Authorization: "Bearer " + sessionStorage.getItem("token"),
+            },
+          }
+        );
+        console.log(res);
+        if (res.data.code == 200) {
+          for (var i in res.data.data) {
+            console.log(res.data.data[i]);
+            this.allocResourceForm.push(res.data.data[i].id);
+          }
+        }
+      } catch (err) {
+        console.log(err);
+      }
+    },
+    async allocResourceconfirm() {
+      try {
+        var param = {
+          roleId: this.roleId,
+          resourceIds: this.allocResourceForm,
+        };
+        const res = await axios.post(
+          `${api.API_URL}/AdminRole/allocResource`,
+          param,
+          {
+            headers: {
+              Authorization: "Bearer " + sessionStorage.getItem("token"),
+            },
+          }
+        );
+        console.log("allocMenuconfirmallocMenuconfirm", res);
+        if (res.data.code == 200) {
+          this.$message.success("更新信息成功");
+          this.getList();
+          this.allocResourceDialogVisible = false;
+        }
+      } catch (err) {
+        this.$message.error("更新信息失败");
+      }
     },
   },
 };

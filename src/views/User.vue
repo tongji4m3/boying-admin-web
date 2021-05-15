@@ -75,7 +75,7 @@
             scope.row.createTime | formatDateTime
           }}</template>
         </el-table-column>
-                <el-table-column label="最后登录时间" align="center">
+        <el-table-column label="最后登录时间" align="center">
           <template slot-scope="scope">{{
             scope.row.loginTime | formatDateTime
           }}</template>
@@ -91,21 +91,26 @@
             </el-switch>
           </template>
         </el-table-column>
-        <el-table-column label="操作"  align="center">
+        <el-table-column label="操作" align="center">
           <template slot-scope="scope">
-            <!-- <el-button
-              size="mini"
+            <el-button
               type="text"
-              @click="handleUpdate(scope.$index, scope.row)"
+              size="mini"
+              @click="allocRole(scope.$index, scope.row)"
+              >分配角色</el-button
             >
-              编辑
-            </el-button> -->
-            <!-- <el-button
-              size="mini"
+            <el-button
               type="text"
+              size="mini"
+              @click="editUser(scope.$index, scope.row)"
+              >编辑</el-button
+            >
+            <el-button
+              type="text"
+              size="mini"
               @click="handleDelete(scope.$index, scope.row)"
-              >删除
-            </el-button> -->
+              >删除</el-button
+            >
           </template>
         </el-table-column>
         <!-- <el-table-column align="center">
@@ -171,7 +176,7 @@
         >
       </span>
     </el-dialog>
-    <!-- <el-dialog title="分配角色" :visible.sync="allocDialogVisible" width="30%">
+    <el-dialog title="分配角色" :visible.sync="allocDialogVisible" width="30%">
       <el-select
         v-model="allocRoleIds"
         multiple
@@ -198,7 +203,7 @@
           >确 定</el-button
         >
       </span>
-    </el-dialog> -->
+    </el-dialog>
   </div>
 </template>
 <script>
@@ -238,6 +243,7 @@ export default {
       allocRoleIds: [],
       allRoleList: [],
       allocAdminId: null,
+      adminId: 0,
     };
   },
   created() {
@@ -298,12 +304,39 @@ export default {
         this.$message.error("添加失败");
       }
     },
+    async deleteUser(index, row) {
+      console.log(row);
+      try {
+        const res = await axios.post(
+          `${api.API_URL}/AdminUser/delete/` + row.id,
+          {
+            headers: {
+              Authorization: "Bearer " + sessionStorage.getItem("token"),
+            },
+          }
+        );
+        console.log(res);
+        if (res.data.code == 200) {
+          this.$message.success("删除成功");
+          this.getList();
+        } else {
+          this.$message.error("删除失败");
+        }
+      } catch (err) {
+        console.log(err);
+        this.$message.error("删除失败");
+      }
+    },
     handleAdd() {
       this.dialogVisible = true;
       this.isEdit = false;
       this.user = Object.assign({}, defaultUser);
     },
-
+    editUser(index, row) {
+      this.dialogVisible = true;
+      this.isEdit = true;
+      this.user = Object.assign({}, row);
+    },
     async updateStatus(row) {
       try {
         //注意这里的row的status跟实际的status是相反的
@@ -352,27 +385,6 @@ export default {
         });
     },
 
-    async deleteUser(row) {
-      try {
-        const res = await axios.post(
-          `${api.API_URL}/AdminUser/delete/` + row.userId,
-          {
-            headers: {
-              Authorization: "Bearer " + sessionStorage.getItem("token"),
-            },
-          }
-        );
-        console.log(res);
-        if (res.data.code == 200) {
-          this.$message.success("删除成功");
-        }
-      } catch (err) {
-        console.log(err);
-        this.$message.error("删除失败");
-      }
-      this.getList();
-    },
-
     handleDelete(index, row) {
       this.$confirm("是否要删除该用户?", "提示", {
         confirmButtonText: "确定",
@@ -380,7 +392,7 @@ export default {
         type: "warning",
       })
         .then(() => {
-          this.deleteUser(row);
+          this.deleteUser(index, row);
         })
         .catch(() => {
           this.$message.info("取消删除");
@@ -421,7 +433,7 @@ export default {
         type: "warning",
       }).then(() => {
         if (this.isEdit) {
-          this.updateUser(this.user.userId, this.user);
+          this.updateUser(this.user.id, this.user);
           this.dialogVisible = false;
         } else {
           this.addUser(this.user);
@@ -429,30 +441,47 @@ export default {
         }
       });
     },
-    handleAllocDialogConfirm() {
+    async handleAllocDialogConfirm() {
       this.$confirm("是否要确认?", "提示", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
         type: "warning",
       }).then(() => {
-        let params = new URLSearchParams();
-        params.append("adminId", this.allocAdminId);
-        params.append("roleIds", this.allocRoleIds);
-        allocRole(params).then((response) => {
-          this.$message({
-            message: "分配成功！",
-            type: "success",
-          });
-          this.allocDialogVisible = false;
-        });
+        console.log("this.allocRoleIds", this.allocRoleIds);
+        this.updateUserRole();
       });
     },
-    //暂时无用
-    handleSelectRole(index, row) {
-      this.allocAdminId = row.id;
-      this.allocDialogVisible = true;
-      this.getRoleListByAdmin(row.id);
+    async updateUserRole() {
+      try {
+        var param = {
+          userId: this.adminId,
+          roleIds: this.allocRoleIds,
+        };
+        const res = await axios.post(
+          `${api.API_URL}/AdminUser/AdminRole/update`,
+          param,
+          {
+            headers: {
+              Authorization: "Bearer " + sessionStorage.getItem("token"),
+            },
+          }
+        );
+        console.log("/AdminUser/AdminRole/update", res);
+        if (res.data.code == 200) {
+          this.$message.success("更新角色成功");
+          this.getList();
+          this.allocDialogVisible = false;
+        }
+      } catch (err) {
+        this.$message.error("更新信息失败");
+      }
     },
+    //暂时无用
+    // handleSelectRole(index, row) {
+    //   this.allocAdminId = row.id;
+    //   this.allocDialogVisible = true;
+    //   this.getRoleListByAdmin(row.id);
+    // },
     async getList() {
       this.listLoading = true;
       try {
@@ -461,14 +490,14 @@ export default {
             Authorization: "Bearer " + sessionStorage.getItem("token"),
           },
         });
-        console.log("/AdminUser/list", res);
+        // console.log("/AdminUser/list", res);
         if (res.data.message == "不存在任何用户") {
           this.list = null;
         }
         if (res.data.code == 200) {
           this.list = res.data.data.list;
         }
-        console.log("this.list", this.list);
+        // console.log("this.list", this.list);
         setTimeout(() => {
           this.listLoading = false;
         }, 500);
@@ -481,22 +510,58 @@ export default {
       //   this.total = response.data.total;
       // });
     },
-    getAllRoleList() {
-      // fetchAllRoleList().then(response => {
-      //   this.allRoleList = response.data;
-      // });
-    },
-    getRoleListByAdmin(adminId) {
-      getRoleByAdmin(adminId).then((response) => {
-        let allocRoleList = response.data;
-        this.allocRoleIds = [];
-        if (allocRoleList != null && allocRoleList.length > 0) {
-          for (let i = 0; i < allocRoleList.length; i++) {
-            this.allocRoleIds.push(allocRoleList[i].id);
+    async allocRole(index, row) {
+      this.allocRoleIds = []; //先清空
+      this.adminId = row.id;
+      console.log("allocRole", this.allRoleList);
+      try {
+        const res = await axios.post(
+          `${api.API_URL}/AdminUser/AdminRole/` + row.id,
+          {
+            headers: {
+              Authorization: "Bearer " + sessionStorage.getItem("token"),
+            },
+          }
+        );
+        console.log("/AdminUser/AdminRole/", res.data.data);
+        if (res.data.code == 200) {
+          for (var i = 0; i < res.data.data.length; i++) {
+            this.allocRoleIds.push(res.data.data[i].id);
           }
         }
-      });
+        // console.log("this.allocRoleIds", this.allocRoleIds);
+      } catch (err) {
+        console.log(err);
+      }
+      this.allocDialogVisible = true;
     },
+    async getAllRoleList() {
+      try {
+        const res = await axios.post(`${api.API_URL}/AdminRole/listAll`, {
+          headers: {
+            Authorization: "Bearer " + sessionStorage.getItem("token"),
+          },
+        });
+        console.log("/AdminRole/listAll", res.data.data);
+        if (res.data.code == 200) {
+          this.allRoleList = res.data.data;
+        }
+        console.log("this.allRoleList", this.allRoleList);
+      } catch (err) {
+        console.log(err);
+      }
+    },
+    // getRoleListByAdmin(adminId) {
+    //   getRoleByAdmin(adminId).then((response) => {
+    //     let allocRoleList = response.data;
+    //     this.allocRoleIds = [];
+    //     if (allocRoleList != null && allocRoleList.length > 0) {
+    //       for (let i = 0; i < allocRoleList.length; i++) {
+    //         this.allocRoleIds.push(allocRoleList[i].id);
+    //       }
+    //     }
+    //   });
+    // },
   },
 };
 </script>
