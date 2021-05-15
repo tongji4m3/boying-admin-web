@@ -16,6 +16,22 @@
           <i class="el-icon-s-home"></i>
           <span slot="title">首页</span>
         </el-menu-item>
+<!-- 后续这里取消注释，这里是动态菜单栏 -->
+        <!-- <el-submenu
+          v-for="(value, key) in adminMenuList"
+          :key="key"
+          :index="key"
+        >
+          <template slot="title">
+            <i class="myicon myiconyanchu" style="font-size: 20px"></i>
+            <span slot="title"> {{key}}</span>
+          </template>
+          <el-menu-item :index="menu.name" v-for="menu in value" :key="menu.id">
+            <i class="el-icon-tickets"></i>
+            <span slot="title">{{ menu.title }}</span></el-menu-item
+          >
+        </el-submenu> -->
+<!-- 后续这里取消注释，这里是动态菜单栏 -->
         <el-submenu index="show">
           <template slot="title">
             <i class="myicon myiconyanchu" style="font-size: 20px"></i>
@@ -52,7 +68,7 @@
         <el-submenu index="user">
           <template slot="title">
             <i class="el-icon-user-solid"></i>
-            <span slot="user"> 用户</span>
+            <span slot="user">用户</span>
           </template>
           <el-menu-item index="user">
             <i class="myicon myiconyonghuliebiao" style="font-size: 20px"></i>
@@ -171,18 +187,41 @@
 </style>
 
 <script>
+import axios from "axios";
+import api from "@/assets/api.js";
 export default {
   data() {
     return {
       isCollapse: false,
       breadList: [], // 路由集合
       list: [], //面包屑动态生成所用集合
+      adminMenuList: [], //当前管理员能看到的菜单栏列表
     };
   },
   watch: {
     $route() {
       this.bread();
     },
+  },
+  async mounted() {
+    console.log("pageContainermounted");
+    try {
+      const res = await axios.post(`${api.API_URL}/login/AdminMenu`, {
+        headers: {
+          Authorization: "Bearer " + sessionStorage.getItem("token"),
+        },
+      });
+      console.log("/login/AdminMenu", res.data.data);
+      if (res.data.code == 200) {
+        this.adminMenuList = res.data.data;
+      } else {
+        this.$message.error("获取AdminMenu失败");
+      }
+      console.log("this.adminMenuList", this.adminMenuList);
+    } catch (err) {
+      console.log(err);
+      this.$message.error("获取AdminMenu失败");
+    }
   },
   methods: {
     // 点击切换左侧菜单的折叠与展开

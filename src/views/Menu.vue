@@ -27,7 +27,9 @@
         </el-table-column>
 
         <el-table-column label="级数" align="center">
-          <template slot-scope="scope">{{ scope.row.level }}</template>
+          <template slot-scope="scope">{{
+            scope.row.level == 0 ? "一级" : "二级"
+          }}</template>
         </el-table-column>
         <el-table-column label="排序" align="center">
           <template slot-scope="scope">{{ scope.row.weight }}</template>
@@ -89,9 +91,9 @@
         <el-form-item label="菜单名称">
           <el-input v-model="user.title" style="width: 250px"></el-input>
         </el-form-item>
-        <el-form-item label="级数">
+        <!-- <el-form-item label="级数">
           <el-input v-model="user.level" style="width: 250px"></el-input>
-        </el-form-item>
+        </el-form-item> -->
         <el-form-item label="排序">
           <el-input v-model="user.weight" style="width: 250px"></el-input>
         </el-form-item>
@@ -315,9 +317,10 @@ export default {
             },
           }
         );
-        console.log(res);
+        console.log("/AdminMenu/delete/", res);
         if (res.data.code == 200) {
           this.$message.success("删除成功");
+          this.getList();
         } else {
           this.$message.error("删除失败");
         }
@@ -329,7 +332,7 @@ export default {
     },
 
     handleDelete(index, row) {
-      this.$confirm("是否要删除该用户?", "提示", {
+      this.$confirm("是否要删除该菜单?", "提示", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
         type: "warning",
@@ -411,6 +414,7 @@ export default {
       this.getRoleListByAdmin(row.id);
     },
     async getList() {
+      this.list = [];
       this.parentId = this.$route.query.parentId;
       if (!this.parentId) {
         this.parentId = 0;

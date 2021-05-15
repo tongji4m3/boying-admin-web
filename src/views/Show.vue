@@ -50,24 +50,27 @@
 
           <el-table-column label="操作">
             <template slot-scope="scope">
-              <el-button
-                size="mini"
-                type="danger"
-                @click="handleDelete(scope.$index, scope.row)"
-                >删除</el-button
-              >
-              <el-button
-                size="mini"
-                style="margin-left: 0"
-                @click="handleClick(scope.row)"
-                >查看</el-button
-              >
-              <el-button
-                size="mini"
-                style="margin-left: 0"
-                @click="handleClickSeat(scope.row.id)"
-                >座次</el-button
-              >
+              <div v-if="scope.row.adminDelete == false">
+                <el-button
+                  size="mini"
+                  type="danger"
+                  @click="handleDelete(scope.$index, scope.row)"
+                  >删除</el-button
+                >
+                <el-button
+                  size="mini"
+                  style="margin-left: 0"
+                  @click="handleClick(scope.row)"
+                  >查看</el-button
+                >
+                <el-button
+                  size="mini"
+                  style="margin-left: 0"
+                  @click="handleClickSeat(scope.row.id)"
+                  >座次</el-button
+                >
+              </div>
+              <div v-else><el-tag type="danger"> 已删除 </el-tag></div>
             </template>
           </el-table-column>
           <!--  <el-table-column label="演出名称" prop="name"> </el-table-column>
@@ -288,10 +291,10 @@ export default {
     },
     //修改座次提交
     async updateSeatSubmit() {
-      console.log("updateSeatSubmit",this.addSeatTable);
-            try {
+      console.log("updateSeatSubmit", this.addSeatTable);
+      try {
         const res = await axios.post(
-          `${api.API_URL}/seat/update/`+this.addSeatTable.id,
+          `${api.API_URL}/seat/update/` + this.addSeatTable.id,
           this.addSeatTable,
           {
             headers: {
@@ -327,18 +330,19 @@ export default {
     async handleDelete(index, row) {
       console.log(row.id);
       try {
-        console.log("mounted");
-        const res = await axios.post(`${api.API_URL}/show/delete/` + row.id, {
-          headers: {
-            Authorization: "Bearer " + sessionStorage.getItem("token"),
-          },
-        });
-        console.log("test");
-        console.log(res);
+        const res = await axios.post(
+          `${api.API_URL}/show/updateStatus/` + row.id,
+          {
+            headers: {
+              Authorization: "Bearer " + sessionStorage.getItem("token"),
+            },
+          }
+        );
+        console.log("handleDeletehandleDelete", res);
         if (res.data.code == 200) {
           this.$message.success("删除成功");
-          this.tableData.splice(index, 1);
           console.log(index, row);
+          this.reload();
         } else {
           this.$message.error("删除失败");
         }

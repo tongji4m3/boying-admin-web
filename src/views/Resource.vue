@@ -61,7 +61,12 @@
               @click="handleUpdate(scope.$index, scope.row)"
               >编辑</el-button
             >
-            <!-- <el-button type="text" size="mini">删除</el-button> -->
+            <el-button
+              type="text"
+              size="mini"
+              @click="handleDelete(scope.$index, scope.row)"
+              >删除</el-button
+            >
           </template>
         </el-table-column>
       </el-table>
@@ -284,7 +289,7 @@ export default {
     async deleteUser(row) {
       try {
         const res = await axios.post(
-          `${api.API_URL}/AdminUser/delete/` + row.userId,
+          `${api.API_URL}/AdminResource/delete/` + row.id,
           {
             headers: {
               Authorization: "Bearer " + sessionStorage.getItem("token"),
@@ -303,7 +308,7 @@ export default {
     },
 
     handleDelete(index, row) {
-      this.$confirm("是否要删除该用户?", "提示", {
+      this.$confirm("是否要删除该资源?", "提示", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
         type: "warning",
