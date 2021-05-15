@@ -11,6 +11,8 @@ import User from "@/views/User.vue"
 import UpdateShow from "@/views/UpdateShow.vue"
 import Role from "@/views/Role.vue"
 import Resource from "@/views/Resource.vue"
+import Menu from "@/views/Menu.vue"
+
 Vue.use(VueRouter)
 
 const routes = [
@@ -73,7 +75,12 @@ const routes = [
                 path: '/Resource',
                 name: '资源管理',
                 component: Resource
-
+            }
+            ,
+            {
+                path: '/Menu',
+                name: '菜单管理',
+                component: Menu
             }
         ]
     },

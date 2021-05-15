@@ -72,6 +72,12 @@
               资源管理</span
             ></el-menu-item
           >
+          <el-menu-item index="Menu">
+            <i class="myicon myiconyonghuliebiao" style="font-size: 20px"></i>
+            <span slot="title" style="margin-left: 5px">
+              菜单管理</span
+            ></el-menu-item
+          >
         </el-submenu>
       </el-menu>
     </el-aside>
@@ -98,7 +104,7 @@
         </el-dropdown>
       </el-breadcrumb>
       <el-divider></el-divider>
-      <router-view></router-view>
+      <router-view :key="$route.fullPath"></router-view>
     </el-main>
   </el-container>
 </template>

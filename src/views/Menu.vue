@@ -13,29 +13,30 @@
     </el-card>
     <div class="table-container">
       <el-table
-        :data="resourceList"
+        :data="list"
         :key="key"
         style="width: 100%"
         v-loading="listLoading"
         border
       >
-        <el-table-column label="资源id" align="center">
+        <el-table-column label="菜单id" align="center">
           <template slot-scope="scope">{{ scope.row.id }}</template>
         </el-table-column>
-        <el-table-column label="资源目录" align="center">
-          <template slot-scope="scope">{{ scope.row.adminCategory }}</template>
+        <el-table-column label="菜单名称" align="center">
+          <template slot-scope="scope">{{ scope.row.title }}</template>
         </el-table-column>
-        <el-table-column label="资源名" align="center">
+
+        <el-table-column label="级数" align="center">
+          <template slot-scope="scope">{{ scope.row.level }}</template>
+        </el-table-column>
+        <el-table-column label="排序" align="center">
+          <template slot-scope="scope">{{ scope.row.weight }}</template>
+        </el-table-column>
+        <el-table-column label="前端名称" align="center">
           <template slot-scope="scope">{{ scope.row.name }}</template>
         </el-table-column>
-        <el-table-column label="资源路径" align="center">
-          <template slot-scope="scope">{{ scope.row.url }}</template>
-        </el-table-column>
-        <el-table-column label="描述" align="center">
-          <template slot-scope="scope">{{ scope.row.description }}</template>
-        </el-table-column>
-        <el-table-column label="权重" align="center">
-          <template slot-scope="scope">{{ scope.row.weight }}</template>
+        <el-table-column label="图标" align="center">
+          <template slot-scope="scope">{{ scope.row.icon }}</template>
         </el-table-column>
         <el-table-column label="创建时间" align="center">
           <template slot-scope="scope">{{
@@ -61,39 +62,44 @@
               @click="handleUpdate(scope.$index, scope.row)"
               >编辑</el-button
             >
-            <!-- <el-button type="text" size="mini">删除</el-button> -->
+            <el-button
+              type="text"
+              size="mini"
+              @click="handleDelete(scope.$index, scope.row)"
+              >删除</el-button
+            >
+            <el-button
+              v-if="parentId == 0"
+              type="text"
+              size="mini"
+              @click="getChild(scope.$index, scope.row)"
+              >查看下级</el-button
+            >
           </template>
         </el-table-column>
       </el-table>
     </div>
 
     <el-dialog
-      :title="isEdit ? '编辑资源' : '添加资源'"
+      :title="isEdit ? '编辑菜单' : '添加菜单'"
       :visible.sync="dialogVisible"
       width="40%"
     >
       <el-form :model="user" ref="adminForm" label-width="150px" size="small">
-        <el-form-item label="资源名">
+        <el-form-item label="菜单名称">
+          <el-input v-model="user.title" style="width: 250px"></el-input>
+        </el-form-item>
+        <el-form-item label="级数">
+          <el-input v-model="user.level" style="width: 250px"></el-input>
+        </el-form-item>
+        <el-form-item label="排序">
+          <el-input v-model="user.weight" style="width: 250px"></el-input>
+        </el-form-item>
+        <el-form-item label="前端名称">
           <el-input v-model="user.name" style="width: 250px"></el-input>
         </el-form-item>
-        <el-form-item label="资源目录">
-          <el-select v-model="user.categoryId" placeholder="请选择演出目录">
-            <el-option
-              v-for="adminCategory in adminCategoryList"
-              :key="adminCategory.id"
-              :label="adminCategory.name"
-              :value="adminCategory.id"
-            ></el-option>
-          </el-select>
-        </el-form-item>
-        <el-form-item label="资源路径">
-          <el-input v-model="user.url" style="width: 250px"></el-input>
-        </el-form-item>
-        <el-form-item label="描述">
-          <el-input v-model="user.description" style="width: 250px"></el-input>
-        </el-form-item>
-        <el-form-item label="权重">
-          <el-input v-model="user.weight" style="width: 250px"></el-input>
+        <el-form-item label="图标">
+          <el-input v-model="user.icon" style="width: 250px"></el-input>
         </el-form-item>
         <el-form-item label="是否启用：">
           <el-radio-group v-model="user.status">
@@ -161,12 +167,13 @@ export default {
   name: "adminList",
   data() {
     return {
+      parentId: 0, //父id，默认0
+      pageNum: 1,
+      pageSize: 100,
       key: 1, // table key
       search: "",
       listQuery: Object.assign({}, defaultListQuery),
       list: [],
-      resourceList: [],
-      adminCategoryList: [], //资源菜单列表
       total: null,
       listLoading: false,
       dialogVisible: false,
@@ -178,9 +185,14 @@ export default {
       allocAdminId: null,
     };
   },
-  mounted() {
+  created() {
+    console.log("created");
     this.getList();
-    this.getAllAdminCategoryList();
+    // this.getAllRoleList();
+  },
+  mounted() {
+    console.log("mounted");
+    this.getList();
   },
   filters: {
     formatDateTime(time) {
@@ -210,18 +222,17 @@ export default {
     },
 
     async addUser(user) {
-      console.log("addUseraddUser", user);
-      //   user.createTime = new Date();
+      user.createTime = new Date();
       try {
         const res = await axios.post(
-          `${api.API_URL}/AdminResource/create`,
+          `${api.API_URL}/AdminMenu/create`,
           {
-            categoryId: user.categoryId,
-            description: user.description,
-            name: user.name,
-            weight: user.weight,
-            url: user.url,
             status: user.status,
+            icon: user.icon,
+            name: user.name,
+            parentId: this.parentId,
+            sort: user.sort,
+            title: user.title,
           },
           {
             headers: {
@@ -246,15 +257,21 @@ export default {
     },
 
     async updateStatus(row) {
+      var url = "";
+      //这里的status是反的，是row的status，不是menu的status！！
+      if (!row.status) {
+        url =
+          `${api.API_URL}/AdminMenu/updateHidden/` + row.id + "?hidden=false";
+      } else {
+        url =
+          `${api.API_URL}/AdminMenu/updateHidden/` + row.id + "?hidden=true";
+      }
       try {
-        const res = await axios.post(
-          `${api.API_URL}/AdminResource/changeStatus/` + row.id,
-          {
-            headers: {
-              Authorization: "Bearer " + sessionStorage.getItem("token"),
-            },
-          }
-        );
+        const res = await axios.post(url, {
+          headers: {
+            Authorization: "Bearer " + sessionStorage.getItem("token"),
+          },
+        });
         console.log("updateStatus", res);
         if (res.data.code == 200) {
           this.$message.success("修改成功");
@@ -281,10 +298,17 @@ export default {
           this.getList();
         });
     },
+    getChild(index, row) {
+      this.$router.push({
+        path: "/Menu",
+        query: { parentId: row.id },
+      });
+      this.getList();
+    },
     async deleteUser(row) {
       try {
         const res = await axios.post(
-          `${api.API_URL}/AdminUser/delete/` + row.userId,
+          `${api.API_URL}/AdminMenu/delete/` + row.id,
           {
             headers: {
               Authorization: "Bearer " + sessionStorage.getItem("token"),
@@ -294,6 +318,8 @@ export default {
         console.log(res);
         if (res.data.code == 200) {
           this.$message.success("删除成功");
+        } else {
+          this.$message.error("删除失败");
         }
       } catch (err) {
         console.log(err);
@@ -321,12 +347,12 @@ export default {
       this.dialogVisible = true;
       this.isEdit = true;
       this.user = Object.assign({}, row);
+      console.log("useruser", this.user);
     },
     async updateUser(id, user) {
-      console.log("updateUserupdateUser", user);
       try {
         const res = await axios.post(
-          `${api.API_URL}/AdminResource/update/` + id,
+          `${api.API_URL}/AdminMenu/update/` + id,
           user,
           {
             headers: {
@@ -385,63 +411,34 @@ export default {
       this.getRoleListByAdmin(row.id);
     },
     async getList() {
+      this.parentId = this.$route.query.parentId;
+      if (!this.parentId) {
+        this.parentId = 0;
+      }
+      console.log("this.parentId", this.parentId);
       this.listLoading = true;
       try {
-        const res = await axios.post(`${api.API_URL}/AdminResource/listAll`, {
-          headers: {
-            Authorization: "Bearer " + sessionStorage.getItem("token"),
-          },
-        });
-        // console.log("/AdminResource/listAll", res.data.data);
-        if (res.data.code == 200) {
-          this.list = res.data.data;
-          for (var i = 0; i < res.data.data.length; i++) {
-            await this.getAdminCategory(this.list[i].categoryId, i);
-          }
-          setTimeout(() => {
-            this.listLoading = false;
-          }, 500);
-        }
-        this.resourceList = this.list;
-        // console.log("this.list", this.resourceList);
-      } catch (err) {
-        console.log(err);
-      }
-    },
-    async getAdminCategory(adminCategoryId, i) {
-      try {
         const res = await axios.post(
-          `${api.API_URL}/AdminCategory/` + adminCategoryId,
+          `${api.API_URL}/AdminMenu/list/` +
+            this.parentId +
+            "/?pageNum=" +
+            this.pageNum +
+            "&pageSize=" +
+            this.pageSize,
           {
             headers: {
               Authorization: "Bearer " + sessionStorage.getItem("token"),
             },
           }
         );
-        console.log("getAdminCategory", res);
+        console.log("/AdminMenu/listAll", res.data.data);
         if (res.data.code == 200) {
-          this.list[i].adminCategory = res.data.data.name;
-          //   console.log(this.list[i].adminCategory);
-          //   setTimeout(() => {
-          //     this.loading = false;
-          //   }, 500);
+          this.list = res.data.data.list;
         }
-      } catch (err) {
-        console.log(err);
-      }
-    },
-    async getAllAdminCategoryList() {
-      try {
-        const res = await axios.post(`${api.API_URL}/AdminCategory/listAll`, {
-          headers: {
-            Authorization: "Bearer " + sessionStorage.getItem("token"),
-          },
-        });
-        console.log("getAllAdminCategoryList", res);
-        if (res.data.code == 200) {
-          this.adminCategoryList = res.data.data;
-          console.log("this.adminCategoryList", this.adminCategoryList);
-        }
+        console.log("this.list", this.list);
+        setTimeout(() => {
+          this.listLoading = false;
+        }, 500);
       } catch (err) {
         console.log(err);
       }
