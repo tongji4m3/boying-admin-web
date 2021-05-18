@@ -14,6 +14,7 @@ import Resource from "@/views/Resource.vue"
 import Menu from "@/views/Menu.vue"
 import AddPromo from "@/views/AddPromo.vue"
 import Promo from "@/views/Promo.vue"
+import ResourceCategory from "@/views/ResourceCategory.vue"
 
 Vue.use(VueRouter)
 
@@ -95,6 +96,12 @@ const routes = [
                 path: '/AddPromo',
                 name: '添加活动',
                 component: AddPromo
+            }
+            ,
+            {
+                path: '/ResourceCategory',
+                name: '资源目录',
+                component: ResourceCategory
             }
         ]
     },
