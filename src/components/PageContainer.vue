@@ -16,8 +16,8 @@
           <i class="el-icon-s-home"></i>
           <span slot="title">首页</span>
         </el-menu-item>
-<!-- 后续这里取消注释，这里是动态菜单栏 -->
-        <!-- <el-submenu
+        <!-- 后续这里取消注释，这里是动态菜单栏 -->
+        <el-submenu
           v-for="(value, key) in adminMenuList"
           :key="key"
           :index="key"
@@ -30,9 +30,9 @@
             <i class="el-icon-tickets"></i>
             <span slot="title">{{ menu.title }}</span></el-menu-item
           >
-        </el-submenu> -->
-<!-- 后续这里取消注释，这里是动态菜单栏 -->
-        <el-submenu index="show">
+        </el-submenu>
+        <!-- 后续这里取消注释，这里是动态菜单栏 -->
+        <!-- <el-submenu index="show">
           <template slot="title">
             <i class="myicon myiconyanchu" style="font-size: 20px"></i>
             <span slot="title"> 演出</span>
@@ -65,10 +65,24 @@
             <span slot="title"> 订单列表</span></el-menu-item
           >
         </el-submenu>
+        <el-submenu index="promo">
+          <template slot="title">
+            <i class="myicon myiconicon--copy" style="font-size: 20px"></i>
+            <span slot="title">活动管理</span>
+          </template>
+          <el-menu-item index="Promo">
+            <i class="myicon myiconicon--copy" style="font-size: 20px"></i>
+            <span slot="title"> 活动列表</span></el-menu-item
+          >
+          <el-menu-item index="AddPromo">
+            <i class="myicon myiconicon--copy" style="font-size: 20px"></i>
+            <span slot="title"> 添加活动</span></el-menu-item
+          >
+        </el-submenu>
         <el-submenu index="user">
           <template slot="title">
             <i class="el-icon-user-solid"></i>
-            <span slot="user">用户</span>
+            <span slot="user">权限管理</span>
           </template>
           <el-menu-item index="user">
             <i class="myicon myiconyonghuliebiao" style="font-size: 20px"></i>
@@ -94,7 +108,7 @@
               菜单管理</span
             ></el-menu-item
           >
-        </el-submenu>
+        </el-submenu> -->
       </el-menu>
     </el-aside>
     <el-main style="padding: 0px">

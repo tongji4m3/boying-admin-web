@@ -12,6 +12,8 @@ import UpdateShow from "@/views/UpdateShow.vue"
 import Role from "@/views/Role.vue"
 import Resource from "@/views/Resource.vue"
 import Menu from "@/views/Menu.vue"
+import AddPromo from "@/views/AddPromo.vue"
+import Promo from "@/views/Promo.vue"
 
 Vue.use(VueRouter)
 
@@ -37,7 +39,7 @@ const routes = [
                 component: Home
             },
             {
-                path: '/show',
+                path: '/showList',
                 name: '演出',
                 component: Show
             },
@@ -52,12 +54,12 @@ const routes = [
                 component: AddShow
             },
             {
-                path: '/order',
+                path: '/orderList',
                 name: '订单列表',
                 component: Order
             },
             {
-                path: '/user',
+                path: '/admin',
                 name: '用户列表',
                 component: User
             }, {
@@ -81,6 +83,18 @@ const routes = [
                 path: '/Menu',
                 name: '菜单管理',
                 component: Menu
+            }
+            ,
+            {
+                path: '/PromoList',
+                name: '活动列表',
+                component: Promo
+            }
+            ,
+            {
+                path: '/AddPromo',
+                name: '添加活动',
+                component: AddPromo
             }
         ]
     },
