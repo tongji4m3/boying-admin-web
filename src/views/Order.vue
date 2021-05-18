@@ -1,250 +1,401 @@
 <template>
-  <div>
-    <el-card class="operate-container" shadow="never" style="text-align: left">
-      <i class="el-icon-tickets"></i>
-      <span>数据列表</span>
-    </el-card>
-    <div class="table-container">
-      <el-table
-        :key="key"
-        :data="
-          tableData.filter(
-            (data) =>
-              !search ||
-              data.realStatus.toLowerCase().includes(search.toLowerCase())
-          )
-        "
-        v-loading="loading"
-        style="width: 100%"
-      >
-        <!-- <el-table-column type="expand">
+  <div class="showView">
+    <div v-loading="loading">
+      <el-table :data="tableData" border row-key="id">
+        <el-table-column prop="id" label="订单编号"> </el-table-column>
+        <el-table-column prop="userId" label="用户编号"> </el-table-column>
+        <el-table-column prop="showId" label="演出编号"> </el-table-column>
+        <el-table-column prop="seatId" label="座次编号"> </el-table-column>
+        <el-table-column prop="promoId" label="活动编号"> </el-table-column>
+        <el-table-column prop="status" label="状态"> </el-table-column>
+        <el-table-column prop="time" label="时间"> </el-table-column>
+        <!-- <el-table-column prop="userDelete" label="用户是否删除"> </el-table-column> -->
+        <!-- <el-table-column prop="adminDelete" label="管理员是否删除"> </el-table-column> -->
+        <el-table-column prop="ticketCount" label="购票数量"> </el-table-column>
+        <el-table-column prop="ticketPrice" label="购票价格"> </el-table-column>
+        <el-table-column prop="orderPrice" label="订单价格"> </el-table-column>
+        <el-table-column prop="payment" label="支付方式"> </el-table-column>
+        <el-table-column label="是否启用">
           <template slot-scope="scope">
-            <el-form
-              label-position="left"
-              inline
-              class="demo-table-expand"
-              v-for="fruit in formThead"
-              :key="fruit.prop"
-              :width="fruit.width"
-              show-overflow-tooltip
-            >
-            <el-form-item >
-              <span>{{scope.row[fruit.label]}}</span>
-              <span>{{ scope.row[fruit.prop] }}</span>
-            </el-form-item>
-            </el-form>
-          </template>
-        </el-table-column> -->
-        <el-table-column type="expand">
-          <template slot-scope="props">
-            <el-form label-position="left" inline class="demo-table-expand">
-              <el-form-item label="订单编号:">
-                <span>{{ props.row.orderId }}</span>
-              </el-form-item>
-              <el-form-item label="用户账号:">
-                <span>{{ props.row.userId }}</span>
-              </el-form-item>
-              <el-form-item label="演出编号:">
-                <span>{{ props.row.showId }}</span>
-              </el-form-item>
-              <el-form-item label="订单状态:">
-                <span>{{ props.row.realStatus }}</span>
-              </el-form-item>
-              <el-form-item label="订单提交时间:">
-                <span>{{ props.row.time | formatDateTime }}</span>
-              </el-form-item>
-              <el-form-item label="订单总金额:">
-                <span>￥{{ props.row.money }}</span>
-              </el-form-item>
-              <el-form-item label="演出场次编号:">
-                <span>{{ props.row.showSessionId }}</span>
-              </el-form-item>
-              <el-form-item label="订单支付方式:">
-                <span>{{ props.row.payment }}</span>
-              </el-form-item>
-              <el-form-item label="该订单对用户是否可见:">
-                <span>{{ props.row.userDelete | formatUserDelete }}</span>
-              </el-form-item>
-              <el-form-item label="订单所含票数:">
-                <span>{{ props.row.ticketCount }}</span>
-              </el-form-item>
-            </el-form>
-          </template>
-        </el-table-column>
-        <el-table-column label="订单编号" prop="orderId"> </el-table-column>
-        <el-table-column label="用户账号" prop="userId"> </el-table-column>
-        <el-table-column label="演出编号" prop="showId"> </el-table-column>
-        <el-table-column label="订单状态" prop="realStatus"> </el-table-column>
-        <el-table-column label="订单提交时间" width="160" align="center">
-          <template slot-scope="scope">{{
-            scope.row.time | formatDateTime
-          }}</template>
-        </el-table-column>
-
-        <el-table-column label="订单总金额" prop="money" align="center"> </el-table-column>
-        <el-table-column align="center">
-          <template slot="header" slot-scope="scope">
-            <el-input
-              v-model="search"
-              size="mini"
-              placeholder="按订单状态关键字搜索"
-            />
-          </template>
-          <template slot-scope="scope">
-            <el-button
-              size="mini"
-              type="danger"
-              @click="Delete(scope.$index, scope.row)"
-              >删除</el-button
-            >
+            <div v-if="scope.row.adminDelete == false">
+              <el-button
+                size="mini"
+                type="info"
+                @click="handleDelete(scope.$index, scope.row)"
+              >
+                删除
+              </el-button>
+            </div>
+            <div v-else><el-tag type="danger"> 已删除 </el-tag></div>
           </template>
         </el-table-column>
       </el-table>
+
+      <el-dialog
+        :title="isEdit ? '编辑目录' : '添加目录'"
+        :visible.sync="dialogVisible"
+        width="40%"
+      >
+        <el-form :model="categorySelected" label-width="150px" size="small">
+          <el-form-item label="目录名称:">
+            <el-input
+              v-model="categorySelected.name"
+              style="width: 250px"
+            ></el-input>
+          </el-form-item>
+          <el-form-item label="目录图标:">
+            <!-- <el-upload
+                class="avatar-uploader"
+                action
+                :drag="true"
+                :multiple="false"
+                :file-list="images"
+                :http-request="uploadHttp"
+                :before-upload="beforeAvatarUpload"
+                :on-remove="handleRemove"
+                style="text-align: center"
+              >
+                <img
+                  v-if="categorySelected.icon"
+                  :src="categorySelected.icon"
+                  class="avatar"
+                />
+                <i v-else class="el-icon-plus avatar-uploader-icon"></i>
+                <p id="img-context">上传演出图片</p>
+                <div class="el-upload__tip" slot="tip">
+                  只能上传jpg/jpeg/png文件，且不超过5MB
+                </div>
+              </el-upload> -->
+            <el-upload
+              class="avatar-uploader"
+              action=""
+              :show-file-list="false"
+              :http-request="uploadHttp"
+              :before-upload="beforeAvatarUpload"
+            >
+              <img
+                v-if="categorySelected.icon"
+                :src="categorySelected.icon"
+                class="avatar"
+              />
+              <i v-else class="el-icon-plus avatar-uploader-icon"></i>
+            </el-upload>
+            <!-- <el-image
+              style="width: 100px; height: 100px"
+              :src="categorySelected.icon"
+              :preview-src-list="[categorySelected.icon]"
+            ></el-image> -->
+          </el-form-item>
+          <el-form-item label="目录描述:">
+            <el-input
+              v-model="categorySelected.description"
+              style="width: 250px"
+            ></el-input>
+          </el-form-item>
+          <el-form-item label="目录权重:">
+            <el-input
+              v-model="categorySelected.weight"
+              style="width: 250px"
+            ></el-input>
+          </el-form-item>
+          <!-- <el-form-item label="目录图标:">
+            <el-input
+              v-model="categorySelected.icon"
+              style="width: 250px"
+            ></el-input>
+          </el-form-item> -->
+        </el-form>
+        <span slot="footer" class="dialog-footer">
+          <el-button @click="dialogVisible = false" size="small"
+            >取 消</el-button
+          >
+          <el-button type="primary" @click="handleDialogConfirm()" size="small"
+            >确 定</el-button
+          >
+        </span>
+      </el-dialog>
     </div>
   </div>
 </template>
-
 <script>
+import ossClient from "../assets/config/aliyun.oss.client";
 import axios from "axios";
 import api from "@/assets/api.js";
 import qs from "qs";
-import { formatDate } from "@/utils/date";
 
-const fields = [
-  { label: "订单编号", prop: "orderId" },
-  { label: "用户账号", prop: "userId" },
-  { label: "演出编号", prop: "showId" },
-  { label: "订单状态编号", prop: "status" },
-  { label: "订单状态", prop: "realStatus" },
-  { label: "订单提交时间", prop: "time" },
-  { label: "订单总金额", prop: "money" },
-
-  //展开行功能多出的内容
-  { label: "演出场次编号", prop: "showSessionId" },
-  { label: "订单支付方式", prop: "payment" },
-  { label: "用户是否已经删除了该订单", prop: "userDelete" },
-  { label: "订单所含票数", prop: "ticketCount" },
-];
+const defaultCategory = {
+  categoryId: "",
+  description: "",
+  icon: "",
+  name: "",
+  parentId: 0,
+  weight: 1,
+  children: [],
+};
 
 export default {
-  name: "",
-  props: [""],
   data() {
     return {
-      tableData: [],
-      search: "",
-      key: 1, // table key
-      formThead: fields, // 默认表头 Default header
+      images: [],
+      uploadConf: {
+        region: null,
+        accessKeyId: null,
+        accessKeySecret: null,
+        bucket: null,
+      },
+      add: false,
       loading: true,
-      OrderState: ["待观看", "已完成", "已退订单"],
+      dialogVisible: false,
+      isEdit: false,
+      firstCategory: {
+        categoryId: "",
+        description: "",
+        icon: "",
+        name: "",
+        parentId: 0,
+        weight: 1,
+        children: [],
+      },
+      categorySelected: Object.assign({}, defaultCategory),
+      tableData: [],
     };
   },
-
-  components: {},
-
-  computed: {},
-
-  beforeMount() {},
-
-  mounted() {
-    this.reload();
-  },
-
   methods: {
-    Delete(index,row) {
-      this.$confirm("此操作将删除该订单, 是否继续?", "提示", {
+    handleUpdate(index, row) {
+      this.dialogVisible = true;
+      this.isEdit = true;
+      this.categorySelected = Object.assign({}, row);
+    },
+    async handleStatusChange(index, row) {
+      console.log("handleStatusChange", index, row, row.id);
+      try {
+        const res = await axios.post(
+          `${api.API_URL}/category/admin_delete/` + row.id,
+          {
+            headers: {
+              Authorization: "Bearer " + sessionStorage.getItem("token"),
+            },
+          }
+        );
+        console.log(res);
+        if (res.data.code == 200) {
+          this.$message.success("操作成功");
+          setTimeout(() => {
+            this.loading = false;
+          }, 500);
+        } else {
+          this.$message.error("未知错误");
+        }
+      } catch (err) {
+        this.$message.error("未知错误");
+        console.log(err);
+      }
+    },
+    async updateCategory(category) {
+      this.loading = true;
+      try {
+        const res = await axios.post(
+          `${api.API_URL}/category/update` + "/" + category.id,
+          {
+            // parentId: category.parentId,
+            name: category.name,
+            weight: category.weight,
+            icon: category.icon,
+            description: category.description,
+            adminDelete: category.adminDelete,
+          },
+          {
+            headers: {
+              Authorization: "Bearer " + sessionStorage.getItem("token"),
+            },
+          }
+        );
+        console.log(res);
+        if (res.data.code == 200) {
+          this.$message.success("编辑成功");
+          this.reload();
+          setTimeout(() => {
+            this.loading = false;
+          }, 500);
+        } else {
+          this.$message.error("未知错误编辑失败");
+        }
+      } catch (err) {
+        console.log(err);
+      }
+    },
+    handleDialogConfirm() {
+      this.$confirm("是否要确认?", "提示", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
         type: "warning",
-      })
-        .then(() => {
-          this.handleDelete(row.orderId)
-        }).catch(() => {
-          this.$message.info("已取消删除");
-        });
+      }).then(() => {
+        if (this.isEdit) {
+          this.updateCategory(this.categorySelected);
+          this.dialogVisible = false;
+          this.images = [];
+        } else {
+          console.log(this.add);
+          this.addCategory(this.categorySelected);
+          this.dialogVisible = false;
+        }
+      });
     },
-    async handleDelete(id) {
+    async handleAdd() {
+      this.dialogVisible = true;
+      this.isEdit = false;
+      this.categorySelected = Object.assign({}, defaultCategory);
+    },
+
+    async addCategory(category) {
       try {
-        console.log("mounted");
-        const res = await axios.post(`${api.API_URL}/user/deleteOrder/` + id);
-        console.log("test");
-        console.log(res);
+        const res = await axios.post(
+          `${api.API_URL}/category/create`,
+          category
+        );
+        if (res.status == 200) {
+          this.$message.success("添加成功");
+          this.reload();
+          this.add = false;
+        }
+      } catch (err) {
+        console.log(err);
+        this.$message.error("添加失败");
+      }
+    },
+
+    async reload() {
+      this.loading = true;
+      try {
+        const res = await axios.post(`${api.API_URL}/order/list`, {
+          headers: {
+            Authorization: "Bearer " + sessionStorage.getItem("token"),
+          },
+        });
+        console.log("reload", res);
+        if (res.data.code == 200) {
+          this.tableData = res.data.data.list;
+          setTimeout(() => {
+            this.loading = false;
+          }, 500);
+          console.log(this.tableData);
+        }
+      } catch (err) {
+        console.log(err);
+      }
+    },
+    handleDelete(index, row) {
+      this.$confirm("是否要删除?", "提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning",
+      }).then(() => {
+        this.delete(row.id);
+      });
+    },
+    async delete(id) {
+      console.log("delete");
+      try {
+        const res = await axios.post(`${api.API_URL}/order/delete/` + id, {
+          headers: {
+            Authorization: "Bearer " + sessionStorage.getItem("token"),
+          },
+        });
+        console.log("/order/delete/", res);
         if (res.data.code == 200) {
           this.$message.success("删除成功");
           this.reload();
         }
       } catch (err) {
-        console.log(err);
+        this.$message.error("删除失败");
       }
     },
-
-    async reload() {
-      try {
-        console.log("mounted");
-        const res = await axios.get(`${api.API_URL}/user/listOrders`, {
-          headers: {
-            Authorization: "Bearer " + sessionStorage.getItem("token"),
-          },
-        });
-        console.log(res);
-        if(res.data.message == "不存在任何订单"){
-          this.tableData=[];
-        }
-        if (res.data.code == 200) {
-          this.tableData = res.data.data;
-          for (var i = 0; i < this.tableData.length; i++) {
-            if (this.tableData[i].status == 1) {
-              this.tableData[i].realStatus = "待观看";
-            } else if (this.tableData[i].status == 2) {
-              this.tableData[i].realStatus = "已完成";
-            } else {
-              this.tableData[i].realStatus = "已退订单";
-            }
+    /**
+     * 初始化
+     */
+    async init() {
+      //获取阿里云token  这里是后台返回来的数据
+      this.uploadConf.region = "oss-cn-shanghai";
+      this.uploadConf.accessKeyId = "LTAI4FzMDhgBN9LMBr71T3Ny";
+      this.uploadConf.accessKeySecret = "hTPgQQSyBgEDnfMNe06RPf8ecDafpz";
+      this.uploadConf.bucket = "tongji-boying";
+    },
+    /**
+     * 阿里云OSS上传
+     */
+    uploadHttp({ file }) {
+      this.init();
+      const { imgName } = "ALIOSS_IMG_";
+      const fileName = `${imgName}/${Date.parse(new Date())}`; //定义唯一的文件名
+      ossClient(this.uploadConf)
+        .put(fileName, file, {
+          ContentType: "image/jpeg",
+        })
+        .then(({ res, url, name }) => {
+          if (res && res.status === 200) {
+            console.log(`阿里云OSS上传图片成功回调`, res, url, name);
+            console.log(url);
+            this.categorySelected.icon = url;
           }
-        }
-        setTimeout(() => {
-          this.loading = false;
-        }, 500);
-      } catch (err) {
-        console.log(err);
-      }
-    },
-  },
-  filters: {
-    formatDateTime(time) {
-      if (time == null || time === "") {
-        return "N/A";
-      }
-      let date = new Date(time);
-      return formatDate(date, "yyyy-MM-dd hh:mm:ss");
+        })
+        .catch((err) => {
+          console.log(`阿里云OSS上传图片失败回调`, err);
+        });
     },
 
-    formatUserDelete(value){
-      if(value==true){
-        return "用户已删除";
+    /**
+     * 图片限制
+     */
+    beforeAvatarUpload(file) {
+      const isJPEG = file.name.split(".")[1] === "jpeg";
+      const isJPG = file.name.split(".")[1] === "jpg";
+      const isPNG = file.name.split(".")[1] === "png";
+      const isLt500K = file.size / 1024 / 1024 / 5 < 2;
+      if (!isJPG && !isJPEG && !isPNG) {
+        this.$message.error("上传图片只能是 JPEG/JPG/PNG 格式!");
       }
-      else{
-        return "用户未删除";
+      if (!isLt500K) {
+        this.$message.error("单张图片大小不能超过 5MB!");
       }
-    }
+      return (isJPEG || isJPG || isPNG) && isLt500K;
+    },
+
+    /**
+     * 移除图片
+     */
+    handleRemove(file, fileList) {
+      console.log(`移除图片回调`, fileList);
+    },
   },
 
-  watch: {},
+  async mounted() {
+    this.reload();
+  },
 };
 </script>
 
 <style scoped>
-.demo-table-expand {
-  font-size: 0;
+.avatar-uploader .el-upload {
+  border: 1px dashed #d9d9d9;
+  border-radius: 6px;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
 }
-/* 这个css未生效 也可能这三个都未生效*/
-.demo-table-expand .label {
-  width: 90px;
-  color: #99a9bf;
+.avatar-uploader .el-upload:hover {
+  border-color: #409eff;
 }
-.demo-table-expand .el-form-item {
-  margin-right: 0;
-  margin-bottom: 0;
-  width: 50%;
+.avatar-uploader-icon {
+  font-size: 28px;
+  color: #8c939d;
+  width: 178px;
+  height: 178px;
+  line-height: 178px;
+  text-align: center;
+}
+.avatar {
+  width: 178px;
+  height: 178px;
+  display: block;
 }
 </style>

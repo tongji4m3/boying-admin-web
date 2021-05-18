@@ -112,13 +112,14 @@
               >
               </el-date-picker>
               <div>
-                <ve-line
+                <!-- <ve-line
                   :data="chartData"
                   :legend-visible="false"
                   :loading="loading"
                   :data-empty="dataEmpty"
                   :settings="chartSettings"
-                ></ve-line>
+                ></ve-line> -->
+                <ve-line :data="chartData" :settings="chartSettings"></ve-line>
               </div>
             </div>
           </el-col>
@@ -213,6 +214,17 @@ import { str2Date } from "@/utils/date";
 export default {
   data() {
     return {
+      chartData11: {
+        columns: ["日期", "访问用户", "下单用户", "下单率"],
+        rows: [
+          { 日期: "1/1", 访问用户: 1393, 下单用户: 1093, 下单率: 0.32 },
+          { 日期: "1/2", 访问用户: 3530, 下单用户: 3230, 下单率: 0.26 },
+          { 日期: "1/3", 访问用户: 2923, 下单用户: 2623, 下单率: 0.76 },
+          { 日期: "1/4", 访问用户: 1723, 下单用户: 1423, 下单率: 0.49 },
+          { 日期: "1/5", 访问用户: 3792, 下单用户: 3492, 下单率: 0.323 },
+          { 日期: "1/6", 访问用户: 4593, 下单用户: 4293, 下单率: 0.78 },
+        ],
+      },
       todayOrderNum: 10,
       todayOrderMoney: 10,
       allOrderMoney: 10,
@@ -251,13 +263,15 @@ export default {
       },
       orderCountDate: "",
       chartSettings: {
-        xAxisType: "time",
-        area: true,
-        axisSite: { right: ["orderAmount"] },
-        labelMap: { orderCount: "订单数量", orderAmount: "订单金额" },
+        yAxisType: ["0.[00]a", "0.[00]a"],
+        axisSite: {
+          right: ["订单量"],
+        },
+        yAxisName: ["销售额", "订单量"],
       },
+
       chartData: {
-        columns: [],
+        columns: ["日期", "订单量", "销售额"],
         rows: [],
       },
       dataEmpty: false,
@@ -343,12 +357,13 @@ export default {
 
     //画图用
     handleDateChange() {
+      console.log("handleDateChange");
       this.getData();
     },
     initOrderCountDate() {
       let start = new Date();
-      start.setFullYear(2020);
-      start.setMonth(12);
+      start.setFullYear(2021);
+      start.setMonth(4);
       start.setDate(1);
       const end = new Date();
       end.setTime(start.getTime() + 1000 * 60 * 60 * 24 * 7);
@@ -356,15 +371,14 @@ export default {
     },
 
     async getData() {
+      this.chartData.rows = [];
       console.log("hello");
       let start = new Date();
       let end = new Date();
       start.setTime(this.orderCountDate[0].getTime());
       end.setTime(this.orderCountDate[1].getTime());
-      console.log(start);
-      console.log(end);
-      const PeriodOrderMoney = await axios.post(
-        `${api.API_URL}/statistics/PeriodOrderMoney`,
+      const res = await axios.post(
+        `${api.API_URL}/statistics/periodStatistics`,
         {
           dateStart: start,
           dateEnd: end,
@@ -375,43 +389,22 @@ export default {
           },
         }
       );
-      const periodOrder = await axios.post(
-        `${api.API_URL}/statistics/periodOrder`,
-        {
-          dateStart: start,
-          dateEnd: end,
-        },
-        {
-          headers: {
-            Authorization: "Bearer " + sessionStorage.getItem("token"),
-          },
-        }
-      );
-      if (PeriodOrderMoney.data.code != 200 || periodOrder.data.code != 200) {
-        console.log("herehereerror");
-      } else {
-        setTimeout(() => {
-          this.chartData = {
-            columns: ["date", "orderCount", "orderAmount"],
-            rows: [],
+      console.log("/statistics/periodStatistics", res);
+      if (res.data.code == 200) {
+        for (var i in res.data.data.dataList) {
+          console.log(res.data.data.dataList[i].substring(0, 10));
+          console.log(res.data.data.orderAmountList[i]);
+          console.log(res.data.data.orderCount[i]);
+          var item = {
+            日期: res.data.data.dataList[i].substring(0, 10),
+            订单量: res.data.data.orderAmountList[i],
+            销售额: res.data.data.orderCount[i],
           };
-          console.log("PeriodOrderMoney", PeriodOrderMoney.data);
-          console.log("periodOrder", periodOrder.data);
-          for (var i in PeriodOrderMoney.data.data) {
-            //   console.log(i);
-            //   console.log(DATA_FROM_BACKEND.rows[i]);
-            var item = {
-              date: i,
-              orderAmount: PeriodOrderMoney.data.data[i],
-              orderCount: periodOrder.data.data[i],
-            };
-            console.log("item", item);
-            this.chartData.rows.push(item);
-          }
-          this.dataEmpty = false;
-          this.loading = false;
-          console.log("chartData", this.chartData);
-        }, 1000);
+          this.chartData.rows.push(item);
+        }
+        console.log("this.chartData", this.chartData);
+      } else {
+        console.log("/statistics/periodStatistics error");
       }
     },
   },
