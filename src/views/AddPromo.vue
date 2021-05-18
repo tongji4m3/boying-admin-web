@@ -130,33 +130,33 @@
           <el-input v-model="addPromoTable.price" placeholder="价格"></el-input>
         </el-form-item>
         <el-form-item label="演出开始时间" required>
-        <el-col :span="11">
-          <el-form-item prop="startTime">
-            <el-date-picker
-              type="date"
-              placeholder="选择日期"
-              v-model="addPromoTable.startTime"
-              style="width: 100%"
-              format="yyyy 年 MM 月 dd 日 HH 小时 mm 分钟 ss 秒"
-              value-format="yyyy-MM-dd HH:mm:ss"
-            ></el-date-picker>
-          </el-form-item>
-        </el-col>
-      </el-form-item>
-      <el-form-item label="演出结束时间" required>
-        <el-col :span="11">
-          <el-form-item prop="endTime">
-            <el-date-picker
-              type="date"
-              placeholder="选择日期"
-              v-model="addPromoTable.endTime"
-              style="width: 100%"
-              format="yyyy 年 MM 月 dd 日 HH 小时 mm 分钟 ss 秒"
-              value-format="yyyy-MM-dd HH:mm:ss"
-            ></el-date-picker>
-          </el-form-item>
-        </el-col>
-      </el-form-item>
+          <el-col :span="11">
+            <el-form-item prop="startTime">
+              <el-date-picker
+                type="date"
+                placeholder="选择日期"
+                v-model="addPromoTable.startTime"
+                style="width: 100%"
+                format="yyyy 年 MM 月 dd 日 HH 小时 mm 分钟 ss 秒"
+                value-format="yyyy-MM-dd HH:mm:ss"
+              ></el-date-picker>
+            </el-form-item>
+          </el-col>
+        </el-form-item>
+        <el-form-item label="演出结束时间" required>
+          <el-col :span="11">
+            <el-form-item prop="endTime">
+              <el-date-picker
+                type="date"
+                placeholder="选择日期"
+                v-model="addPromoTable.endTime"
+                style="width: 100%"
+                format="yyyy 年 MM 月 dd 日 HH 小时 mm 分钟 ss 秒"
+                value-format="yyyy-MM-dd HH:mm:ss"
+              ></el-date-picker>
+            </el-form-item>
+          </el-col>
+        </el-form-item>
         <el-form-item>
           <el-button type="primary" @click="addPromoSubmit">添加</el-button>
         </el-form-item>
@@ -262,9 +262,29 @@ export default {
       this.addSeatTable = row;
     },
     //添加活动提交
-    addPromoSubmit(index, row) {
-      console.log("addPromoSubmit",this.addPromoTable);
-      
+    async addPromoSubmit(index, row) {
+      console.log("addPromoSubmit", this.addPromoTable);
+      try {
+        const res = await axios.post(
+          `${api.API_URL}/promo/create`,
+          this.addPromoTable,
+          {
+            headers: {
+              Authorization: "Bearer " + sessionStorage.getItem("token"),
+            },
+          }
+        );
+        console.log("/seat/create", res.data);
+        if (res.data.code == 200) {
+          this.addPromoVisiable = false;
+          this.$message.success("添加成功");
+        } else {
+          this.$message.error("添加失败");
+        }
+      } catch (err) {
+        console.log(err);
+        this.$message.error("添加失败");
+      }
     },
     //添加活动
     addPromo(index, row) {
