@@ -57,21 +57,21 @@
         <el-table-column label="用户名" align="center">
           <template slot-scope="scope">{{ scope.row.username }}</template>
         </el-table-column>
-        <el-table-column label="密码" align="center">
-          <template slot-scope="scope">{{ scope.row.password }}</template>
-        </el-table-column>
+        <!-- <el-table-column label="密码" align="center">
+          <template slot-scope="scope" >{{ scope.row.password }}</template>
+        </el-table-column> -->
         <el-table-column label="手机号" align="center">
           <template slot-scope="scope">{{ scope.row.phone }}</template>
         </el-table-column>
         <el-table-column label="邮箱" align="center">
           <template slot-scope="scope">{{ scope.row.email }}</template>
         </el-table-column>
-        <el-table-column label="真实姓名" align="center">
+        <!-- <el-table-column label="真实姓名" align="center">
           <template slot-scope="scope">{{ scope.row.realName }}</template>
         </el-table-column>
         <el-table-column label="身份证号" align="center">
           <template slot-scope="scope">{{ scope.row.identityNumber }}</template>
-        </el-table-column>
+        </el-table-column> -->
         <el-table-column label="年龄" align="center">
           <template slot-scope="scope">{{ scope.row.age }}</template>
         </el-table-column>
@@ -148,32 +148,33 @@
         <el-form-item label="电话号码">
           <el-input v-model="user.phone" style="width: 250px"></el-input>
         </el-form-item>
-        <el-form-item label="真实姓名：">
+        <!-- <el-form-item label="真实姓名：">
           <el-input v-model="user.realName" style="width: 250px"></el-input>
-        </el-form-item>
+        </el-form-item> -->
         <el-form-item label="年龄">
           <el-input v-model="user.age" style="width: 250px"></el-input>
         </el-form-item>
         <el-form-item label="性别">
-          <el-input v-model="user.gender" style="width: 250px"></el-input>
-
+          <el-radio v-model="user.gender" label="true">男</el-radio>
+          <el-radio v-model="user.gender" label="false">女</el-radio>
         </el-form-item>
         <el-form-item label="邮箱：">
           <el-input v-model="user.email" style="width: 250px"></el-input>
         </el-form-item>
-        <el-form-item label="身份证号：">
+        <!-- <el-form-item label="身份证号：">
           <el-input
             v-model="user.identityNumber"
             style="width: 250px"
           ></el-input>
-        </el-form-item>
-        <el-form-item label="密码：">
+        </el-form-item> -->
+        <!-- <el-form-item label="密码：">
           <el-input
             v-model="user.password"
             type="password"
             style="width: 250px"
+            :disabled="true"
           ></el-input>
-        </el-form-item>
+        </el-form-item> -->
         <!-- <el-form-item label="是否启用：">
           <el-radio-group v-model="user.userstatus">
             <el-radio :label="true">是</el-radio>
@@ -188,7 +189,6 @@
         >
       </span>
     </el-dialog>
-    
   </div>
 </template>
 <script>
@@ -229,7 +229,6 @@ export default {
       allRoleList: [],
       allocAdminId: null,
       adminId: 0,
-
     };
   },
   created() {
