@@ -317,6 +317,8 @@ export default {
       //   console.log(res);
       if (res.data.code == 200) {
         this.todayOrderMoney = res.data.data;
+      } else {
+        this.$message.error(res.data.code + "失败");
       }
     },
 
@@ -336,6 +338,8 @@ export default {
         setTimeout(() => {
           this.loading = false;
         }, 500);
+      } else {
+        this.$message.error(res.data.code + "失败");
       }
     },
 
@@ -404,7 +408,7 @@ export default {
         }
         console.log("this.chartData", this.chartData);
       } else {
-        console.log("/statistics/periodStatistics error");
+        this.$message.error(res.data.code + "失败");
       }
     },
   },

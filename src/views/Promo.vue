@@ -82,7 +82,6 @@
             value-format="yyyy-MM-dd HH:mm:ss"
           ></el-date-picker>
         </el-form-item>
-
       </el-form>
 
       <span slot="footer" class="dialog-footer">
@@ -136,7 +135,7 @@ export default {
   },
   created() {
     this.getList();
-    this.getAllRoleList();
+    // this.getAllRoleList();
   },
   filters: {
     formatDateTime(time) {
@@ -186,6 +185,8 @@ export default {
         if (res.data.code == 200) {
           this.$message.success("添加成功");
           this.getList();
+        } else {
+          this.$message.error(res.data.code + "失败");
         }
       } catch (err) {
         console.log(err);
@@ -195,20 +196,17 @@ export default {
     async deleteUser(index, row) {
       console.log(row);
       try {
-        const res = await axios.post(
-          `${api.API_URL}/promo/delete/` + row.id,
-          {
-            headers: {
-              Authorization: "Bearer " + sessionStorage.getItem("token"),
-            },
-          }
-        );
+        const res = await axios.post(`${api.API_URL}/promo/delete/` + row.id, {
+          headers: {
+            Authorization: "Bearer " + sessionStorage.getItem("token"),
+          },
+        });
         console.log(res);
         if (res.data.code == 200) {
           this.$message.success("删除成功");
           this.getList();
         } else {
-          this.$message.error("删除失败");
+          this.$message.error(res.data.code + "失败");
         }
       } catch (err) {
         console.log(err);
@@ -249,6 +247,8 @@ export default {
         console.log("updateStatus", res);
         if (res.data.code == 200) {
           this.$message.success("修改成功");
+        } else {
+          this.$message.error(res.data.code + "失败");
         }
       } catch (err) {
         console.log(err);
@@ -308,6 +308,8 @@ export default {
         if (res.data.code == 200) {
           this.$message.success("更新信息成功");
           this.getList();
+        } else {
+          this.$message.error(res.data.code + "失败");
         }
       } catch (err) {
         console.log(err);
@@ -354,6 +356,8 @@ export default {
           this.$message.success("更新角色成功");
           this.getList();
           this.allocDialogVisible = false;
+        } else {
+          this.$message.error(res.data.code + "失败");
         }
       } catch (err) {
         this.$message.error("更新信息失败");
@@ -371,6 +375,8 @@ export default {
 
         if (res.data.code == 200) {
           this.list = res.data.data;
+        } else {
+          this.$message.error(res.data.code + "失败");
         }
         console.log("this.list", this.list);
         setTimeout(() => {
@@ -398,6 +404,8 @@ export default {
           for (var i = 0; i < res.data.data.length; i++) {
             this.allocRoleIds.push(res.data.data[i].id);
           }
+        } else {
+          this.$message.error(res.data.code + "失败");
         }
         // console.log("this.allocRoleIds", this.allocRoleIds);
       } catch (err) {
@@ -415,6 +423,8 @@ export default {
         console.log("/AdminRole/listAll", res.data.data);
         if (res.data.code == 200) {
           this.allRoleList = res.data.data;
+        } else {
+          this.$message.error(res.data.code + "失败");
         }
         console.log("this.allRoleList", this.allRoleList);
       } catch (err) {

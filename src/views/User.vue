@@ -42,13 +42,6 @@
     <el-card class="operate-container" shadow="never" style="text-align: left">
       <i class="el-icon-tickets"></i>
       <span>数据列表</span>
-      <el-button
-        size="mini"
-        class="btn-add"
-        @click="handleAdd()"
-        style="float: right"
-        >添加</el-button
-      >
     </el-card>
     <div class="table-container">
       <el-table
@@ -64,41 +57,47 @@
         <el-table-column label="用户名" align="center">
           <template slot-scope="scope">{{ scope.row.username }}</template>
         </el-table-column>
-        <el-table-column label="真实姓名" align="center">
-          <template slot-scope="scope">{{ scope.row.username }}</template>
+        <el-table-column label="密码" align="center">
+          <template slot-scope="scope">{{ scope.row.password }}</template>
+        </el-table-column>
+        <el-table-column label="手机号" align="center">
+          <template slot-scope="scope">{{ scope.row.phone }}</template>
         </el-table-column>
         <el-table-column label="邮箱" align="center">
           <template slot-scope="scope">{{ scope.row.email }}</template>
+        </el-table-column>
+        <el-table-column label="真实姓名" align="center">
+          <template slot-scope="scope">{{ scope.row.realName }}</template>
+        </el-table-column>
+        <el-table-column label="身份证号" align="center">
+          <template slot-scope="scope">{{ scope.row.identityNumber }}</template>
+        </el-table-column>
+        <el-table-column label="年龄" align="center">
+          <template slot-scope="scope">{{ scope.row.age }}</template>
+        </el-table-column>
+        <el-table-column label="性别" align="center">
+          <template slot-scope="scope">{{
+            scope.row.gender ? "男" : "女"
+          }}</template>
         </el-table-column>
         <el-table-column label="账号创建时间" align="center">
           <template slot-scope="scope">{{
             scope.row.createTime | formatDateTime
           }}</template>
         </el-table-column>
-        <el-table-column label="最后登录时间" align="center">
-          <template slot-scope="scope">{{
-            scope.row.loginTime | formatDateTime
-          }}</template>
-        </el-table-column>
         <el-table-column label="是否启用" align="center">
           <template slot-scope="scope">
             <el-switch
               @change="handleStatusChange(scope.$index, scope.row)"
-              :active-value="true"
-              :inactive-value="false"
-              v-model="scope.row.status"
+              :active-value="false"
+              :inactive-value="true"
+              v-model="scope.row.adminDelete"
             >
             </el-switch>
           </template>
         </el-table-column>
         <el-table-column label="操作" align="center">
           <template slot-scope="scope">
-            <el-button
-              type="text"
-              size="mini"
-              @click="allocRole(scope.$index, scope.row)"
-              >分配角色</el-button
-            >
             <el-button
               type="text"
               size="mini"
@@ -146,14 +145,27 @@
         <el-form-item label="用户名：">
           <el-input v-model="user.username" style="width: 250px"></el-input>
         </el-form-item>
-        <!-- <el-form-item label="电话号码">
+        <el-form-item label="电话号码">
           <el-input v-model="user.phone" style="width: 250px"></el-input>
-        </el-form-item> -->
-        <!-- <el-form-item label="真实姓名：">
+        </el-form-item>
+        <el-form-item label="真实姓名：">
           <el-input v-model="user.realName" style="width: 250px"></el-input>
-        </el-form-item> -->
+        </el-form-item>
+        <el-form-item label="年龄">
+          <el-input v-model="user.age" style="width: 250px"></el-input>
+        </el-form-item>
+        <el-form-item label="性别">
+          <el-input v-model="user.gender" style="width: 250px"></el-input>
+
+        </el-form-item>
         <el-form-item label="邮箱：">
           <el-input v-model="user.email" style="width: 250px"></el-input>
+        </el-form-item>
+        <el-form-item label="身份证号：">
+          <el-input
+            v-model="user.identityNumber"
+            style="width: 250px"
+          ></el-input>
         </el-form-item>
         <el-form-item label="密码：">
           <el-input
@@ -176,34 +188,7 @@
         >
       </span>
     </el-dialog>
-    <el-dialog title="分配角色" :visible.sync="allocDialogVisible" width="30%">
-      <el-select
-        v-model="allocRoleIds"
-        multiple
-        placeholder="请选择"
-        size="small"
-        style="width: 80%"
-      >
-        <el-option
-          v-for="item in allRoleList"
-          :key="item.id"
-          :label="item.name"
-          :value="item.id"
-        >
-        </el-option>
-      </el-select>
-      <span slot="footer" class="dialog-footer">
-        <el-button @click="allocDialogVisible = false" size="small"
-          >取 消</el-button
-        >
-        <el-button
-          type="primary"
-          @click="handleAllocDialogConfirm()"
-          size="small"
-          >确 定</el-button
-        >
-      </span>
-    </el-dialog>
+    
   </div>
 </template>
 <script>
@@ -244,11 +229,12 @@ export default {
       allRoleList: [],
       allocAdminId: null,
       adminId: 0,
+
     };
   },
   created() {
     this.getList();
-    this.getAllRoleList();
+    // this.getAllRoleList();
   },
   filters: {
     formatDateTime(time) {
@@ -307,20 +293,17 @@ export default {
     async deleteUser(index, row) {
       console.log(row);
       try {
-        const res = await axios.post(
-          `${api.API_URL}/AdminUser/delete/` + row.id,
-          {
-            headers: {
-              Authorization: "Bearer " + sessionStorage.getItem("token"),
-            },
-          }
-        );
+        const res = await axios.post(`${api.API_URL}/user/delete/` + row.id, {
+          headers: {
+            Authorization: "Bearer " + sessionStorage.getItem("token"),
+          },
+        });
         console.log(res);
         if (res.data.code == 200) {
           this.$message.success("删除成功");
           this.getList();
         } else {
-          this.$message.error("删除失败");
+          this.$message.error(res.data.code + "删除失败");
         }
       } catch (err) {
         console.log(err);
@@ -339,17 +322,17 @@ export default {
     },
     async updateStatus(row) {
       try {
-        //注意这里的row的status跟实际的status是相反的
         var url = "";
-        if (row.status) {
+        console.log("row.statusrow.status", row.adminDelete);
+        if (row.adminDelete == false) {
           console.log("row.status", false);
           url =
-            `${api.API_URL}/AdminUser/updateStatus/` + row.id + "?status=true";
+            `${api.API_URL}/user/updateStatus/` + row.id + "?adminDelete=false";
         } else {
           console.log("row.status", true);
 
           url =
-            `${api.API_URL}/AdminUser/updateStatus/` + row.id + "?status=false";
+            `${api.API_URL}/user/updateStatus/` + row.id + "?adminDelete=true";
         }
         console.log("row", row, url);
 
@@ -364,7 +347,7 @@ export default {
         }
       } catch (err) {
         console.log(err);
-        this.$message.error("修改失败");
+        this.$message.error(res.data.code + "修改失败");
       }
       this.getList();
     },
@@ -407,15 +390,11 @@ export default {
     },
     async updateUser(id, user) {
       try {
-        const res = await axios.post(
-          `${api.API_URL}/AdminUser/update/` + id,
-          user,
-          {
-            headers: {
-              Authorization: "Bearer " + sessionStorage.getItem("token"),
-            },
-          }
-        );
+        const res = await axios.post(`${api.API_URL}/user/update/` + id, user, {
+          headers: {
+            Authorization: "Bearer " + sessionStorage.getItem("token"),
+          },
+        });
         console.log(res);
         if (res.data.code == 200) {
           this.$message.success("更新信息成功");
@@ -485,17 +464,19 @@ export default {
     async getList() {
       this.listLoading = true;
       try {
-        const res = await axios.post(`${api.API_URL}/AdminUser/list`, {
+        const res = await axios.get(`${api.API_URL}/user/list`, {
           headers: {
             Authorization: "Bearer " + sessionStorage.getItem("token"),
           },
         });
-        // console.log("/AdminUser/list", res);
+        console.log("/user/list", res);
         if (res.data.message == "不存在任何用户") {
           this.list = null;
         }
         if (res.data.code == 200) {
-          this.list = res.data.data.list;
+          this.list = res.data.data;
+        } else {
+          this.$message.error(res.data.code + "失败");
         }
         // console.log("this.list", this.list);
         setTimeout(() => {
@@ -528,6 +509,8 @@ export default {
           for (var i = 0; i < res.data.data.length; i++) {
             this.allocRoleIds.push(res.data.data[i].id);
           }
+        } else {
+          this.$message.error(res.data.code + "失败");
         }
         // console.log("this.allocRoleIds", this.allocRoleIds);
       } catch (err) {
@@ -545,6 +528,8 @@ export default {
         console.log("/AdminRole/listAll", res.data.data);
         if (res.data.code == 200) {
           this.allRoleList = res.data.data;
+        } else {
+          this.$message.error(res.data.code + "失败");
         }
         console.log("this.allRoleList", this.allRoleList);
       } catch (err) {

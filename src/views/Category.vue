@@ -213,7 +213,7 @@ export default {
             this.loading = false;
           }, 500);
         } else {
-          this.$message.error("未知错误");
+          this.$message.error(res.data.code+"未知错误");
         }
       } catch (err) {
         this.$message.error("未知错误");
@@ -247,7 +247,7 @@ export default {
             this.loading = false;
           }, 500);
         } else {
-          this.$message.error("未知错误编辑失败");
+          this.$message.error(res.data.code+"未知错误编辑失败");
         }
       } catch (err) {
         console.log(err);
@@ -309,6 +309,9 @@ export default {
             this.loading = false;
           }, 500);
           console.log(this.tableData);
+        } else {
+          console.log(res.data.code);
+          this.$message.error(res.data.code+"错误");
         }
       } catch (err) {
         console.log(err);

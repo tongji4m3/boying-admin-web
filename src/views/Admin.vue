@@ -1,5 +1,44 @@
 <template>
+   
   <div class="app-container">
+    <!-- <el-card class="filter-container" shadow="never" align="left">
+      <div>
+        <i class="el-icon-search"></i>
+        <span>筛选搜索</span>
+        <el-button
+          style="float: right"
+          type="primary"
+          @click="handleSearchList()"
+          size="small"
+        >
+          查询搜索
+        </el-button>
+        <el-button
+          style="float: right; margin-right: 15px"
+          @click="handleResetSearch()"
+          size="small"
+        >
+          重置
+        </el-button>
+      </div>
+      <div style="margin-top: 15px">
+        <el-form
+          :inline="true"
+          :model="listQuery"
+          size="small"
+          label-width="140px"
+        >
+          <el-form-item label="输入搜索：">
+            <el-input
+              v-model="listQuery.keyword"
+              class="input-width"
+              placeholder="账号"
+              clearable
+            ></el-input>
+          </el-form-item>
+        </el-form>
+      </div>
+    </el-card> -->
     <el-card class="operate-container" shadow="never" style="text-align: left">
       <i class="el-icon-tickets"></i>
       <span>数据列表</span>
@@ -13,33 +52,30 @@
     </el-card>
     <div class="table-container">
       <el-table
-        :data="resourceList"
+        :data="list"
         :key="key"
         style="width: 100%"
         v-loading="listLoading"
         border
       >
-        <el-table-column label="资源id" align="center">
+        <el-table-column label="用户id" align="center">
           <template slot-scope="scope">{{ scope.row.id }}</template>
         </el-table-column>
-        <el-table-column label="资源目录" align="center">
-          <template slot-scope="scope">{{ scope.row.adminCategory }}</template>
+        <el-table-column label="用户名" align="center">
+          <template slot-scope="scope">{{ scope.row.username }}</template>
         </el-table-column>
-        <el-table-column label="资源名" align="center">
-          <template slot-scope="scope">{{ scope.row.name }}</template>
+
+        <el-table-column label="邮箱" align="center">
+          <template slot-scope="scope">{{ scope.row.email }}</template>
         </el-table-column>
-        <el-table-column label="资源路径" align="center">
-          <template slot-scope="scope">{{ scope.row.url }}</template>
-        </el-table-column>
-        <el-table-column label="描述" align="center">
-          <template slot-scope="scope">{{ scope.row.description }}</template>
-        </el-table-column>
-        <el-table-column label="权重" align="center">
-          <template slot-scope="scope">{{ scope.row.weight }}</template>
-        </el-table-column>
-        <el-table-column label="创建时间" align="center">
+        <el-table-column label="账号创建时间" align="center">
           <template slot-scope="scope">{{
             scope.row.createTime | formatDateTime
+          }}</template>
+        </el-table-column>
+        <el-table-column label="最后登录时间" align="center">
+          <template slot-scope="scope">{{
+            scope.row.loginTime | formatDateTime
           }}</template>
         </el-table-column>
         <el-table-column label="是否启用" align="center">
@@ -58,7 +94,13 @@
             <el-button
               type="text"
               size="mini"
-              @click="handleUpdate(scope.$index, scope.row)"
+              @click="allocRole(scope.$index, scope.row)"
+              >分配角色</el-button
+            >
+            <el-button
+              type="text"
+              size="mini"
+              @click="editUser(scope.$index, scope.row)"
               >编辑</el-button
             >
             <el-button
@@ -69,43 +111,61 @@
             >
           </template>
         </el-table-column>
+        <!-- <el-table-column align="center">
+          <template slot="header">
+            <el-input
+              v-model="search"
+              size="mini"
+              placeholder="按用户名关键字搜索"
+            />
+          </template>
+        </el-table-column> -->
       </el-table>
     </div>
-
+    <!-- <div class="pagination-container">
+      <el-pagination
+        background
+        @size-change="handleSizeChange"
+        @current-change="handleCurrentChange"
+        layout="total, sizes,prev, pager, next,jumper"
+        :current-page.sync="listQuery.pageNum"
+        :page-size="listQuery.pageSize"
+        :page-sizes="[10, 15, 20]"
+        :total="total"
+      >
+      </el-pagination>
+    </div> -->
     <el-dialog
-      :title="isEdit ? '编辑资源' : '添加资源'"
+      :title="isEdit ? '编辑用户' : '添加用户'"
       :visible.sync="dialogVisible"
       width="40%"
     >
       <el-form :model="user" ref="adminForm" label-width="150px" size="small">
-        <el-form-item label="资源名">
-          <el-input v-model="user.name" style="width: 250px"></el-input>
+        <el-form-item label="用户名：">
+          <el-input v-model="user.username" style="width: 250px"></el-input>
         </el-form-item>
-        <el-form-item label="资源目录">
-          <el-select v-model="user.categoryId" placeholder="请选择演出目录">
-            <el-option
-              v-for="adminCategory in adminCategoryList"
-              :key="adminCategory.id"
-              :label="adminCategory.name"
-              :value="adminCategory.id"
-            ></el-option>
-          </el-select>
+        <!-- <el-form-item label="电话号码">
+          <el-input v-model="user.phone" style="width: 250px"></el-input>
+        </el-form-item> -->
+        <!-- <el-form-item label="真实姓名：">
+          <el-input v-model="user.realName" style="width: 250px"></el-input>
+        </el-form-item> -->
+        <el-form-item label="邮箱：">
+          <el-input v-model="user.email" style="width: 250px"></el-input>
         </el-form-item>
-        <el-form-item label="资源路径">
-          <el-input v-model="user.url" style="width: 250px"></el-input>
+        <el-form-item label="密码：">
+          <el-input
+            v-model="user.password"
+            type="password"
+            style="width: 250px"
+          ></el-input>
         </el-form-item>
-        <el-form-item label="描述">
-          <el-input v-model="user.description" style="width: 250px"></el-input>
-        </el-form-item>
-        <el-form-item label="权重">
-          <el-input v-model="user.weight" style="width: 250px"></el-input>
-        </el-form-item>
-        <el-form-item label="是否启用：">
-          <el-radio-group v-model="user.status">
+        <!-- <el-form-item label="是否启用：">
+          <el-radio-group v-model="user.userstatus">
             <el-radio :label="true">是</el-radio>
             <el-radio :label="false">否</el-radio>
           </el-radio-group>
-        </el-form-item>
+        </el-form-item> -->
       </el-form>
       <span slot="footer" class="dialog-footer">
         <el-button @click="dialogVisible = false" size="small">取 消</el-button>
@@ -114,7 +174,7 @@
         >
       </span>
     </el-dialog>
-    <!-- <el-dialog title="分配角色" :visible.sync="allocDialogVisible" width="30%">
+    <el-dialog title="分配角色" :visible.sync="allocDialogVisible" width="30%">
       <el-select
         v-model="allocRoleIds"
         multiple
@@ -141,7 +201,7 @@
           >确 定</el-button
         >
       </span>
-    </el-dialog> -->
+    </el-dialog>
   </div>
 </template>
 <script>
@@ -155,12 +215,14 @@ const defaultListQuery = {
   keyword: null,
 };
 const defaultUser = {
-  id: null,
-  name: null,
-  description: null,
+  userId: null,
+  username: null,
+  phone: null,
+  realName: null,
+  password: null,
+  email: null,
   createTime: null,
-  status: true,
-  weight: 2,
+  userstatus: true,
 };
 export default {
   name: "adminList",
@@ -170,8 +232,6 @@ export default {
       search: "",
       listQuery: Object.assign({}, defaultListQuery),
       list: [],
-      resourceList: [],
-      adminCategoryList: [], //资源菜单列表
       total: null,
       listLoading: false,
       dialogVisible: false,
@@ -181,11 +241,12 @@ export default {
       allocRoleIds: [],
       allRoleList: [],
       allocAdminId: null,
+      adminId: 0,
     };
   },
-  mounted() {
+  created() {
     this.getList();
-    this.getAllAdminCategoryList();
+    this.getAllRoleList();
   },
   filters: {
     formatDateTime(time) {
@@ -215,18 +276,15 @@ export default {
     },
 
     async addUser(user) {
-      console.log("addUseraddUser", user);
-      //   user.createTime = new Date();
+      user.createTime = new Date();
       try {
         const res = await axios.post(
-          `${api.API_URL}/AdminResource/create`,
+          `${api.API_URL}/AdminUser/register`,
           {
-            categoryId: user.categoryId,
-            description: user.description,
-            name: user.name,
-            weight: user.weight,
-            url: user.url,
-            status: user.status,
+            email: user.email,
+            icon: "",
+            password: user.password,
+            username: user.username,
           },
           {
             headers: {
@@ -238,12 +296,33 @@ export default {
         if (res.data.code == 200) {
           this.$message.success("添加成功");
           this.getList();
-        } else {
-          this.$message.error(res.data.code + "失败");
         }
       } catch (err) {
         console.log(err);
         this.$message.error("添加失败");
+      }
+    },
+    async deleteUser(index, row) {
+      console.log(row);
+      try {
+        const res = await axios.post(
+          `${api.API_URL}/AdminUser/delete/` + row.id,
+          {
+            headers: {
+              Authorization: "Bearer " + sessionStorage.getItem("token"),
+            },
+          }
+        );
+        console.log(res);
+        if (res.data.code == 200) {
+          this.$message.success("删除成功");
+          this.getList();
+        } else {
+          this.$message.error("删除失败");
+        }
+      } catch (err) {
+        console.log(err);
+        this.$message.error("删除失败");
       }
     },
     handleAdd() {
@@ -251,22 +330,35 @@ export default {
       this.isEdit = false;
       this.user = Object.assign({}, defaultUser);
     },
-
+    editUser(index, row) {
+      this.dialogVisible = true;
+      this.isEdit = true;
+      this.user = Object.assign({}, row);
+    },
     async updateStatus(row) {
       try {
-        const res = await axios.post(
-          `${api.API_URL}/AdminResource/changeStatus/` + row.id,
-          {
-            headers: {
-              Authorization: "Bearer " + sessionStorage.getItem("token"),
-            },
-          }
-        );
+        //注意这里的row的status跟实际的status是相反的
+        var url = "";
+        if (row.status) {
+          console.log("row.status", false);
+          url =
+            `${api.API_URL}/AdminUser/updateStatus/` + row.id + "?status=true";
+        } else {
+          console.log("row.status", true);
+
+          url =
+            `${api.API_URL}/AdminUser/updateStatus/` + row.id + "?status=false";
+        }
+        console.log("row", row, url);
+
+        const res = await axios.post(url, {
+          headers: {
+            Authorization: "Bearer " + sessionStorage.getItem("token"),
+          },
+        });
         console.log("updateStatus", res);
         if (res.data.code == 200) {
           this.$message.success("修改成功");
-        } else {
-          this.$message.error(res.data.code + "失败");
         }
       } catch (err) {
         console.log(err);
@@ -290,37 +382,15 @@ export default {
           this.getList();
         });
     },
-    async deleteUser(row) {
-      try {
-        const res = await axios.post(
-          `${api.API_URL}/AdminResource/delete/` + row.id,
-          {
-            headers: {
-              Authorization: "Bearer " + sessionStorage.getItem("token"),
-            },
-          }
-        );
-        console.log(res);
-        if (res.data.code == 200) {
-          this.$message.success("删除成功");
-        } else {
-          this.$message.error(res.data.code + "失败");
-        }
-      } catch (err) {
-        console.log(err);
-        this.$message.error("删除失败");
-      }
-      this.getList();
-    },
 
     handleDelete(index, row) {
-      this.$confirm("是否要删除该资源?", "提示", {
+      this.$confirm("是否要删除该用户?", "提示", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
         type: "warning",
       })
         .then(() => {
-          this.deleteUser(row);
+          this.deleteUser(index, row);
         })
         .catch(() => {
           this.$message.info("取消删除");
@@ -334,10 +404,9 @@ export default {
       this.user = Object.assign({}, row);
     },
     async updateUser(id, user) {
-      console.log("updateUserupdateUser", user);
       try {
         const res = await axios.post(
-          `${api.API_URL}/AdminResource/update/` + id,
+          `${api.API_URL}/AdminUser/update/` + id,
           user,
           {
             headers: {
@@ -349,8 +418,6 @@ export default {
         if (res.data.code == 200) {
           this.$message.success("更新信息成功");
           this.getList();
-        } else {
-          this.$message.error(res.data.code + "失败");
         }
       } catch (err) {
         console.log(err);
@@ -358,7 +425,6 @@ export default {
       }
     },
     handleDialogConfirm() {
-      console.log(this.user);
       this.$confirm("是否要确认?", "提示", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
@@ -373,98 +439,133 @@ export default {
         }
       });
     },
-    handleAllocDialogConfirm() {
+    async handleAllocDialogConfirm() {
       this.$confirm("是否要确认?", "提示", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
         type: "warning",
       }).then(() => {
-        let params = new URLSearchParams();
-        params.append("adminId", this.allocAdminId);
-        params.append("roleIds", this.allocRoleIds);
-        allocRole(params).then((response) => {
-          this.$message({
-            message: "分配成功！",
-            type: "success",
-          });
-          this.allocDialogVisible = false;
-        });
+        console.log("this.allocRoleIds", this.allocRoleIds);
+        this.updateUserRole();
       });
     },
-    //暂时无用
-    handleSelectRole(index, row) {
-      this.allocAdminId = row.id;
-      this.allocDialogVisible = true;
-      this.getRoleListByAdmin(row.id);
-    },
-    async getList() {
-      this.listLoading = true;
+    async updateUserRole() {
       try {
-        const res = await axios.post(`${api.API_URL}/AdminResource/listAll`, {
-          headers: {
-            Authorization: "Bearer " + sessionStorage.getItem("token"),
-          },
-        });
-        // console.log("/AdminResource/listAll", res.data.data);
-        if (res.data.code == 200) {
-          this.list = res.data.data;
-          for (var i = 0; i < res.data.data.length; i++) {
-            await this.getAdminCategory(this.list[i].categoryId, i);
-          }
-          setTimeout(() => {
-            this.listLoading = false;
-          }, 500);
-        } else {
-          this.$message.error(res.data.code + "失败");
-        }
-        this.resourceList = this.list;
-        // console.log("this.list", this.resourceList);
-      } catch (err) {
-        console.log(err);
-      }
-    },
-    async getAdminCategory(adminCategoryId, i) {
-      try {
+        var param = {
+          userId: this.adminId,
+          roleIds: this.allocRoleIds,
+        };
         const res = await axios.post(
-          `${api.API_URL}/AdminCategory/` + adminCategoryId,
+          `${api.API_URL}/AdminUser/AdminRole/update`,
+          param,
           {
             headers: {
               Authorization: "Bearer " + sessionStorage.getItem("token"),
             },
           }
         );
-        console.log("getAdminCategory", res);
+        console.log("/AdminUser/AdminRole/update", res);
         if (res.data.code == 200) {
-          this.list[i].adminCategory = res.data.data.name;
-          //   console.log(this.list[i].adminCategory);
-          //   setTimeout(() => {
-          //     this.loading = false;
-          //   }, 500);
-        } else {
-          this.$message.error(res.data.code + "失败");
+          this.$message.success("更新角色成功");
+          this.getList();
+          this.allocDialogVisible = false;
         }
       } catch (err) {
-        console.log(err);
+        this.$message.error("更新信息失败");
       }
     },
-    async getAllAdminCategoryList() {
+    //暂时无用
+    // handleSelectRole(index, row) {
+    //   this.allocAdminId = row.id;
+    //   this.allocDialogVisible = true;
+    //   this.getRoleListByAdmin(row.id);
+    // },
+    async getList() {
+      this.listLoading = true;
       try {
-        const res = await axios.post(`${api.API_URL}/AdminCategory/listAll`, {
+        const res = await axios.post(`${api.API_URL}/AdminUser/list`, {
           headers: {
             Authorization: "Bearer " + sessionStorage.getItem("token"),
           },
         });
-        console.log("getAllAdminCategoryList", res);
+        // console.log("/AdminUser/list", res);
+        if (res.data.message == "不存在任何用户") {
+          this.list = null;
+        }
         if (res.data.code == 200) {
-          this.adminCategoryList = res.data.data;
-          console.log("this.adminCategoryList", this.adminCategoryList);
+          this.list = res.data.data.list;
         } else {
           this.$message.error(res.data.code + "失败");
         }
+        // console.log("this.list", this.list);
+        setTimeout(() => {
+          this.listLoading = false;
+        }, 500);
+      } catch (err) {
+        console.log(err);
+      }
+      // fetchList(this.listQuery).then(response => {
+      //   this.listLoading = false;
+      //   this.list = response.data.list;
+      //   this.total = response.data.total;
+      // });
+    },
+    async allocRole(index, row) {
+      this.allocRoleIds = []; //先清空
+      this.adminId = row.id;
+      console.log("allocRole", this.allRoleList);
+      try {
+        const res = await axios.post(
+          `${api.API_URL}/AdminUser/AdminRole/` + row.id,
+          {
+            headers: {
+              Authorization: "Bearer " + sessionStorage.getItem("token"),
+            },
+          }
+        );
+        console.log("/AdminUser/AdminRole/", res.data.data);
+        if (res.data.code == 200) {
+          for (var i = 0; i < res.data.data.length; i++) {
+            this.allocRoleIds.push(res.data.data[i].id);
+          }
+        } else {
+          this.$message.error(res.data.code + "失败");
+        }
+        // console.log("this.allocRoleIds", this.allocRoleIds);
+      } catch (err) {
+        console.log(err);
+      }
+      this.allocDialogVisible = true;
+    },
+    async getAllRoleList() {
+      try {
+        const res = await axios.post(`${api.API_URL}/AdminRole/listAll`, {
+          headers: {
+            Authorization: "Bearer " + sessionStorage.getItem("token"),
+          },
+        });
+        console.log("/AdminRole/listAll", res.data.data);
+        if (res.data.code == 200) {
+          this.allRoleList = res.data.data;
+        } else {
+          this.$message.error(res.data.code + "失败");
+        }
+        console.log("this.allRoleList", this.allRoleList);
       } catch (err) {
         console.log(err);
       }
     },
+    // getRoleListByAdmin(adminId) {
+    //   getRoleByAdmin(adminId).then((response) => {
+    //     let allocRoleList = response.data;
+    //     this.allocRoleIds = [];
+    //     if (allocRoleList != null && allocRoleList.length > 0) {
+    //       for (let i = 0; i < allocRoleList.length; i++) {
+    //         this.allocRoleIds.push(allocRoleList[i].id);
+    //       }
+    //     }
+    //   });
+    // },
   },
 };
 </script>

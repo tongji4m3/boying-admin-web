@@ -114,7 +114,7 @@
       width="40%"
     >
       <div v-for="(value, key) in adminMenuTreeList" :key="key">
-        {{ key }}
+        <b> {{ key }}</b>
         <div style="margin: 15px 0"></div>
         <el-checkbox-group
           v-model="allocMenuForm"
@@ -145,7 +145,7 @@
       width="40%"
     >
       <div v-for="(value, key) in adminResourceTreeList" :key="key">
-        {{ key }}
+        <b> {{ key }}</b>
         <div style="margin: 15px 0"></div>
         <el-checkbox-group
           v-model="allocResourceForm"
@@ -269,6 +269,8 @@ export default {
         if (res.data.code == 200) {
           this.$message.success("添加成功");
           this.getList();
+        } else {
+          this.$message.error(res.data.code + "失败");
         }
       } catch (err) {
         this.$message.error("添加失败");
@@ -299,6 +301,8 @@ export default {
         });
         if (res.data.code == 200) {
           this.$message.success("修改成功");
+        } else {
+          this.$message.error(res.data.code + "失败");
         }
       } catch (err) {
         this.$message.error("修改失败");
@@ -333,6 +337,8 @@ export default {
         );
         if (res.data.code == 200) {
           this.$message.success("删除成功");
+        } else {
+          this.$message.error(res.data.code + "失败");
         }
       } catch (err) {
         this.$message.error("删除失败");
@@ -373,6 +379,8 @@ export default {
         if (res.data.code == 200) {
           this.$message.success("更新信息成功");
           this.getList();
+        } else {
+          this.$message.error(res.data.code + "失败");
         }
       } catch (err) {
         this.$message.error("更新信息失败");
@@ -428,6 +436,8 @@ export default {
         // console.log("/AdminRole/list", res.data.data);
         if (res.data.code == 200) {
           this.list = res.data.data;
+        } else {
+          this.$message.error(res.data.code + "失败");
         }
         // console.log("this.list", this.list);
         setTimeout(() => {
@@ -453,6 +463,8 @@ export default {
         if (res.data.code == 200) {
           this.adminResourceTreeList = res.data.data;
           console.log("adminResourceTreeList", this.adminResourceTreeList);
+        } else {
+          this.$message.error(res.data.code + "失败");
         }
         setTimeout(() => {
           this.listLoading = false;
@@ -482,6 +494,8 @@ export default {
         if (res.data.code == 200) {
           this.adminMenuTreeList = res.data.data;
           //   console.log("adminMenuTreeList", this.adminMenuTreeList);
+        } else {
+          this.$message.error(res.data.code + "失败");
         }
         setTimeout(() => {
           this.listLoading = false;
@@ -516,6 +530,8 @@ export default {
             console.log(res.data.data[i]);
             this.allocMenuForm.push(res.data.data[i].id);
           }
+        } else {
+          this.$message.error(res.data.code + "失败");
         }
       } catch (err) {
         console.log(err);
@@ -541,6 +557,8 @@ export default {
           this.$message.success("更新信息成功");
           this.getList();
           this.allocMenuDialogVisible = false;
+        } else {
+          this.$message.error(res.data.code + "失败");
         }
       } catch (err) {
         this.$message.error("更新信息失败");
@@ -565,6 +583,8 @@ export default {
             console.log(res.data.data[i]);
             this.allocResourceForm.push(res.data.data[i].id);
           }
+        } else {
+          this.$message.error(res.data.code + "失败");
         }
       } catch (err) {
         console.log(err);
@@ -590,6 +610,8 @@ export default {
           this.$message.success("更新信息成功");
           this.getList();
           this.allocResourceDialogVisible = false;
+        } else {
+          this.$message.error(res.data.code + "失败");
         }
       } catch (err) {
         this.$message.error("更新信息失败");

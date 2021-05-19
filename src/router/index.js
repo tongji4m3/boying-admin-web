@@ -7,7 +7,7 @@ import Show from "@/views/Show.vue"
 import Category from "@/views/Category.vue"
 import AddShow from "@/views/AddShow.vue"
 import Order from "@/views/Order.vue"
-import User from "@/views/User.vue"
+import Admin from "@/views/Admin.vue"
 import UpdateShow from "@/views/UpdateShow.vue"
 import Role from "@/views/Role.vue"
 import Resource from "@/views/Resource.vue"
@@ -15,7 +15,7 @@ import Menu from "@/views/Menu.vue"
 import AddPromo from "@/views/AddPromo.vue"
 import Promo from "@/views/Promo.vue"
 import ResourceCategory from "@/views/ResourceCategory.vue"
-
+import User from "@/views/User.vue"
 Vue.use(VueRouter)
 
 const routes = [
@@ -61,8 +61,8 @@ const routes = [
             },
             {
                 path: '/admin',
-                name: '用户列表',
-                component: User
+                name: '账号列表',
+                component: Admin
             }, {
                 path: '/UpdateShow',
                 name: '修改演出',
@@ -102,6 +102,11 @@ const routes = [
                 path: '/ResourceCategory',
                 name: '资源目录',
                 component: ResourceCategory
+            },
+            {
+                path: '/User',
+                name: '用户列表',
+                component: User
             }
         ]
     },

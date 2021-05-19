@@ -206,7 +206,6 @@ export default {
     };
   },
   async mounted() {
-    console.log("mounted");
     try {
       const res = await axios.get(`${api.API_URL}/category/listAll`);
       console.log("mounted", res.data.data);
@@ -218,7 +217,7 @@ export default {
         }, 500);
         console.log(res.data.data);
       } else {
-        this.$message.error("未知错误");
+        this.$message.error(res.data.code+"未知错误");
       }
     } catch {
       this.$message.error("未知错误");
@@ -236,7 +235,6 @@ export default {
         } else {
           try {
             console.log("this.ruleForm", this.ruleForm);
-            console.log("mounted");
             const res = await axios.post(
               `${api.API_URL}/show/create`,
               this.ruleForm
@@ -250,6 +248,8 @@ export default {
               }, 500);
               console.log(res.data.data);
               this.$router.push("/show");
+            }else{
+                this.$message.error(res.data.code+"失败")
             }
           } catch (err) {
             console.log(err);

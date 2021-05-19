@@ -1,79 +1,75 @@
 <template>
   <div class="showView">
     <div v-loading="loading" style="padding: 50px">
-        <el-table
-          :data="tableData"
-          border
-          row-key="categoryId"
-          :tree-props="{ children: 'children', hasChildren: 'hasChildren' }"
-        >
-          <el-table-column prop="id" label="资源目录编号"> </el-table-column>
-          <el-table-column prop="name" label="资源目录名称"> </el-table-column>
+      <el-table
+        :data="tableData"
+        border
+        row-key="categoryId"
+        :tree-props="{ children: 'children', hasChildren: 'hasChildren' }"
+      >
+        <el-table-column prop="id" label="资源目录编号"> </el-table-column>
+        <el-table-column prop="name" label="资源目录名称"> </el-table-column>
 
-          <el-table-column prop="weight" label="资源目录权重">
-          </el-table-column>
-          <el-table-column prop="status" label="是否启用">
-            <template slot-scope="scope">
-              <el-switch
-                @change="handleStatusChange(scope.$index, scope.row)"
-                :active-value="1"
-                :inactive-value="0"
-                v-model="scope.row.status"
-              >
-              </el-switch></template
-          ></el-table-column>
-          <el-table-column prop="address" label="操作">
-            <template slot-scope="scope">
-              <el-button
-                size="mini"
-                type="info"
-                @click="handleUpdate(scope.$index, scope.row)"
-              >
-                编辑
-              </el-button>
-              <el-button
-                size="mini"
-                type="info"
-                @click="handledelete(scope.$index, scope.row)"
-              >
-                删除
-              </el-button>
-            </template></el-table-column
-          >
-        </el-table>
-        <el-button type="primary" @click="handleAdd()">添加目录</el-button>
-
-        <el-dialog
-          :title="isEdit ? '编辑目录' : '添加目录'"
-          :visible.sync="dialogVisible"
-          width="40%"
-        >
-          <el-form :model="categorySelected" label-width="150px" size="small">
-            <el-form-item label="资源目录名称:">
-              <el-input
-                v-model="categorySelected.name"
-                style="width: 250px"
-              ></el-input>
-            </el-form-item>
-            <el-form-item label="资源目录权重:">
-              <el-input
-                v-model="categorySelected.weight"
-                style="width: 250px"
-              ></el-input>
-            </el-form-item>
-          </el-form>
-          <span slot="footer" class="dialog-footer">
-            <el-button @click="dialogVisible = false" size="small"
-              >取 消</el-button
+        <el-table-column prop="weight" label="资源目录权重"> </el-table-column>
+        <el-table-column prop="status" label="是否启用">
+          <template slot-scope="scope">
+            <el-switch
+              @change="handleStatusChange(scope.$index, scope.row)"
+              :active-value="1"
+              :inactive-value="0"
+              v-model="scope.row.status"
             >
+            </el-switch></template
+        ></el-table-column>
+        <el-table-column prop="address" label="操作">
+          <template slot-scope="scope">
             <el-button
-              type="primary"
-              @click="handleDialogConfirm()"
-              size="small"
-              >确 定</el-button
+              size="mini"
+              type="info"
+              @click="handleUpdate(scope.$index, scope.row)"
             >
-          </span>
-        </el-dialog>
+              编辑
+            </el-button>
+            <el-button
+              size="mini"
+              type="info"
+              @click="handledelete(scope.$index, scope.row)"
+            >
+              删除
+            </el-button>
+          </template></el-table-column
+        >
+      </el-table>
+      <el-button type="primary" @click="handleAdd()">添加目录</el-button>
+
+      <el-dialog
+        :title="isEdit ? '编辑目录' : '添加目录'"
+        :visible.sync="dialogVisible"
+        width="40%"
+      >
+        <el-form :model="categorySelected" label-width="150px" size="small">
+          <el-form-item label="资源目录名称:">
+            <el-input
+              v-model="categorySelected.name"
+              style="width: 250px"
+            ></el-input>
+          </el-form-item>
+          <el-form-item label="资源目录权重:">
+            <el-input
+              v-model="categorySelected.weight"
+              style="width: 250px"
+            ></el-input>
+          </el-form-item>
+        </el-form>
+        <span slot="footer" class="dialog-footer">
+          <el-button @click="dialogVisible = false" size="small"
+            >取 消</el-button
+          >
+          <el-button type="primary" @click="handleDialogConfirm()" size="small"
+            >确 定</el-button
+          >
+        </span>
+      </el-dialog>
     </div>
   </div>
 </template>
@@ -144,7 +140,7 @@ export default {
             this.loading = false;
           }, 500);
         } else {
-          this.$message.error("未知错误");
+          this.$message.error(res.data.code + "失败");
         }
       } catch (err) {
         this.$message.error("未知错误");
@@ -169,7 +165,7 @@ export default {
             this.loading = false;
           }, 500);
         } else {
-          this.$message.error("未知错误");
+          this.$message.error(res.data.code + "失败");
         }
       } catch (err) {
         this.$message.error("未知错误");
@@ -200,7 +196,7 @@ export default {
             this.loading = false;
           }, 500);
         } else {
-          this.$message.error("未知错误编辑失败");
+          this.$message.error(res.data.code + "失败");
         }
       } catch (err) {
         console.log(err);
@@ -239,6 +235,8 @@ export default {
           this.$message.success("添加成功");
           this.reload();
           this.add = false;
+        } else {
+          this.$message.error(res.data.code + "失败");
         }
       } catch (err) {
         console.log(err);
@@ -262,6 +260,8 @@ export default {
             this.loading = false;
           }, 500);
           console.log(this.tableData);
+        } else {
+          this.$message.error(res.data.code + "失败");
         }
       } catch (err) {
         console.log(err);

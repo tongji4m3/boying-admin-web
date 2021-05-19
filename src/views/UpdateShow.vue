@@ -237,7 +237,7 @@ export default {
         }, 500);
         console.log(res.data.data);
       } else {
-        this.$message.error("未知错误");
+                this.$message.error(res.data.code+"失败")
       }
     } catch {
       this.$message.error("未知错误");
@@ -252,7 +252,7 @@ export default {
           this.loading = false;
         }, 500);
       } else {
-        this.$message.error("未知错误");
+                this.$message.error(res.data.code+"失败")
       }
     } catch {
       this.$message.error("未知错误");
@@ -282,6 +282,8 @@ export default {
               setTimeout(() => {
                 this.loading = false;
               }, 500);
+            }else{
+                                this.$message.error(res.data.code+"失败")
             }
           } catch (err) {
             console.log(err);

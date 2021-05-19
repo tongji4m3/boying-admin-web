@@ -240,7 +240,7 @@ export default {
           console.log(this.seatTable);
           this.handleClickSeatVisiable = true;
         } else {
-          this.$message.error("查看座次失败");
+          this.$message.error(res.data.code + "失败");
         }
       } catch (err) {
         console.log(err);
@@ -282,7 +282,7 @@ export default {
           this.$message.success("添加成功");
           this.handleClickSeat(this.seatTable[0].showId);
         } else {
-          this.$message.error("添加失败");
+          this.$message.error(res.data.code + "失败");
         }
       } catch (err) {
         console.log(err);
@@ -309,7 +309,7 @@ export default {
           this.$message.success("修改成功");
           this.handleClickSeat(this.seatTable[0].showId);
         } else {
-          this.$message.error("修改失败");
+          this.$message.error(res.data.code + "失败");
         }
       } catch (err) {
         console.log(err);
@@ -344,7 +344,7 @@ export default {
           console.log(index, row);
           this.reload();
         } else {
-          this.$message.error("删除失败");
+          this.$message.error(res.data.code + "失败");
         }
       } catch (err) {
         console.log(err);
@@ -369,6 +369,8 @@ export default {
           setTimeout(() => {
             this.loading = false;
           }, 500);
+        } else {
+          this.$message.error(res.data.code + "失败");
         }
       } catch (err) {
         console.log(err);
@@ -391,6 +393,8 @@ export default {
           setTimeout(() => {
             this.loading = false;
           }, 500);
+        } else {
+          this.$message.error(res.data.code + "失败");
         }
       } catch (err) {
         console.log(err);
