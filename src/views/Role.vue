@@ -543,7 +543,6 @@ export default {
           roleId: this.roleId,
           menuIds: this.allocMenuForm,
         };
-        console.log("helloworld", param);
         const res = await axios.post(
           `${api.API_URL}/AdminRole/allocMenu`,
           param,

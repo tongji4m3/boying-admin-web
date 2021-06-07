@@ -1,7 +1,7 @@
 <template>
   <div class="showView">
     <div v-loading="loading">
-       <el-table :data="tableData" border row-key="id">
+      <el-table :data="tableData" border row-key="id">
         <el-table-column prop="id" label="订单编号"> </el-table-column>
         <el-table-column prop="userId" label="用户编号"> </el-table-column>
         <el-table-column prop="showId" label="演出编号"> </el-table-column>
@@ -9,20 +9,13 @@
         <el-table-column prop="promoId" label="活动编号"> </el-table-column>
         <el-table-column prop="status" label="状态"> </el-table-column>
         <el-table-column prop="time" label="时间"> </el-table-column>
-        <el-table-column prop="userDelete" label="用户是否删除">
-          <template slot-scope="scope">
-            <div v-if="scope.row.userDelete == false">
-              <el-tag> 未删除 </el-tag>
-            </div>
-            <div v-else><el-tag type="danger"> 已删除 </el-tag></div>
-          </template>
-        </el-table-column>
+        <!-- <el-table-column prop="userDelete" label="用户是否删除"> </el-table-column> -->
         <!-- <el-table-column prop="adminDelete" label="管理员是否删除"> </el-table-column> -->
         <el-table-column prop="ticketCount" label="购票数量"> </el-table-column>
         <el-table-column prop="ticketPrice" label="购票价格"> </el-table-column>
         <el-table-column prop="orderPrice" label="订单价格"> </el-table-column>
         <el-table-column prop="payment" label="支付方式"> </el-table-column>
-        <!-- <el-table-column label="是否启用">
+        <el-table-column label="是否启用">
           <template slot-scope="scope">
             <div v-if="scope.row.adminDelete == false">
               <el-button
@@ -35,7 +28,7 @@
             </div>
             <div v-else><el-tag type="danger"> 已删除 </el-tag></div>
           </template>
-        </el-table-column> -->
+        </el-table-column>
       </el-table>
 
       <el-dialog
