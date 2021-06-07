@@ -247,7 +247,7 @@ export default {
                 this.loading = false;
               }, 500);
               console.log(res.data.data);
-              this.$router.push("/show");
+              this.$router.push("/showList");
             }else{
                 this.$message.error(res.data.code+"失败")
             }

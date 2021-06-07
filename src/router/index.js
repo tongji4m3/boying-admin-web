@@ -16,6 +16,7 @@ import AddPromo from "@/views/AddPromo.vue"
 import Promo from "@/views/Promo.vue"
 import ResourceCategory from "@/views/ResourceCategory.vue"
 import User from "@/views/User.vue"
+import History from "@/views/History.vue"
 Vue.use(VueRouter)
 
 const routes = [
@@ -58,6 +59,11 @@ const routes = [
                 path: '/orderList',
                 name: '订单列表',
                 component: Order
+            },
+            {
+                path: '/history',
+                name: '订单历史',
+                component: History
             },
             {
                 path: '/admin',
