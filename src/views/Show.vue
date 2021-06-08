@@ -51,12 +51,12 @@
           <el-table-column label="操作">
             <template slot-scope="scope">
               <div v-if="scope.row.adminDelete == false">
-                <el-button
+                <!-- <el-button
                   size="mini"
                   type="danger"
                   @click="handleDelete(scope.$index, scope.row)"
                   >删除</el-button
-                >
+                > -->
                 <el-button
                   size="mini"
                   style="margin-left: 0"
@@ -149,10 +149,17 @@
         <el-form-item label="价格">
           <el-input v-model="addSeatTable.price" placeholder="价格"></el-input>
         </el-form-item>
-        <el-form-item label="容量">
+        <el-form-item label="容量" v-if="!isEdit">
           <el-input
             v-model="addSeatTable.capacity"
             placeholder="容量"
+          ></el-input>
+        </el-form-item>
+        <el-form-item label="容量" v-if="isEdit">
+          <el-input
+            v-model="addSeatTable.capacity"
+            placeholder="容量"
+            disabled
           ></el-input>
         </el-form-item>
         <el-form-item>
@@ -200,7 +207,7 @@ export default {
   },
   data() {
     return {
-        addSeatShowId:-1,
+      addSeatShowId: -1,
       isEdit: false,
       handleClickSeatVisiable: false, //座次详情表格
       addSeatVisiable: false, //添加座次表格
@@ -229,7 +236,7 @@ export default {
     },
     //点击座次按钮
     async handleClickSeat(id) {
-        this.addSeatShowId=id;
+      this.addSeatShowId = id;
       try {
         const res = await axios.get(`${api.API_URL}/seat/getShowSeat/` + id, {
           headers: {
@@ -251,13 +258,13 @@ export default {
     },
     //添加座次
     addSeat() {
-        console.log("addSeataddSeataddSeataddSeat");
+      console.log("addSeataddSeataddSeataddSeat");
       this.addSeatVisiable = true;
       this.isEdit = false;
       console.log("this.addSeatShowId", this.addSeatShowId);
       this.addSeatTable = {};
-      
-      this.addSeatTable.showId = this.addSeatShowId
+
+      this.addSeatTable.showId = this.addSeatShowId;
     },
     //编辑座次
     editSeat(index, row) {

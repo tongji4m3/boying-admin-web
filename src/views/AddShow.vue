@@ -85,13 +85,11 @@
         <el-col :span="11">
           <el-form-item prop="startTime">
             <el-date-picker
-              type="date"
-              placeholder="选择日期"
-              v-model="ruleForm.startTime"
-              style="width: 100%"
-              format="yyyy 年 MM 月 dd 日 HH 小时 mm 分钟 ss 秒"
-              value-format="yyyy-MM-dd HH:mm:ss"
-            ></el-date-picker>
+              v-model="ruleForm.dayStart"
+              type="datetime"
+              placeholder="选择日期时间"
+            >
+            </el-date-picker>
           </el-form-item>
         </el-col>
       </el-form-item>
@@ -99,13 +97,11 @@
         <el-col :span="11">
           <el-form-item prop="endTime">
             <el-date-picker
-              type="date"
-              placeholder="选择日期"
-              v-model="ruleForm.endTime"
-              style="width: 100%"
-              format="yyyy 年 MM 月 dd 日 HH 小时 mm 分钟 ss 秒"
-              value-format="yyyy-MM-dd HH:mm:ss"
-            ></el-date-picker>
+              v-model="ruleForm.dayEnd"
+              type="datetime"
+              placeholder="选择日期时间"
+            >
+            </el-date-picker>
           </el-form-item>
         </el-col>
       </el-form-item>
@@ -217,7 +213,7 @@ export default {
         }, 500);
         console.log(res.data.data);
       } else {
-        this.$message.error(res.data.code+"未知错误");
+        this.$message.error(res.data.code + "未知错误");
       }
     } catch {
       this.$message.error("未知错误");
@@ -233,12 +229,53 @@ export default {
           this.$message.error("添加失败，请完整填写表单");
           return false;
         } else {
+          var mystart = this.ruleForm.dayStart;
+          const startyear = mystart.getFullYear();
+          const startmonth = mystart.getMonth() + 1;
+          const startday = mystart.getDate();
+          const starthour = mystart.getHours();
+          const startminute = mystart.getMinutes();
+          const startsecond = mystart.getSeconds();
+          var myEnd = this.ruleForm.dayEnd;
+          const endyear = myEnd.getFullYear();
+          const endmonth = myEnd.getMonth() + 1;
+          const endday = myEnd.getDate();
+          const endhour = myEnd.getHours();
+          const endminute = myEnd.getMinutes();
+          const endsecond = myEnd.getSeconds();
+          var startformat = "yyyy-MM-dd HH:mm:ss";
+          var endformat = "yyyy-MM-dd HH:mm:ss";
+          var start = startformat
+            .replace("yyyy", startyear)
+            .replace("MM", startmonth > 9 ? startmonth : `0${startmonth}`)
+            .replace("dd", startday > 9 ? startday : `0${startday}`)
+            .replace("HH", starthour > 9 ? starthour : `0${starthour}`)
+            .replace("mm", startminute > 9 ? startminute : `0${startminute}`)
+            .replace("ss", startsecond > 9 ? startsecond : `0${startsecond}`);
+          console.log("start", start);
+          var end = endformat
+            .replace("yyyy", endyear)
+            .replace("MM", endmonth > 9 ? endmonth : `0${endmonth}`)
+            .replace("dd", endday > 9 ? endday : `0${endday}`)
+            .replace("HH", endhour > 9 ? endhour : `0${endhour}`)
+            .replace("mm", endminute > 9 ? endminute : `0${endminute}`)
+            .replace("ss", endsecond > 9 ? endsecond : `0${endsecond}`);
+          console.log("end", end);
           try {
             console.log("this.ruleForm", this.ruleForm);
-            const res = await axios.post(
-              `${api.API_URL}/show/create`,
-              this.ruleForm
-            );
+            const res = await axios.post(`${api.API_URL}/show/create`, {
+              address: this.ruleForm.address,
+              categoryId: this.ruleForm.categoryId,
+              city: this.ruleForm.city,
+              dayEnd: start,
+              dayStart: end,
+              details: this.ruleForm.details,
+              maxPrice: this.ruleForm.maxPrice,
+              minPrice: this.ruleForm.minPrice,
+              name: this.ruleForm.name,
+              poster: this.ruleForm.poster,
+              weight: this.ruleForm.weight,
+            });
             console.log(res);
             if (res.data.code == 200) {
               this.$message.success("添加演出成功,即将跳转演出界面");
@@ -248,8 +285,8 @@ export default {
               }, 500);
               console.log(res.data.data);
               this.$router.push("/showList");
-            }else{
-                this.$message.error(res.data.code+"失败")
+            } else {
+              this.$message.error(res.data.code + "失败");
             }
           } catch (err) {
             console.log(err);
