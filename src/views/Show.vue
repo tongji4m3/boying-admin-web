@@ -200,6 +200,7 @@ export default {
   },
   data() {
     return {
+        addSeatShowId:-1,
       isEdit: false,
       handleClickSeatVisiable: false, //座次详情表格
       addSeatVisiable: false, //添加座次表格
@@ -228,6 +229,7 @@ export default {
     },
     //点击座次按钮
     async handleClickSeat(id) {
+        this.addSeatShowId=id;
       try {
         const res = await axios.get(`${api.API_URL}/seat/getShowSeat/` + id, {
           headers: {
@@ -249,11 +251,13 @@ export default {
     },
     //添加座次
     addSeat() {
+        console.log("addSeataddSeataddSeataddSeat");
       this.addSeatVisiable = true;
       this.isEdit = false;
-      console.log("this.seatTable[0].showId", this.seatTable[0].showId);
+      console.log("this.addSeatShowId", this.addSeatShowId);
       this.addSeatTable = {};
-      this.addSeatTable.showId = this.seatTable[0].showId;
+      
+      this.addSeatTable.showId = this.addSeatShowId
     },
     //编辑座次
     editSeat(index, row) {
@@ -280,7 +284,7 @@ export default {
           console.log(this.seatTable);
           this.addSeatVisiable = false;
           this.$message.success("添加成功");
-          this.handleClickSeat(this.seatTable[0].showId);
+          this.handleClickSeat(this.addSeatTable.showId);
         } else {
           this.$message.error(res.data.code + "失败");
         }
