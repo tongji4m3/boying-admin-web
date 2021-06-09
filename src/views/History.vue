@@ -136,10 +136,7 @@ import ossClient from "../assets/config/aliyun.oss.client";
 import axios from "axios";
 import api from "@/assets/api.js";
 import qs from "qs";
- 
 
-
- 
 const defaultCategory = {
   categoryId: "",
   description: "",
@@ -201,7 +198,7 @@ export default {
             this.loading = false;
           }, 500);
         } else {
-          this.$message.error("未知错误");
+          this.$message.error(res.data.code + res.data.message);
         }
       } catch (err) {
         this.$message.error("未知错误");
@@ -235,7 +232,7 @@ export default {
             this.loading = false;
           }, 500);
         } else {
-          this.$message.error(res.data.code + "失败");
+          this.$message.error(res.data.code + res.data.message);
         }
       } catch (err) {
         console.log(err);
@@ -275,7 +272,7 @@ export default {
           this.reload();
           this.add = false;
         } else {
-          this.$message.error(res.data.code + "失败");
+          this.$message.error(res.data.code + res.data.message);
         }
       } catch (err) {
         console.log(err);
@@ -299,7 +296,7 @@ export default {
           }, 500);
           console.log(this.tableData);
         } else {
-          this.$message.error(res.data.code + "失败");
+          this.$message.error(res.data.code + res.data.message);
         }
       } catch (err) {
         console.log(err);
@@ -327,7 +324,7 @@ export default {
           this.$message.success("删除成功");
           this.reload();
         } else {
-          this.$message.error(res.data.code + "失败");
+          this.$message.error(res.data.code + res.data.message);
         }
       } catch (err) {
         this.$message.error("删除失败");

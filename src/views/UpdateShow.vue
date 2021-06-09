@@ -67,10 +67,20 @@
         </el-upload>
       </el-form-item>
 
-      <el-form-item label="演出最低价格" prop="minPrice" style="width: 50%">
+      <el-form-item
+        label="演出最低价格"
+        prop="minPrice"
+        style="width: 50%"
+        v-show="false"
+      >
         <el-input v-model="ruleForm.minPrice"></el-input>
       </el-form-item>
-      <el-form-item label="演出最高价格" prop="maxPrice" style="width: 50%">
+      <el-form-item
+        label="演出最高价格"
+        prop="maxPrice"
+        style="width: 50%"
+        v-show="false"
+      >
         <el-input v-model="ruleForm.maxPrice"></el-input>
       </el-form-item>
       <!-- <el-form-item label="演出展示优先级" prop="region">
@@ -233,7 +243,7 @@ export default {
         }, 500);
         console.log(res.data.data);
       } else {
-        this.$message.error(res.data.code + "失败");
+        this.$message.error(res.data.code + "失败" + res.data.message);
       }
     } catch {
       this.$message.error("未知错误");
@@ -248,7 +258,7 @@ export default {
           this.loading = false;
         }, 500);
       } else {
-        this.$message.error(res.data.code + "失败");
+        this.$message.error(res.data.code + "失败" + res.data.message);
       }
     } catch {
       this.$message.error("未知错误");
@@ -273,7 +283,7 @@ export default {
             const starthour = mystart.getHours();
             const startminute = mystart.getMinutes();
             const startsecond = mystart.getSeconds();
-            var myEnd =new Date(this.ruleForm.endTime);
+            var myEnd = new Date(this.ruleForm.endTime);
             const endyear = myEnd.getFullYear();
             const endmonth = myEnd.getMonth() + 1;
             const endday = myEnd.getDate();
@@ -322,7 +332,7 @@ export default {
                 this.loading = false;
               }, 500);
             } else {
-              this.$message.error(res.data.code + "失败");
+              this.$message.error(res.data.code + "失败" + res.data.message);
             }
           } catch (err) {
             console.log(err);

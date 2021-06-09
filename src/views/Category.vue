@@ -213,7 +213,7 @@ export default {
             this.loading = false;
           }, 500);
         } else {
-          this.$message.error(res.data.code+"未知错误");
+          this.$message.error(res.data.code + res.data.message);
         }
       } catch (err) {
         this.$message.error("未知错误");
@@ -247,10 +247,10 @@ export default {
             this.loading = false;
           }, 500);
         } else {
-          this.$message.error(res.data.code+"未知错误编辑失败");
+          this.$message.error(res.data.code + res.data.message);
         }
       } catch (err) {
-        console.log(err);
+        this.$message.error(err);
       }
     },
     handleDialogConfirm() {
@@ -286,6 +286,8 @@ export default {
           this.$message.success("添加成功");
           this.reload();
           this.add = false;
+        } else {
+          this.$message.error(res.data.code + res.data.message);
         }
       } catch (err) {
         console.log(err);
@@ -311,7 +313,7 @@ export default {
           console.log(this.tableData);
         } else {
           console.log(res.data.code);
-          this.$message.error(res.data.code+"错误");
+          this.$message.error(res.data.code + res.data.message);
         }
       } catch (err) {
         console.log(err);

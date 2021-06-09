@@ -247,7 +247,7 @@ export default {
           this.$message.success("添加成功");
           this.getList();
         } else {
-          this.$message.error(res.data.code + "失败");
+          this.$message.error(res.data.code + res.data.message);
         }
       } catch (err) {
         console.log(err);
@@ -280,7 +280,7 @@ export default {
         if (res.data.code == 200) {
           this.$message.success("修改成功");
         } else {
-          this.$message.error(res.data.code + "失败");
+          this.$message.error(res.data.code + res.data.message);
         }
       } catch (err) {
         console.log(err);
@@ -326,7 +326,7 @@ export default {
           this.$message.success("删除成功");
           this.getList();
         } else {
-          this.$message.error(res.data.code + "失败");
+          this.$message.error(res.data.code + res.data.message);
         }
       } catch (err) {
         console.log(err);
@@ -372,7 +372,7 @@ export default {
           this.$message.success("更新信息成功");
           this.getList();
         } else {
-          this.$message.error(res.data.code + "失败");
+          this.$message.error(res.data.code + res.data.message);
         }
       } catch (err) {
         console.log(err);
@@ -445,7 +445,7 @@ export default {
         if (res.data.code == 200) {
           this.list = res.data.data.list;
         } else {
-          this.$message.error(res.data.code+"");
+          this.$message.error(res.data.code + res.data.message);
         }
         console.log("this.list", this.list);
         setTimeout(() => {

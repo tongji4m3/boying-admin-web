@@ -318,7 +318,7 @@ export default {
       if (res.data.code == 200) {
         this.todayOrderMoney = res.data.data;
       } else {
-        this.$message.error(res.data.code + "失败");
+        this.$message.error(res.data.code + res.data.message);
       }
     },
 
@@ -339,7 +339,7 @@ export default {
           this.loading = false;
         }, 500);
       } else {
-        this.$message.error(res.data.code + "失败");
+        this.$message.error(res.data.code + res.data.message);
       }
     },
 
@@ -408,7 +408,7 @@ export default {
         }
         console.log("this.chartData", this.chartData);
       } else {
-        this.$message.error(res.data.code + "失败");
+        this.$message.error(res.data.code + res.data.message);
       }
     },
   },

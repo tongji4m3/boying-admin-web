@@ -213,7 +213,7 @@ export default {
         }, 500);
         console.log(res.data.data);
       } else {
-        this.$message.error(res.data.code + "未知错误");
+        this.$message.error(res.data.code + res.data.message + "未知错误");
       }
     } catch {
       this.$message.error("未知错误");
@@ -286,7 +286,7 @@ export default {
               console.log(res.data.data);
               this.$router.push("/showList");
             } else {
-              this.$message.error(res.data.code + "失败");
+              this.$message.error(res.data.code + res.data.message + "失败");
             }
           } catch (err) {
             console.log(err);
