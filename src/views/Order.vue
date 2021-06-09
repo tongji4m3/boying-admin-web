@@ -1,21 +1,58 @@
 <template>
   <div class="showView">
     <div v-loading="loading">
-      <el-table :data="tableData" border row-key="id">
+      <el-table :data="tableData" style="width: 100%" border>
+        <el-table-column label="订单编号" align="center">
+          <template slot-scope="scope">{{ scope.row.id }}</template>
+        </el-table-column>
+        <el-table-column label="用户编号" align="center">
+          <template slot-scope="scope">{{ scope.row.userId }}</template>
+        </el-table-column>
+        <el-table-column label="演出编号" align="center">
+          <template slot-scope="scope">{{ scope.row.showId }}</template>
+        </el-table-column>
+        <el-table-column label="座次编号" align="center">
+          <template slot-scope="scope">{{ scope.row.seatId }}</template>
+        </el-table-column>
+        <el-table-column label="活动编号" align="center">
+          <template slot-scope="scope">{{ scope.row.promoId }}</template>
+        </el-table-column>
+        <el-table-column label="状态" align="center">
+          <template slot-scope="scope">{{ scope.row.status }}</template>
+        </el-table-column>
+        <el-table-column label="时间" align="center">
+          <template slot-scope="scope">{{
+            scope.row.time | formatDateTime
+          }}</template>
+        </el-table-column>
+        <el-table-column label="购票数量" align="center">
+          <template slot-scope="scope">{{ scope.row.ticketCount }}</template>
+        </el-table-column>
+        <el-table-column label="购票价格" align="center">
+          <template slot-scope="scope">{{ scope.row.ticketPrice }}</template>
+        </el-table-column>
+        <el-table-column label="订单价格" align="center">
+          <template slot-scope="scope">{{ scope.row.orderPrice }}</template>
+        </el-table-column>
+        <el-table-column label="支付方式" align="center">
+          <template slot-scope="scope">{{ scope.row.payment }}</template>
+        </el-table-column>
+      </el-table>
+      <!-- <el-table :data="tableData" border row-key="id">
         <el-table-column prop="id" label="订单编号"> </el-table-column>
         <el-table-column prop="userId" label="用户编号"> </el-table-column>
         <el-table-column prop="showId" label="演出编号"> </el-table-column>
         <el-table-column prop="seatId" label="座次编号"> </el-table-column>
         <el-table-column prop="promoId" label="活动编号"> </el-table-column>
         <el-table-column prop="status" label="状态"> </el-table-column>
-        <el-table-column prop="time" label="时间"> </el-table-column>
-        <!-- <el-table-column prop="userDelete" label="用户是否删除"> </el-table-column> -->
-        <!-- <el-table-column prop="adminDelete" label="管理员是否删除"> </el-table-column> -->
-        <el-table-column prop="ticketCount" label="购票数量"> </el-table-column>
+        <el-table-column prop="time" label="时间"> </el-table-column> -->
+      <!-- <el-table-column prop="userDelete" label="用户是否删除"> </el-table-column> -->
+      <!-- <el-table-column prop="adminDelete" label="管理员是否删除"> </el-table-column> -->
+      <!-- <el-table-column prop="ticketCount" label="购票数量"> </el-table-column>
         <el-table-column prop="ticketPrice" label="购票价格"> </el-table-column>
         <el-table-column prop="orderPrice" label="订单价格"> </el-table-column>
-        <el-table-column prop="payment" label="支付方式"> </el-table-column>
-        <el-table-column label="是否启用">
+        <el-table-column prop="payment" label="支付方式"> </el-table-column> -->
+      <!-- <el-table-column label="是否启用">
           <template slot-scope="scope">
             <div v-if="scope.row.adminDelete == false">
               <el-button
@@ -28,8 +65,8 @@
             </div>
             <div v-else><el-tag type="danger"> 已删除 </el-tag></div>
           </template>
-        </el-table-column>
-      </el-table>
+        </el-table-column> -->
+      <!-- </el-table> -->
 
       <el-dialog
         :title="isEdit ? '编辑目录' : '添加目录'"
@@ -122,7 +159,7 @@ import ossClient from "../assets/config/aliyun.oss.client";
 import axios from "axios";
 import api from "@/assets/api.js";
 import qs from "qs";
-
+import { formatDate } from "@/utils/date";
 const defaultCategory = {
   categoryId: "",
   description: "",
@@ -159,6 +196,16 @@ export default {
       categorySelected: Object.assign({}, defaultCategory),
       tableData: [],
     };
+  },
+  filters: {
+    formatDateTime(time) {
+      if (time == null || time === "") {
+        return "N/A";
+      }
+      let date = new Date(time);
+      console.log("date" + date);
+      return formatDate(date, "yyyy-MM-dd hh:mm:ss");
+    },
   },
   methods: {
     handleUpdate(index, row) {
