@@ -51,12 +51,12 @@
           <el-table-column label="操作">
             <template slot-scope="scope">
               <div v-if="scope.row.adminDelete == false">
-                <!-- <el-button
+                <el-button
                   size="mini"
                   type="danger"
                   @click="handleDelete(scope.$index, scope.row)"
                   >删除</el-button
-                > -->
+                >
                 <el-button
                   size="mini"
                   style="margin-left: 0"

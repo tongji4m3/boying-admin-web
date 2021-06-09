@@ -34,9 +34,9 @@
         <el-table-column label="排序" align="center">
           <template slot-scope="scope">{{ scope.row.weight }}</template>
         </el-table-column>
-        <el-table-column label="前端名称" align="center">
+        <!-- <el-table-column label="前端名称" align="center">
           <template slot-scope="scope">{{ scope.row.name }}</template>
-        </el-table-column>
+        </el-table-column> -->
         <!-- <el-table-column label="图标" align="center">
           <template slot-scope="scope">{{ scope.row.icon }}</template>
         </el-table-column> -->
@@ -97,9 +97,9 @@
         <el-form-item label="排序">
           <el-input v-model="user.weight" style="width: 250px"></el-input>
         </el-form-item>
-        <el-form-item label="前端名称">
+        <!-- <el-form-item label="前端名称">
           <el-input v-model="user.name" style="width: 250px"></el-input>
-        </el-form-item>
+        </el-form-item> -->
         <!-- <el-form-item label="图标">
           <el-input v-model="user.icon" style="width: 250px"></el-input>
         </el-form-item> -->

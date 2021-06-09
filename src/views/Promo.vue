@@ -64,23 +64,37 @@
         </el-form-item>
         <el-form-item label="演出开始时间">
           <el-date-picker
+            disabled
+            v-model="user.startTime"
+            type="datetime"
+            placeholder="选择日期时间"
+          >
+          </el-date-picker>
+          <!-- <el-date-picker
             type="date"
             placeholder="选择日期"
             v-model="user.startTime"
             style="width: 100%"
             format="yyyy 年 MM 月 dd 日 HH 小时 mm 分钟 ss 秒"
             value-format="yyyy-MM-dd HH:mm:ss"
-          ></el-date-picker>
+          ></el-date-picker> -->
         </el-form-item>
         <el-form-item label="演出结束时间">
           <el-date-picker
+            disabled
+            v-model="user.endTime"
+            type="datetime"
+            placeholder="选择日期时间"
+          >
+          </el-date-picker>
+          <!-- <el-date-picker
             type="date"
             placeholder="选择日期"
             v-model="user.endTime"
             style="width: 100%"
             format="yyyy 年 MM 月 dd 日 HH 小时 mm 分钟 ss 秒"
             value-format="yyyy-MM-dd HH:mm:ss"
-          ></el-date-picker>
+          ></el-date-picker> -->
         </el-form-item>
       </el-form>
 
