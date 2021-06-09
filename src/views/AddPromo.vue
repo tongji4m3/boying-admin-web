@@ -133,13 +133,18 @@
           <el-col :span="11">
             <el-form-item prop="startTime">
               <el-date-picker
-                type="date"
+                v-model="addPromoTable.startTime"
+                type="datetime"
+                placeholder="选择日期时间"
+              ></el-date-picker>
+              <!-- <el-date-picker
+                type="datetime"
                 placeholder="选择日期"
                 v-model="addPromoTable.startTime"
                 style="width: 100%"
                 format="yyyy 年 MM 月 dd 日 HH 小时 mm 分钟 ss 秒"
                 value-format="yyyy-MM-dd HH:mm:ss"
-              ></el-date-picker>
+              ></el-date-picker> -->
             </el-form-item>
           </el-col>
         </el-form-item>
@@ -147,13 +152,19 @@
           <el-col :span="11">
             <el-form-item prop="endTime">
               <el-date-picker
-                type="date"
+                v-model="addPromoTable.endTime"
+                type="datetime"
+                placeholder="选择日期时间"
+              >
+              </el-date-picker>
+              <!-- <el-date-picker
+                type="datetime"
                 placeholder="选择日期"
                 v-model="addPromoTable.endTime"
                 style="width: 100%"
                 format="yyyy 年 MM 月 dd 日 HH 小时 mm 分钟 ss 秒"
                 value-format="yyyy-MM-dd HH:mm:ss"
-              ></el-date-picker>
+              ></el-date-picker> -->
             </el-form-item>
           </el-col>
         </el-form-item>
@@ -239,7 +250,7 @@ export default {
           console.log(this.seatTable);
           this.handleClickSeatVisiable = true;
         } else {
-          this.$message.error(res.data.code+"查看座次失败");
+          this.$message.error(res.data.code + "查看座次失败");
         }
       } catch (err) {
         console.log(err);
@@ -265,9 +276,47 @@ export default {
     async addPromoSubmit(index, row) {
       console.log("addPromoSubmit", this.addPromoTable);
       try {
+        var mystart = this.addPromoTable.startTime;
+        const startyear = mystart.getFullYear();
+        const startmonth = mystart.getMonth() + 1;
+        const startday = mystart.getDate();
+        const starthour = mystart.getHours();
+        const startminute = mystart.getMinutes();
+        const startsecond = mystart.getSeconds();
+        var myEnd = this.addPromoTable.endTime;
+        const endyear = myEnd.getFullYear();
+        const endmonth = myEnd.getMonth() + 1;
+        const endday = myEnd.getDate();
+        const endhour = myEnd.getHours();
+        const endminute = myEnd.getMinutes();
+        const endsecond = myEnd.getSeconds();
+        var startformat = "yyyy-MM-dd HH:mm:ss";
+        var endformat = "yyyy-MM-dd HH:mm:ss";
+        var start = startformat
+          .replace("yyyy", startyear)
+          .replace("MM", startmonth > 9 ? startmonth : `0${startmonth}`)
+          .replace("dd", startday > 9 ? startday : `0${startday}`)
+          .replace("HH", starthour > 9 ? starthour : `0${starthour}`)
+          .replace("mm", startminute > 9 ? startminute : `0${startminute}`)
+          .replace("ss", startsecond > 9 ? startsecond : `0${startsecond}`);
+        console.log("start", start);
+        var end = endformat
+          .replace("yyyy", endyear)
+          .replace("MM", endmonth > 9 ? endmonth : `0${endmonth}`)
+          .replace("dd", endday > 9 ? endday : `0${endday}`)
+          .replace("HH", endhour > 9 ? endhour : `0${endhour}`)
+          .replace("mm", endminute > 9 ? endminute : `0${endminute}`)
+          .replace("ss", endsecond > 9 ? endsecond : `0${endsecond}`);
+        console.log("end", end);
         const res = await axios.post(
           `${api.API_URL}/promo/create`,
-          this.addPromoTable,
+          {
+            endTime: end,
+            name: this.addPromoTable.name,
+            price: this.addPromoTable.price,
+            seatId: this.addPromoTable.seatId,
+            startTime: start,
+          },
           {
             headers: {
               Authorization: "Bearer " + sessionStorage.getItem("token"),
@@ -279,7 +328,7 @@ export default {
           this.addPromoVisiable = false;
           this.$message.success("添加成功");
         } else {
-          this.$message.error(res.data.code+"添加失败");
+          this.$message.error(res.data.code + "添加失败");
         }
       } catch (err) {
         console.log(err);
@@ -311,7 +360,7 @@ export default {
           this.$message.success("添加成功");
           this.handleClickSeat(this.seatTable[0].showId);
         } else {
-          this.$message.error(res.data.code+"添加失败");
+          this.$message.error(res.data.code + "添加失败");
         }
       } catch (err) {
         console.log(err);
@@ -338,7 +387,7 @@ export default {
           this.$message.success("修改成功");
           this.handleClickSeat(this.seatTable[0].showId);
         } else {
-          this.$message.error(res.data.code+"修改失败");
+          this.$message.error(res.data.code + "修改失败");
         }
       } catch (err) {
         console.log(err);
@@ -373,7 +422,7 @@ export default {
           console.log(index, row);
           this.reload();
         } else {
-          this.$message.error(res.data.code+"删除失败");
+          this.$message.error(res.data.code + "删除失败");
         }
       } catch (err) {
         console.log(err);
@@ -420,8 +469,8 @@ export default {
           setTimeout(() => {
             this.loading = false;
           }, 500);
-        }else{
-            this.$message.error(res.data.code+"失败")
+        } else {
+          this.$message.error(res.data.code + "失败");
         }
       } catch (err) {
         console.log(err);
