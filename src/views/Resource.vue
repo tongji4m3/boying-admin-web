@@ -42,7 +42,7 @@
             scope.row.createTime | formatDateTime
           }}</template>
         </el-table-column>
-        <el-table-column label="是否启用" align="center">
+        <!-- <el-table-column label="是否启用" align="center">
           <template slot-scope="scope">
             <el-switch
               @change="handleStatusChange(scope.$index, scope.row)"
@@ -52,7 +52,7 @@
             >
             </el-switch>
           </template>
-        </el-table-column>
+        </el-table-column> -->
         <el-table-column label="操作" align="center">
           <template slot-scope="scope">
             <el-button
@@ -100,7 +100,7 @@
         <el-form-item label="权重">
           <el-input v-model="user.weight" style="width: 250px"></el-input>
         </el-form-item>
-        <el-form-item label="是否启用：">
+        <el-form-item label="是否启用：" v-show="false">
           <el-radio-group v-model="user.status">
             <el-radio :label="true">是</el-radio>
             <el-radio :label="false">否</el-radio>

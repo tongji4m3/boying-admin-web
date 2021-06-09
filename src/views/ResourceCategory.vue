@@ -11,7 +11,7 @@
         <el-table-column prop="name" label="资源目录名称"> </el-table-column>
 
         <el-table-column prop="weight" label="资源目录权重"> </el-table-column>
-        <el-table-column prop="status" label="是否启用">
+        <!-- <el-table-column prop="status" label="是否启用">
           <template slot-scope="scope">
             <el-switch
               @change="handleStatusChange(scope.$index, scope.row)"
@@ -20,7 +20,7 @@
               v-model="scope.row.status"
             >
             </el-switch></template
-        ></el-table-column>
+        ></el-table-column> -->
         <el-table-column prop="address" label="操作">
           <template slot-scope="scope">
             <el-button
@@ -30,13 +30,13 @@
             >
               编辑
             </el-button>
-            <el-button
+            <!-- <el-button
               size="mini"
               type="info"
               @click="handledelete(scope.$index, scope.row)"
             >
               删除
-            </el-button>
+            </el-button> -->
           </template></el-table-column
         >
       </el-table>

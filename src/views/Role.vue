@@ -491,6 +491,7 @@ export default {
             Authorization: "Bearer " + sessionStorage.getItem("token"),
           },
         });
+        console.log("2231321321312", res);
         if (res.data.code == 200) {
           this.adminMenuTreeList = res.data.data;
           //   console.log("adminMenuTreeList", this.adminMenuTreeList);
