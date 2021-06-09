@@ -96,7 +96,7 @@
             </el-switch>
           </template>
         </el-table-column>
-        <el-table-column label="操作" align="center">
+        <!-- <el-table-column label="操作" align="center">
           <template slot-scope="scope">
             <el-button
               type="text"
@@ -111,7 +111,7 @@
               >删除</el-button
             >
           </template>
-        </el-table-column>
+        </el-table-column> -->
         <!-- <el-table-column align="center">
           <template slot="header">
             <el-input

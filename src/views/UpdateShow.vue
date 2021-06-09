@@ -266,14 +266,14 @@ export default {
         } else {
           try {
             console.log("this.ruleForm", this.ruleForm);
-            var mystart = this.ruleForm.startTime;
+            var mystart = new Date(this.ruleForm.startTime);
             const startyear = mystart.getFullYear();
             const startmonth = mystart.getMonth() + 1;
             const startday = mystart.getDate();
             const starthour = mystart.getHours();
             const startminute = mystart.getMinutes();
             const startsecond = mystart.getSeconds();
-            var myEnd = this.ruleForm.endTime;
+            var myEnd =new Date(this.ruleForm.endTime);
             const endyear = myEnd.getFullYear();
             const endmonth = myEnd.getMonth() + 1;
             const endday = myEnd.getDate();

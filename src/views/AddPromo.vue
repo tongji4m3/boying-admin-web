@@ -276,14 +276,14 @@ export default {
     async addPromoSubmit(index, row) {
       console.log("addPromoSubmit", this.addPromoTable);
       try {
-        var mystart = this.addPromoTable.startTime;
+        var mystart = new Date(this.addPromoTable.startTime);
         const startyear = mystart.getFullYear();
         const startmonth = mystart.getMonth() + 1;
         const startday = mystart.getDate();
         const starthour = mystart.getHours();
         const startminute = mystart.getMinutes();
         const startsecond = mystart.getSeconds();
-        var myEnd = this.addPromoTable.endTime;
+        var myEnd = new Date(this.addPromoTable.endTime);
         const endyear = myEnd.getFullYear();
         const endmonth = myEnd.getMonth() + 1;
         const endday = myEnd.getDate();

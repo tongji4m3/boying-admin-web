@@ -229,14 +229,14 @@ export default {
           this.$message.error("添加失败，请完整填写表单");
           return false;
         } else {
-          var mystart = this.ruleForm.dayStart;
+          var mystart = new Date(this.ruleForm.dayStart);
           const startyear = mystart.getFullYear();
           const startmonth = mystart.getMonth() + 1;
           const startday = mystart.getDate();
           const starthour = mystart.getHours();
           const startminute = mystart.getMinutes();
           const startsecond = mystart.getSeconds();
-          var myEnd = this.ruleForm.dayEnd;
+          var myEnd = new Date(this.ruleForm.dayEnd);
           const endyear = myEnd.getFullYear();
           const endmonth = myEnd.getMonth() + 1;
           const endday = myEnd.getDate();
