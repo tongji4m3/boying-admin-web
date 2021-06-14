@@ -308,10 +308,50 @@ export default {
       this.user = Object.assign({}, row);
     },
     async updateUser(id, user) {
+      console.log("updateUser" + id);
+      console.log(user);
       try {
+        var mystart = new Date(user.startTime);
+        const startyear = mystart.getFullYear();
+        const startmonth = mystart.getMonth() + 1;
+        const startday = mystart.getDate();
+        const starthour = mystart.getHours();
+        const startminute = mystart.getMinutes();
+        const startsecond = mystart.getSeconds();
+        var myEnd = new Date(user.endTime);
+        const endyear = myEnd.getFullYear();
+        const endmonth = myEnd.getMonth() + 1;
+        const endday = myEnd.getDate();
+        const endhour = myEnd.getHours();
+        const endminute = myEnd.getMinutes();
+        const endsecond = myEnd.getSeconds();
+        var startformat = "yyyy-MM-dd HH:mm:ss";
+        var endformat = "yyyy-MM-dd HH:mm:ss";
+        var start = startformat
+          .replace("yyyy", startyear)
+          .replace("MM", startmonth > 9 ? startmonth : `0${startmonth}`)
+          .replace("dd", startday > 9 ? startday : `0${startday}`)
+          .replace("HH", starthour > 9 ? starthour : `0${starthour}`)
+          .replace("mm", startminute > 9 ? startminute : `0${startminute}`)
+          .replace("ss", startsecond > 9 ? startsecond : `0${startsecond}`);
+        console.log("start", start);
+        var end = endformat
+          .replace("yyyy", endyear)
+          .replace("MM", endmonth > 9 ? endmonth : `0${endmonth}`)
+          .replace("dd", endday > 9 ? endday : `0${endday}`)
+          .replace("HH", endhour > 9 ? endhour : `0${endhour}`)
+          .replace("mm", endminute > 9 ? endminute : `0${endminute}`)
+          .replace("ss", endsecond > 9 ? endsecond : `0${endsecond}`);
+        console.log("end", end);
         const res = await axios.post(
           `${api.API_URL}/promo/update/` + id,
-          user,
+          {
+            endTime: start,
+            name: user.name,
+            price: user.price,
+            seatId: user.seatId,
+            startTime: end,
+          },
           {
             headers: {
               Authorization: "Bearer " + sessionStorage.getItem("token"),
