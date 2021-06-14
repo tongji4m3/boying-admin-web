@@ -204,7 +204,7 @@ export default {
   async mounted() {
     try {
       const res = await axios.get(`${api.API_URL}/category/listAll`);
-      console.log("mounted", res.data.data);
+      console.log("mounted21", res);
       if (res.data.code == 200) {
         // 等待不起作用
         this.categoryList = res.data.data;
@@ -213,7 +213,8 @@ export default {
         }, 500);
         console.log(res.data.data);
       } else {
-        this.$message.error(res.data.code + res.data.message + "未知错误");
+        console.log("1231", res);
+        this.$message.error(res.data.code + res.data.message);
       }
     } catch {
       this.$message.error("未知错误");

@@ -597,6 +597,7 @@ export default {
           roleId: this.roleId,
           resourceIds: this.allocResourceForm,
         };
+        console.log("param",param)
         const res = await axios.post(
           `${api.API_URL}/AdminRole/allocResource`,
           param,
